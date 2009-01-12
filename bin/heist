@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'heist'
+
+Heist.run(File.expand_path(ARGV.first))
+
