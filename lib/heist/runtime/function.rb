@@ -1,5 +1,5 @@
 module Heist
-  module Runtime
+  class Runtime
     
     class Function
       def initialize(scope, names = [], body = nil, &block)

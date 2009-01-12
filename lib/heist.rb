@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'treetop'
 
-%w(scheme scheme/nodes runtime/function runtime/scope runtime/builtins).each do |path|
+%w(scheme scheme/nodes runtime).each do |path|
   require File.dirname(__FILE__) + '/heist/' + path
 end
 

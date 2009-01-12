@@ -1,5 +1,5 @@
 module Heist
-  module Runtime
+  class Runtime
     module Builtins
       def self.add(env)
         
@@ -64,16 +64,8 @@ module Heist
           op1 > op2
         end
         
-        env[">="] = Function.new(env) do |op1, op2|
-          op1 >= op2
-        end
-        
         env["<"] = Function.new(env) do |op1, op2|
           op1 < op2
-        end
-        
-        env["<="] = Function.new(env) do |op1, op2|
-          op1 <= op2
         end
         
         env["and"] = MetaFunction.new(env) do |scope, *args|
@@ -97,6 +89,8 @@ module Heist
         env["not"] = Function.new(env) do |expr|
           !expr
         end
+        
+        Heist.run(PATH + 'builtins.scm', env)
           
       end
     end

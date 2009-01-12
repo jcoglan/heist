@@ -1,5 +1,5 @@
 module Heist
-  module Runtime
+  class Runtime
     
     class Scope
       def initialize(parent = nil)
