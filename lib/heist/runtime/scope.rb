@@ -3,7 +3,7 @@ module Heist
     
     class Scope
       def initialize(parent = nil)
-        @parent = parent || TopLevel.new
+        @parent = parent || {}
         @symbols = {}
       end
       
@@ -16,15 +16,7 @@ module Heist
       end
       
       def eval(source)
-        Heist.eval(source, self)
-      end
-    end
-    
-    class TopLevel < Scope
-      def initialize(*args)
-        @symbols = {}
-        @parent  = {}
-        Builtins.add(self)
+        Heist.parse(source).eval(self)
       end
     end
     

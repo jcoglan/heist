@@ -9,16 +9,11 @@ module Heist
   VERSION = '0.1.0'
   
   def self.run(file, scope = nil)
-    ast = parse(File.read(file))
-    ast.eval(scope || env)
+    (scope || env).eval(File.read(file))
   end
   
   def self.env
-    @scope ||= Runtime::Scope.new
-  end
-  
-  def self.eval(source, scope = nil)
-    parse(source).eval(scope || Runtime::Scope.new)
+    @env ||= Runtime.new
   end
   
   def self.parse(source)
