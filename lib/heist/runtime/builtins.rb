@@ -5,7 +5,9 @@ module Heist
         
         env["define"] = MetaFunction.new(env) do |scope, names, body|
           names = names.as_string
-          env[names.first] = Function.new(scope, names[1..-1], body)
+          env[names.first] = (Array === names) ?
+              Function.new(scope, names[1..-1], body) :
+              body.eval(scope)
         end
         
         env["lambda"] = MetaFunction.new(env) do |scope, names, body|

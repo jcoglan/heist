@@ -15,10 +15,7 @@ module Heist
     
     class List < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        first = cells.first.eval(scope)
-        Runtime::Function === first ?
-            first.call(scope, *cells[1..-1]) :
-            first
+        cells.first.eval(scope).call(scope, *cells[1..-1])
       end
       
       def cells
