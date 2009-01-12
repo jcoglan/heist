@@ -22,7 +22,7 @@ class HeistTest < Test::Unit::TestCase
     assert_equal 57,   Heist.eval("(+ (* 3 (+ (* 2 4) (+ 3 5))) (+ (- 10 7) 6))")
   end
   
-  def test_define
+  def test_define_values
     new_scope!
     @scope.eval("(define size 2)")
     assert_equal 2, @scope.eval("size")
@@ -35,6 +35,28 @@ class HeistTest < Test::Unit::TestCase
     
     @scope.eval("(define circumference (* 2 pi radius))")
     assert_equal 62.8318, @scope.eval("circumference")
+  end
+  
+  def test_define_functions
+    new_scope!
+    @scope.eval("(define (square x) (* x x))")
+    assert_equal 441, @scope.eval("(square 21)")
+    assert_equal 49,  @scope.eval("(square (+ 2 5))")
+    assert_equal 81,  @scope.eval("(square (square 3))")
+    
+    @scope.eval <<-CODE
+      (define (sum-of-squares x y)
+        (+ (square x) (square y)))
+    CODE
+    assert_equal 25, @scope.eval("(sum-of-squares 3 4)")
+    
+    @scope.eval <<-CODE
+      (define (f a)
+        (sum-of-squares (+ a 1) (* a 2)))
+    CODE
+    assert_equal 136, @scope.eval("(f 5)")
+    assert_equal @scope.eval("(f 5)"),
+        @scope.eval("((lambda (a) ((lambda (x y) (+ (square x) (square y))) (+ a 1) (* a 2))) 5)")
   end
 end
 
