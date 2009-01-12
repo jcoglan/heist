@@ -105,5 +105,18 @@ class HeistTest < Test::Unit::TestCase
     assert_equal true, @env.eval("(and (> x 5) (<= x 10))")
     assert_equal true, @env.eval("(or (>= x 5) (< x 3))")
   end
+  
+  def test_y_combinator
+    @env.eval <<-CODE
+      (define factorial (Y
+        (lambda (rec)
+          (lambda (x)
+            (if (= x 0) 1 (* x (rec (- x 1))))))))
+    CODE
+    assert_equal (1..6).inject { |a,b| a*b },
+                 @env.eval("(factorial 6)")
+    
+    assert_equal 45, @env.eval("(K 45)")
+  end
 end
 
