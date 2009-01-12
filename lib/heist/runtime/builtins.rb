@@ -25,7 +25,7 @@ module Heist
         end
         
         env["-"] = Function.new(env) do |op1, op2|
-          op1 - op2
+          op2.nil? ? 0 - op1 : op1 - op2
         end
         
         env["*"] = Function.new(env) do |*args|
@@ -34,6 +34,40 @@ module Heist
         
         env["/"] = Function.new(env) do |op1, op2|
           op1 / op2.to_f
+        end
+        
+        env["cond"] = MetaFunction.new(self) do |scope, *pairs|
+          matched, result = false, nil
+          pairs.each do |pair|
+            next if matched
+            matched = pair.cells.first.eval(scope)
+            
+            if matched ||
+                (pair == pairs.last && pair.cells.first.as_string == "else")
+              result  = pair.cells.last.eval(scope)
+            end
+          end
+          result
+        end
+        
+        env["="] = Function.new(env) do |op1, op2|
+          op1 == op2
+        end
+        
+        env[">"] = Function.new(env) do |op1, op2|
+          op1 > op2
+        end
+        
+        env[">="] = Function.new(env) do |op1, op2|
+          op1 >= op2
+        end
+        
+        env["<"] = Function.new(env) do |op1, op2|
+          op1 < op2
+        end
+        
+        env["<="] = Function.new(env) do |op1, op2|
+          op1 <= op2
         end
           
       end

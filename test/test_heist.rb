@@ -58,5 +58,30 @@ class HeistTest < Test::Unit::TestCase
     assert_equal @scope.eval("(f 5)"),
         @scope.eval("((lambda (a) ((lambda (x y) (+ (square x) (square y))) (+ a 1) (* a 2))) 5)")
   end
+  
+  def test_cond
+    new_scope!
+    @scope.eval <<-CODE
+      (define (abs x)
+        (cond ((> x 0) x)
+              ((= x 0) 0)
+              ((< x 0) (- x))))
+    CODE
+    assert_equal 4,  @scope.eval("(abs 4)")
+    assert_equal 0,  @scope.eval("(abs 0)")
+    assert_equal 13, @scope.eval("(abs -13)")
+  end
+  
+  def test_else
+    new_scope!
+    @scope.eval <<-CODE
+      (define (abs x)
+        (cond ((< x 0) (- x))
+              (else x)))
+    CODE
+    assert_equal 4,  @scope.eval("(abs 4)")
+    assert_equal 0,  @scope.eval("(abs 0)")
+    assert_equal 13, @scope.eval("(abs -13)")
+  end
 end
 
