@@ -36,7 +36,7 @@ module Heist
           op1 / op2.to_f
         end
         
-        env["cond"] = MetaFunction.new(self) do |scope, *pairs|
+        env["cond"] = MetaFunction.new(env) do |scope, *pairs|
           matched, result = false, nil
           pairs.each do |pair|
             next if matched
@@ -48,6 +48,12 @@ module Heist
             end
           end
           result
+        end
+        
+        env["if"] = MetaFunction.new(env) do |scope, cond, cons, *alt|
+          cond.eval(scope) ?
+              cons.eval(scope) :
+              (alt.first && alt.first.eval(scope))
         end
         
         env["="] = Function.new(env) do |op1, op2|
@@ -68,6 +74,28 @@ module Heist
         
         env["<="] = Function.new(env) do |op1, op2|
           op1 <= op2
+        end
+        
+        env["and"] = MetaFunction.new(env) do |scope, *args|
+          result = true
+          args.each do |arg|
+            next if !result
+            result = arg.eval(scope)
+          end
+          result
+        end
+        
+        env["or"] = MetaFunction.new(env) do |scope, *args|
+          result = false
+          args.each do |arg|
+            next if result
+            result = arg.eval(scope)
+          end
+          result
+        end
+        
+        env["not"] = Function.new(env) do |expr|
+          !expr
         end
           
       end
