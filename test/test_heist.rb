@@ -3,7 +3,7 @@ require "test/unit"
 
 class HeistTest < Test::Unit::TestCase
   def setup
-    @env = Heist::Runtime.new
+    @env ||= Heist::Runtime.new
   end
   
   def test_numbers
@@ -90,6 +90,14 @@ class HeistTest < Test::Unit::TestCase
     assert_equal 4,  @env.eval("(abs 4)")
     assert_equal 0,  @env.eval("(abs 0)")
     assert_equal 13, @env.eval("(abs -13)")
+    
+    @env.eval <<-CODE
+      (define (a-plus-abs-b a b)
+        ((if (> b 0) + -) a b))
+    CODE
+    
+    assert_equal 7, @env.eval("(a-plus-abs-b 3 4)")
+    assert_equal 11, @env.eval("(a-plus-abs-b 3 (- 8))")
   end
   
   def test_and_or
