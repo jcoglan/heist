@@ -1,7 +1,7 @@
 module Heist
   grammar Scheme
     rule program
-      (comment / list)* <Program>
+      (comment / list / atom)* <Program>
     end
     
     rule comment

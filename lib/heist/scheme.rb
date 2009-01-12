@@ -25,8 +25,13 @@ module Heist
           if r3
             r1 = r3
           else
-            self.index = i1
-            r1 = nil
+            r4 = _nt_atom
+            if r4
+              r1 = r4
+            else
+              self.index = i1
+              r1 = nil
+            end
           end
         end
         if r1

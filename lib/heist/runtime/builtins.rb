@@ -16,18 +16,18 @@ module Heist
           puts expression
         end
         
-        env["+"] = Function.new(env) do |op1, op2|
-          String === op1 || String === op2 ?
-              op1.to_s + op2.to_s :
-              op1 + op2
+        env["+"] = Function.new(env) do |*args|
+          args.any? { |arg| String === arg } ?
+              args.inject("") { |str, arg| str + arg.to_s } :
+              args.inject(0)  { |sum, arg| sum + arg }
         end
         
         env["-"] = Function.new(env) do |op1, op2|
           op1 - op2
         end
         
-        env["*"] = Function.new(env) do |op1, op2|
-          op1 * op2
+        env["*"] = Function.new(env) do |*args|
+          args.inject(1) { |prod, arg| prod * arg }
         end
         
         env["/"] = Function.new(env) do |op1, op2|

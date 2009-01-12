@@ -17,6 +17,10 @@ module Heist
     @scope ||= Runtime::Scope.new
   end
   
+  def self.eval(source, scope = nil)
+    parse(source).eval(scope || Runtime::Scope.new)
+  end
+  
   def self.parse(source)
     @parser ||= SchemeParser.new
     @parser.parse(source)

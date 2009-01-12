@@ -14,6 +14,10 @@ module Heist
       def []=(name, value)
         @symbols[name] = value
       end
+      
+      def eval(source)
+        Heist.eval(source, self)
+      end
     end
     
     class TopLevel < Scope

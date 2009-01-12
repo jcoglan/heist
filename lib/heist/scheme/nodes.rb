@@ -3,7 +3,7 @@ module Heist
     
     class Program < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        elements.each { |e| e.eval(scope) }
+        elements.map { |e| e.eval(scope) }.last
       end
     end
     
@@ -15,7 +15,10 @@ module Heist
     
     class List < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        cells.first.eval(scope).call(scope, *cells[1..-1])
+        first = cells.first.eval(scope)
+        Runtime::Function === first ?
+            first.call(scope, *cells[1..-1]) :
+            first
       end
       
       def cells
