@@ -57,6 +57,19 @@ class HeistTest < Test::Unit::TestCase
         @env.eval("((lambda (a) ((lambda (x y) (+ (square x) (square y))) (+ a 1) (* a 2))) 5)")
   end
   
+  def test_closures
+    result = @env.eval <<-CODE
+      (define (add n)
+        (lambda (x) (+ x n)))
+      
+      (define add4 (add 4))
+      (define add7 (add 7))
+      
+      (add4 11)
+    CODE
+    assert_equal 15, result
+  end
+  
   def test_cond
     @env.eval <<-CODE
       (define (abs x)

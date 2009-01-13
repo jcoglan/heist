@@ -3,17 +3,17 @@ module Heist
     
     class Function
       def initialize(scope, names = [], body = nil, &block)
-        @scope = Scope.new(scope)
+        @scope = scope
         @body  = body || block
         @names = names.dup
       end
       
       def call(scope, *args)
-        params = []
+        params, closure = [], Scope.new(@scope)
         args.each_with_index do |arg, i|
-          params[i] = @scope[@names[i]] = arg.eval(scope)
+          params[i] = closure[@names[i]] = arg.eval(scope)
         end
-        Proc === @body ? @body.call(*params) : @body.eval(@scope)
+        Proc === @body ? @body.call(*params) : @body.eval(closure)
       end
     end
     
