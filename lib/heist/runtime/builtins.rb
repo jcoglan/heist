@@ -15,26 +15,25 @@ module Heist
         end
         
         env["display"] = Function.new(env) do |expression|
-          puts expression.eval
+          puts expression
         end
         
         env["+"] = Function.new(env) do |*args|
-          args = args.map { |arg| arg.eval }
           args.any? { |arg| String === arg } ?
               args.inject("") { |str, arg| str + arg.to_s } :
               args.inject(0)  { |sum, arg| sum + arg }
         end
         
         env["-"] = Function.new(env) do |op1, op2|
-          op2.nil? ? 0 - op1.eval : op1.eval - op2.eval
+          op2.nil? ? 0 - op1 : op1 - op2
         end
         
         env["*"] = Function.new(env) do |*args|
-          args.inject(1) { |prod, arg| prod * arg.eval }
+          args.inject(1) { |prod, arg| prod * arg }
         end
         
         env["/"] = Function.new(env) do |op1, op2|
-          op1.eval / op2.eval.to_f
+          op1 / op2.to_f
         end
         
         env["cond"] = MetaFunction.new(env) do |scope, *pairs|
@@ -52,15 +51,15 @@ module Heist
         end
         
         env["="] = Function.new(env) do |op1, op2|
-          op1.eval == op2.eval
+          op1 == op2
         end
         
         env[">"] = Function.new(env) do |op1, op2|
-          op1.eval > op2.eval
+          op1 > op2
         end
         
         env["<"] = Function.new(env) do |op1, op2|
-          op1.eval < op2.eval
+          op1 < op2
         end
         
         env["and"] = MetaFunction.new(env) do |scope, *args|
@@ -82,7 +81,7 @@ module Heist
         end
         
         env["not"] = Function.new(env) do |expr|
-          !expr.eval
+          !expr
         end
         
         Heist.run(PATH + 'builtins.scm', env)

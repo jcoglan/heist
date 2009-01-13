@@ -9,7 +9,7 @@ module Heist
       
       def [](name)
         value = @symbols[name] || @parent[name]
-        value = value.eval if Reference === value
+        value = value.eval if Thunk === value
         value
       end
       

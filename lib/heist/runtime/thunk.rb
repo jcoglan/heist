@@ -1,7 +1,7 @@
 module Heist
   class Runtime
     
-    class Reference
+    class Thunk
       def initialize(expression, scope)
         @expression, @scope = expression, scope
       end
