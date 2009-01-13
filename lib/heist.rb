@@ -8,8 +8,14 @@ end
 module Heist
   VERSION = '0.1.0'
   
+  EVAL_MODE = "normal"
+  
   def self.run(file, scope = nil)
-    (scope || env).eval(File.read(file))
+    eval(File.read(file), scope)
+  end
+  
+  def self.eval(source, scope = nil)
+    (scope || env).eval(source)
   end
   
   def self.env

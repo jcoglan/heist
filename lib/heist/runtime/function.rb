@@ -11,10 +11,14 @@ module Heist
       def call(scope, *args)
         params, closure = [], Scope.new(@scope)
         args.each_with_index do |arg, i|
-          params[i] = closure[@names[i]] = Thunk.new(arg, scope)
+        
+          params[i] = closure[@names[i]] =
+              (EVAL_MODE == "normal" && !(Proc === @body)) ?
+                  Thunk.new(arg, scope) :
+                  arg.eval(scope)
         end
         Proc === @body ?
-            @body.call(*params.map { |p| p.eval }) :
+            @body.call(*params) :
             @body.eval(closure)
       end
     end

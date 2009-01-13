@@ -3,13 +3,20 @@ module Heist
     
     PATH = File.dirname(__FILE__) + '/runtime/'
     
-    %w(function scope thunk builtins).each do |file|
+    %w(function scope thunk).each do |file|
       require PATH + file
     end
     
     def initialize
       @scope = Scope.new
-      Builtins.add(@scope)
+      @scope.instance_eval(File.read("#{ PATH }/builtins.rb"))
+      @scope.instance_eval(File.read("#{ PATH }/builtins/#{ EVAL_MODE }.rb"))
+      Heist.run("#{ PATH }/builtins.scm", @scope)
+      Heist.run("#{ PATH }/builtins/#{ EVAL_MODE }.scm", @scope)
+    end
+    
+    def [](name)
+      @scope[name]
     end
     
     def eval(source)

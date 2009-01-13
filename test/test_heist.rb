@@ -1,7 +1,12 @@
+$VERBOSE = nil
+
 require File.dirname(__FILE__) + "/../lib/heist"
 require "test/unit"
 
-class HeistTest < Test::Unit::TestCase
+puts "\nType of if() function: #{ Heist.env["if"].class }"
+puts "Application mode: #{ Heist::EVAL_MODE }\n\n"
+
+Class.new(Test::Unit::TestCase) do
   def setup
     @env ||= Heist::Runtime.new
   end
