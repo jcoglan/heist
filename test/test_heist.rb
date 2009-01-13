@@ -113,6 +113,16 @@ class HeistTest < Test::Unit::TestCase
     assert_equal 11, @env.eval("(a-plus-abs-b 3 (- 8))")
   end
   
+  def test_if_should_not_infinitely_recurse
+    @env.eval <<-CODE
+      (define (fact x)
+        (if (= x 0) 1
+            (* x
+            (fact (- x 1)))))
+    CODE
+    assert_equal 720, @env.eval("(fact 6)")
+  end
+  
   def test_and_or
     @env.eval("(define x 7)")
     assert_equal true, @env.eval("(and (> x 5) (<= x 10))")
