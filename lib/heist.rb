@@ -37,6 +37,7 @@ module Heist
     loop do
       input = Readline.readline(buffer.empty? ? "> " : "* ")
       exit if input.nil? or input.strip == "quit"
+      Readline::HISTORY.push(input)
       buffer << input
       tree = parse(buffer)
       unless tree.nil?
