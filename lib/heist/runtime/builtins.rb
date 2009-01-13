@@ -50,12 +50,6 @@ module Heist
           result
         end
         
-        env["if"] = MetaFunction.new(env) do |scope, cond, cons, *alt|
-          cond.eval(scope) ?
-              cons.eval(scope) :
-              (alt.first && alt.first.eval(scope))
-        end
-        
         env["="] = Function.new(env) do |op1, op2|
           op1 == op2
         end

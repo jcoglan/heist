@@ -3,7 +3,7 @@ module Heist
     
     PATH = File.dirname(__FILE__) + '/runtime/'
     
-    %w(function scope builtins).each do |file|
+    %w(function scope reference builtins).each do |file|
       require PATH + file
     end
     
