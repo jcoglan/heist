@@ -13,9 +13,7 @@ module Heist
         args.each_with_index do |arg, i|
         
           params[i] = closure[@names[i]] =
-              (EVAL_MODE == "normal" && !primitive?) ?
-                  Thunk.new(arg, scope) :
-                  arg.eval(scope)
+              lazy? ? Thunk.new(arg, scope) : arg.eval(scope)
         end
         primitive? ?
             @body.call(*params) :
@@ -24,6 +22,10 @@ module Heist
       
       def primitive?
         Proc === @body
+      end
+      
+      def lazy?
+        @scope.runtime.lazy? && !primitive?
       end
       
       def to_s

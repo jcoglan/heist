@@ -3,12 +3,12 @@ $VERBOSE = nil
 require File.dirname(__FILE__) + "/../lib/heist"
 require "test/unit"
 
-puts "\nType of if() function: #{ Heist.env["if"].class }"
-puts "Application mode: #{ Heist::EVAL_MODE }\n\n"
-
 Class.new(Test::Unit::TestCase) do
   def setup
-    @@env ||= Heist::Runtime.new
+    return @@env if defined?(@@env)
+    @@env = Heist::Runtime.new # (:order => Heist::EAGER)
+    puts "\nType of if() function: #{ @@env["if"].class }"
+    puts "Application mode: #{ Heist::ORDERS[@@env.order] }\n\n"
   end
   
   def test_numbers

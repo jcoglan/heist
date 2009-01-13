@@ -2,9 +2,15 @@ module Heist
   class Runtime
     
     class Scope
-      def initialize(parent = nil)
-        @parent = parent || {}
+      def initialize(parent)
         @symbols = {}
+        return @parent = parent unless Runtime === parent
+        @runtime = parent
+        @parent  = {}
+      end
+      
+      def runtime
+        @runtime || @parent.runtime
       end
       
       def [](name)

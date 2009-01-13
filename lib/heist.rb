@@ -9,7 +9,10 @@ end
 module Heist
   VERSION = '0.1.0'
   
-  EVAL_MODE = "normal"
+  NORMAL_ORDER      = LAZY  = 0
+  APPLICATIVE_ORDER = EAGER = 1
+  
+  ORDERS = %w(normal applicative)
   
   def self.run(file, scope = nil)
     eval(File.read(file), scope)
@@ -28,11 +31,11 @@ module Heist
     @parser.parse(source)
   end
   
-  def self.repl
-    puts "Heist Scheme interpreter, v. #{ VERSION }"
-    puts "Application mode: #{ EVAL_MODE.upcase }\n\n"
+  def self.repl(options = {})
+    runtime, buffer = Runtime.new(options), ""
     
-    runtime, buffer = Runtime.new, ""
+    puts "Heist Scheme interpreter, v. #{ VERSION }"
+    puts "Evaluation strategy: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }\n\n"
     
     loop do
       inset = buffer.scan(/\(/).size - buffer.scan(/\)/).size

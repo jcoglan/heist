@@ -7,12 +7,21 @@ module Heist
       require PATH + file
     end
     
-    def initialize
-      @scope = Scope.new
+    attr_reader :order
+    
+    def initialize(options = {})
+      @scope = Scope.new(self)
+      
+      @order = options[:order] || NORMAL_ORDER
+      
       @scope.instance_eval(File.read("#{ PATH }/builtins.rb"))
-      @scope.instance_eval(File.read("#{ PATH }/builtins/#{ EVAL_MODE }.rb"))
+      @scope.instance_eval(File.read("#{ PATH }/builtins/#{ ORDERS[@order] }.rb"))
       Heist.run("#{ PATH }/builtins.scm", @scope)
-      Heist.run("#{ PATH }/builtins/#{ EVAL_MODE }.scm", @scope)
+      Heist.run("#{ PATH }/builtins/#{ ORDERS[@order] }.scm", @scope)
+    end
+    
+    def lazy?
+      @order == NORMAL_ORDER
     end
     
     def [](name)
