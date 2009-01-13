@@ -24,7 +24,6 @@
 ; Y combinator
 ; Returns fixed points of higher order functions
 ; Used to implement anonymous recursion
-; Does not work if using normal order evaluation
 (define (Y f)
   ((lambda (g) (g g))
   (lambda (h)
