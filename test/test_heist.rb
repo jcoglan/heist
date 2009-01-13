@@ -135,6 +135,8 @@ Class.new(Test::Unit::TestCase) do
   end
   
   def test_y_combinator
+    @@env.eval('(load "birds")')
+    
     @@env.eval <<-CODE
       (define factorial (Y
         (lambda (rec)

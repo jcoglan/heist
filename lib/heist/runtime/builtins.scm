@@ -12,16 +12,3 @@
 (define (>= x y)
   (not (< x y)))
 
-; K combinator
-; Returns its input
-(define (K x) x)
-
-; Y combinator
-; Returns fixed points of higher order functions
-; Used to implement anonymous recursion
-(define (Y f)
-  ((lambda (g) (g g))
-  (lambda (h)
-    (lambda (x)
-      ((f (h h)) x)))))
-

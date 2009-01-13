@@ -13,6 +13,16 @@ self["display"] = Function.new(self) do |expression|
   puts expression
 end
 
+self["load"] = Function.new(self) do |file|
+  path = LOAD_PATH.find { |p| File.file?(p + file) || File.file?(p + file + FILE_EXT) }
+  if path.nil?
+    false
+  else
+    Heist.run(path + file, self)
+    true
+  end
+end
+
 self["+"] = Function.new(self) do |*args|
   args.any? { |arg| String === arg } ?
       args.inject("") { |str, arg| str + arg.to_s } :

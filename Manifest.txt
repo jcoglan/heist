@@ -17,6 +17,7 @@ lib/heist/runtime/builtins/applicative.rb
 lib/heist/runtime/builtins/applicative.scm
 lib/heist/runtime/builtins/normal.rb
 lib/heist/runtime/builtins/normal.scm
+lib/heist/stdlib/birds.scm
 test/test_heist.rb
 test/test.scm
 test/mode.scm

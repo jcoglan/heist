@@ -263,22 +263,27 @@ module Heist
       s0 << r1
       if r1
         i2 = index
-        r3 = _nt_number
+        r3 = _nt_string
         if r3
           r2 = r3
         else
-          r4 = _nt_symbol
+          r4 = _nt_number
           if r4
             r2 = r4
           else
-            self.index = i2
-            r2 = nil
+            r5 = _nt_symbol
+            if r5
+              r2 = r5
+            else
+              self.index = i2
+              r2 = nil
+            end
           end
         end
         s0 << r2
         if r2
-          r5 = _nt_space
-          s0 << r5
+          r6 = _nt_space
+          s0 << r6
         end
       end
       if s0.last
@@ -290,6 +295,278 @@ module Heist
       end
 
       node_cache[:atom][start_index] = r0
+
+      return r0
+    end
+
+    module String0
+    end
+
+    def _nt_string
+      start_index = index
+      if node_cache[:string].has_key?(index)
+        cached = node_cache[:string][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      if input.index('"', index) == index
+        r1 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure('"')
+        r1 = nil
+      end
+      s0 << r1
+      if r1
+        s2, i2 = [], index
+        loop do
+          i3 = index
+          if input.index('\\"', index) == index
+            r4 = (SyntaxNode).new(input, index...(index + 2))
+            @index += 2
+          else
+            terminal_parse_failure('\\"')
+            r4 = nil
+          end
+          if r4
+            r3 = r4
+          else
+            if input.index(Regexp.new('[^"]'), index) == index
+              r5 = (SyntaxNode).new(input, index...(index + 1))
+              @index += 1
+            else
+              r5 = nil
+            end
+            if r5
+              r3 = r5
+            else
+              self.index = i3
+              r3 = nil
+            end
+          end
+          if r3
+            s2 << r3
+          else
+            break
+          end
+        end
+        r2 = SyntaxNode.new(input, i2...index, s2)
+        s0 << r2
+        if r2
+          if input.index('"', index) == index
+            r6 = (SyntaxNode).new(input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure('"')
+            r6 = nil
+          end
+          s0 << r6
+        end
+      end
+      if s0.last
+        r0 = (String).new(input, i0...index, s0)
+        r0.extend(String0)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:string][start_index] = r0
+
+      return r0
+    end
+
+    module Number0
+    end
+
+    module Number1
+    end
+
+    module Number2
+    end
+
+    module Number3
+    end
+
+    def _nt_number
+      start_index = index
+      if node_cache[:number].has_key?(index)
+        cached = node_cache[:number][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      if input.index("-", index) == index
+        r2 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure("-")
+        r2 = nil
+      end
+      if r2
+        r1 = r2
+      else
+        r1 = SyntaxNode.new(input, index...index)
+      end
+      s0 << r1
+      if r1
+        i3 = index
+        if input.index("0", index) == index
+          r4 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
+        else
+          terminal_parse_failure("0")
+          r4 = nil
+        end
+        if r4
+          r3 = r4
+        else
+          i5, s5 = index, []
+          if input.index(Regexp.new('[1-9]'), index) == index
+            r6 = (SyntaxNode).new(input, index...(index + 1))
+            @index += 1
+          else
+            r6 = nil
+          end
+          s5 << r6
+          if r6
+            s7, i7 = [], index
+            loop do
+              r8 = _nt_digit
+              if r8
+                s7 << r8
+              else
+                break
+              end
+            end
+            r7 = SyntaxNode.new(input, i7...index, s7)
+            s5 << r7
+          end
+          if s5.last
+            r5 = (SyntaxNode).new(input, i5...index, s5)
+            r5.extend(Number0)
+          else
+            self.index = i5
+            r5 = nil
+          end
+          if r5
+            r3 = r5
+          else
+            self.index = i3
+            r3 = nil
+          end
+        end
+        s0 << r3
+        if r3
+          i10, s10 = index, []
+          if input.index(".", index) == index
+            r11 = (SyntaxNode).new(input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure(".")
+            r11 = nil
+          end
+          s10 << r11
+          if r11
+            s12, i12 = [], index
+            loop do
+              r13 = _nt_digit
+              if r13
+                s12 << r13
+              else
+                break
+              end
+            end
+            if s12.empty?
+              self.index = i12
+              r12 = nil
+            else
+              r12 = SyntaxNode.new(input, i12...index, s12)
+            end
+            s10 << r12
+          end
+          if s10.last
+            r10 = (SyntaxNode).new(input, i10...index, s10)
+            r10.extend(Number1)
+          else
+            self.index = i10
+            r10 = nil
+          end
+          if r10
+            r9 = r10
+          else
+            r9 = SyntaxNode.new(input, index...index)
+          end
+          s0 << r9
+          if r9
+            i15, s15 = index, []
+            if input.index(Regexp.new('[eE]'), index) == index
+              r16 = (SyntaxNode).new(input, index...(index + 1))
+              @index += 1
+            else
+              r16 = nil
+            end
+            s15 << r16
+            if r16
+              if input.index(Regexp.new('[+-]'), index) == index
+                r18 = (SyntaxNode).new(input, index...(index + 1))
+                @index += 1
+              else
+                r18 = nil
+              end
+              if r18
+                r17 = r18
+              else
+                r17 = SyntaxNode.new(input, index...index)
+              end
+              s15 << r17
+              if r17
+                s19, i19 = [], index
+                loop do
+                  r20 = _nt_digit
+                  if r20
+                    s19 << r20
+                  else
+                    break
+                  end
+                end
+                if s19.empty?
+                  self.index = i19
+                  r19 = nil
+                else
+                  r19 = SyntaxNode.new(input, i19...index, s19)
+                end
+                s15 << r19
+              end
+            end
+            if s15.last
+              r15 = (SyntaxNode).new(input, i15...index, s15)
+              r15.extend(Number2)
+            else
+              self.index = i15
+              r15 = nil
+            end
+            if r15
+              r14 = r15
+            else
+              r14 = SyntaxNode.new(input, index...index)
+            end
+            s0 << r14
+          end
+        end
+      end
+      if s0.last
+        r0 = (Number).new(input, i0...index, s0)
+        r0.extend(Number3)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:number][start_index] = r0
 
       return r0
     end
@@ -486,199 +763,6 @@ module Heist
       end
 
       node_cache[:symbol][start_index] = r0
-
-      return r0
-    end
-
-    module Number0
-    end
-
-    module Number1
-    end
-
-    module Number2
-    end
-
-    module Number3
-    end
-
-    def _nt_number
-      start_index = index
-      if node_cache[:number].has_key?(index)
-        cached = node_cache[:number][index]
-        @index = cached.interval.end if cached
-        return cached
-      end
-
-      i0, s0 = index, []
-      if input.index("-", index) == index
-        r2 = (SyntaxNode).new(input, index...(index + 1))
-        @index += 1
-      else
-        terminal_parse_failure("-")
-        r2 = nil
-      end
-      if r2
-        r1 = r2
-      else
-        r1 = SyntaxNode.new(input, index...index)
-      end
-      s0 << r1
-      if r1
-        i3 = index
-        if input.index("0", index) == index
-          r4 = (SyntaxNode).new(input, index...(index + 1))
-          @index += 1
-        else
-          terminal_parse_failure("0")
-          r4 = nil
-        end
-        if r4
-          r3 = r4
-        else
-          i5, s5 = index, []
-          if input.index(Regexp.new('[1-9]'), index) == index
-            r6 = (SyntaxNode).new(input, index...(index + 1))
-            @index += 1
-          else
-            r6 = nil
-          end
-          s5 << r6
-          if r6
-            s7, i7 = [], index
-            loop do
-              r8 = _nt_digit
-              if r8
-                s7 << r8
-              else
-                break
-              end
-            end
-            r7 = SyntaxNode.new(input, i7...index, s7)
-            s5 << r7
-          end
-          if s5.last
-            r5 = (SyntaxNode).new(input, i5...index, s5)
-            r5.extend(Number0)
-          else
-            self.index = i5
-            r5 = nil
-          end
-          if r5
-            r3 = r5
-          else
-            self.index = i3
-            r3 = nil
-          end
-        end
-        s0 << r3
-        if r3
-          i10, s10 = index, []
-          if input.index(".", index) == index
-            r11 = (SyntaxNode).new(input, index...(index + 1))
-            @index += 1
-          else
-            terminal_parse_failure(".")
-            r11 = nil
-          end
-          s10 << r11
-          if r11
-            s12, i12 = [], index
-            loop do
-              r13 = _nt_digit
-              if r13
-                s12 << r13
-              else
-                break
-              end
-            end
-            if s12.empty?
-              self.index = i12
-              r12 = nil
-            else
-              r12 = SyntaxNode.new(input, i12...index, s12)
-            end
-            s10 << r12
-          end
-          if s10.last
-            r10 = (SyntaxNode).new(input, i10...index, s10)
-            r10.extend(Number1)
-          else
-            self.index = i10
-            r10 = nil
-          end
-          if r10
-            r9 = r10
-          else
-            r9 = SyntaxNode.new(input, index...index)
-          end
-          s0 << r9
-          if r9
-            i15, s15 = index, []
-            if input.index(Regexp.new('[eE]'), index) == index
-              r16 = (SyntaxNode).new(input, index...(index + 1))
-              @index += 1
-            else
-              r16 = nil
-            end
-            s15 << r16
-            if r16
-              if input.index(Regexp.new('[+-]'), index) == index
-                r18 = (SyntaxNode).new(input, index...(index + 1))
-                @index += 1
-              else
-                r18 = nil
-              end
-              if r18
-                r17 = r18
-              else
-                r17 = SyntaxNode.new(input, index...index)
-              end
-              s15 << r17
-              if r17
-                s19, i19 = [], index
-                loop do
-                  r20 = _nt_digit
-                  if r20
-                    s19 << r20
-                  else
-                    break
-                  end
-                end
-                if s19.empty?
-                  self.index = i19
-                  r19 = nil
-                else
-                  r19 = SyntaxNode.new(input, i19...index, s19)
-                end
-                s15 << r19
-              end
-            end
-            if s15.last
-              r15 = (SyntaxNode).new(input, i15...index, s15)
-              r15.extend(Number2)
-            else
-              self.index = i15
-              r15 = nil
-            end
-            if r15
-              r14 = r15
-            else
-              r14 = SyntaxNode.new(input, index...index)
-            end
-            s0 << r14
-          end
-        end
-      end
-      if s0.last
-        r0 = (Number).new(input, i0...index, s0)
-        r0.extend(Number3)
-      else
-        self.index = i0
-        r0 = nil
-      end
-
-      node_cache[:number][start_index] = r0
 
       return r0
     end

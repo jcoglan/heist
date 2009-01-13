@@ -14,7 +14,11 @@ module Heist
   
   ORDERS = %w(normal applicative)
   
+  LOAD_PATH = [File.dirname(__FILE__) + '/heist/stdlib/']
+  FILE_EXT  = ".scm"
+  
   def self.run(file, scope = nil)
+    file = file + FILE_EXT unless File.file?(file)
     eval(File.read(file), scope)
   end
   

@@ -47,6 +47,16 @@ module Heist
       end
     end
     
+    class String < Treetop::Runtime::SyntaxNode
+      def eval(scope)
+        @value ||= Kernel.eval(text_value)
+      end
+      
+      def as_string
+        text_value
+      end
+    end
+    
     class Number < Treetop::Runtime::SyntaxNode
       def eval(scope)
         @value ||= Kernel.eval(text_value)
