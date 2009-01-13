@@ -35,14 +35,18 @@ module Heist
     runtime, buffer = Runtime.new, ""
     
     loop do
-      input = Readline.readline(buffer.empty? ? "> " : "* ")
+      inset = buffer.scan(/\(/).size - buffer.scan(/\)/).size
+      input = Readline.readline(buffer.empty? ? "> " : "  " + "   " * inset)
       exit if input.nil? or input.strip == "quit"
       Readline::HISTORY.push(input)
-      buffer << input
+      buffer << input + "\n"
       tree = parse(buffer)
-      unless tree.nil?
-        buffer = ""
+      next if tree.nil?
+      buffer = ""
+      begin
         puts runtime.eval(tree)
+      rescue
+        puts "[error]"
       end
     end
   end
