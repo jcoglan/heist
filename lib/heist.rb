@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'treetop'
+require 'readline'
 
 %w(scheme scheme/nodes runtime).each do |path|
   require File.dirname(__FILE__) + '/heist/' + path
@@ -26,5 +27,24 @@ module Heist
     @parser ||= SchemeParser.new
     @parser.parse(source)
   end
+  
+  def self.repl
+    puts "Heist Scheme interpreter, v. #{ VERSION }"
+    puts "Application mode: #{ EVAL_MODE.upcase }\n\n"
+    
+    runtime, buffer = Runtime.new, ""
+    
+    loop do
+      input = Readline.readline(buffer.empty? ? "> " : "* ")
+      exit if input.nil? or input.strip == "quit"
+      buffer << input
+      tree = parse(buffer)
+      unless tree.nil?
+        buffer = ""
+        puts runtime.eval(tree)
+      end
+    end
+  end
+  
 end
 

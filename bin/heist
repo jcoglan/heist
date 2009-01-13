@@ -3,5 +3,9 @@
 require 'rubygems'
 require 'heist'
 
-Heist.run(File.expand_path(ARGV.first))
+if ARGV.empty?
+  Heist.repl
+else
+  puts Heist.run(File.expand_path(ARGV.first))
+end
 

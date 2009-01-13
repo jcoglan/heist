@@ -18,7 +18,8 @@ module Heist
       end
       
       def eval(source)
-        Heist.parse(source).eval(self)
+        source = Heist.parse(source) if String === source
+        source.eval(self)
       end
     end
     
