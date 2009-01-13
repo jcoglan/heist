@@ -8,6 +8,7 @@ lib/scheme.tt
 lib/scheme.rb
 lib/scheme/nodes.rb
 lib/runtime/scope.rb
+lib/runtime/thunk.rb
 lib/runtime/function.rb
 lib/runtime/builtins.rb
 test/test_heist.rb

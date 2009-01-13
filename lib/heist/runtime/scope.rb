@@ -8,7 +8,9 @@ module Heist
       end
       
       def [](name)
-        @symbols[name] || @parent[name]
+        value = @symbols[name] || @parent[name]
+        value = value.eval if Thunk === value
+        value
       end
       
       def []=(name, value)
