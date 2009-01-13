@@ -13,13 +13,30 @@ module Heist
         args.each_with_index do |arg, i|
         
           params[i] = closure[@names[i]] =
-              (EVAL_MODE == "normal" && !(Proc === @body)) ?
+              (EVAL_MODE == "normal" && !primitive?) ?
                   Thunk.new(arg, scope) :
                   arg.eval(scope)
         end
-        Proc === @body ?
+        primitive? ?
             @body.call(*params) :
             @body.eval(closure)
+      end
+      
+      def primitive?
+        Proc === @body
+      end
+      
+      def to_s
+        return @string if @string
+        return "[native code]" if primitive?
+        
+        string = "lambda (" + (@names * " ") + ")\n"
+        indent, last = 1, ""
+        @body.text_value.split(/\n/).each do |line|
+          string << ("   " * indent) + line.strip + "\n"
+          indent += line.scan(/\(/).size - line.scan(/\)/).size
+        end
+        @string = string.strip
       end
     end
     
