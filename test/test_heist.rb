@@ -156,7 +156,7 @@ Class.new(Test::Unit::TestCase) do
     assert_equal (1..6).inject { |a,b| a*b },
                  @@env.eval("(factorial 6)")
     
-    assert_equal 45, @@env.eval("(K 45)")
+    assert_equal 45, @@env.eval("((K 45) 6)")
   end
 end
 

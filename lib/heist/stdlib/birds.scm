@@ -3,7 +3,7 @@
 ; 
 ; http://en.wikipedia.org/wiki/To_Mock_a_Mockingbird
 ; 
-; Each bird is a high-order function that takes a single
+; Each bird is a higher-order function that takes a single
 ; function as input and returns a function.
 ; 
 ; A bird A 'is fond of' bird B if AB = B, that is to say
@@ -23,7 +23,7 @@
 ;     -> CC = A(MC) = A(CC) -> A is fond of CC
 ; 
 ; If C composes A and M, CC is a fixed point of A and
-; therefore YA = CC = MC where (Cf)x = (A(Mf))x.
+; therefore YA = CC = MC where Cf = A(Mf) for all f.
 ; 
 ; Instead of rule C2, assume this:
 ; 
@@ -40,30 +40,32 @@
 ; So any bird y is fond of Ax where A is the agreeable
 ; bird, Ax = Hx and H composes y with A.
 
-; C combinator -- (Ch)x = (f(gh))x
+; B combinator (Bluebird) -- Bfgh = f(gh)
 ; Returns a function that composes two others (rule C1)
-; The composing function must be higher order: its return
-; value is another function that accepts more input.
-(define (C f g)
-  (lambda (h)
-    (lambda (x)
-      ((f (g h)) x))))
+; The composing function (Bfg) must be higher order: its
+; return value is another function that accepts more input.
+(define (B f)
+  (lambda (g)
+    (lambda (h)
+      (lambda (x)
+        ((f (g h)) x)))))
 
-; M combinator (Mockingbird)
+; M combinator (Mockingbird) -- Mf = ff
 ; Returns a function's response to itself (rule C2)
 (define (M f) (f f))
 
-; K combinator (Kestrel)
+; K combinator (Kestrel) -- Kfg = f
 ; Returns its first input
-(define (K x y)
-  (if y x x))
+(define (K f)
+  (lambda (g)
+    (begin g f)))
 
-; Y combinator -- Yf = MC where Cx = f(Mx)
+; Y combinator -- Yf = MC = M(BfM)
 ; Returns fixed points of higher order functions, that
 ; is to say Yf = f(Yf). It's often used to implement
 ; anonymous recursion.
 (define (Y f)
-  (M (C f M)))
+  (M ((B f) M)))
 
 ; E combinator
 ; This combinator is its own fixed point, according to
