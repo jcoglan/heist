@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'heist'
+require File.dirname(__FILE__) + '/../lib/heist'
 
 if ARGV.empty?
   Heist.repl

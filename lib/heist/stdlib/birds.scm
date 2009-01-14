@@ -42,13 +42,10 @@
 
 ; B combinator (Bluebird) -- Bfgh = f(gh)
 ; Returns a function that composes two others (rule C1)
-; The composing function (Bfg) must be higher order: its
-; return value is another function that accepts more input.
 (define (B f)
   (lambda (g)
     (lambda (h)
-      (lambda (x)
-        ((f (g h)) x)))))
+      (f (g h)))))
 
 ; M combinator (Mockingbird) -- Mf = ff
 ; Returns a function's response to itself (rule C2)
@@ -64,16 +61,22 @@
 ; Returns fixed points of higher order functions, that
 ; is to say Yf = f(Yf). It's often used to implement
 ; anonymous recursion.
+; 
+; Interestingly, using a lazy evaluator you can write
+; this simply as
+; 
+;     (define (Y f)
+;       (f (Y f)))
+; 
+; and it will work correctly. The following form assumes
+; lazy evaluation but is expressed in terms of results
+; derived above. If using applicative order, the following
+; form should be used:
+; 
+;     (define (Y f)
+;       (M (lambda (g)
+;           (lambda (h)
+;             ((((B f) M) g) h)))))
 (define (Y f)
   (M ((B f) M)))
-
-; E combinator
-; This combinator is its own fixed point, according to
-; the following logic:
-; 
-;     All combinators have fixed points
-;     Let ME = E -> EE = E
-; 
-; So E is its own fixed point, as well as that of M.
-(define E (Y M))
 

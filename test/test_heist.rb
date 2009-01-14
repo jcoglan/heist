@@ -144,7 +144,8 @@ Class.new(Test::Unit::TestCase) do
     assert_equal true, @@env.eval("(or (>= x 5) (< x 3))")
   end
   
-  def test_y_combinator
+  def test_birds
+    return unless @@env.lazy?
     @@env.eval('(load "birds")')
     
     @@env.eval <<-CODE
