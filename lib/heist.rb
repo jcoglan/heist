@@ -2,10 +2,6 @@ require 'rubygems'
 require 'treetop'
 require 'readline'
 
-%w(scheme scheme/nodes runtime).each do |path|
-  require File.dirname(__FILE__) + '/heist/' + path
-end
-
 module Heist
   VERSION = '0.1.0'
   
@@ -14,7 +10,17 @@ module Heist
   
   ORDERS = %w(normal applicative)
   
-  LOAD_PATH = [File.dirname(__FILE__) + '/heist/stdlib/']
+  ROOT_PATH    = File.expand_path(File.dirname(__FILE__))
+  PARSER_PATH  = ROOT_PATH + '/interpreter/'
+  RUNTIME_PATH = ROOT_PATH + '/runtime/'
+  BUILTIN_PATH = ROOT_PATH + '/builtin/'
+  LIB_PATH     = ROOT_PATH + '/stdlib/'
+  
+  require PARSER_PATH + 'scheme'
+  require PARSER_PATH + 'nodes'
+  require RUNTIME_PATH + 'runtime'
+  
+  LOAD_PATH = [LIB_PATH]
   FILE_EXT  = ".scm"
   
   def self.run(file, scope = nil)

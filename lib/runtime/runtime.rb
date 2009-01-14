@@ -1,10 +1,8 @@
 module Heist
   class Runtime
     
-    PATH = File.dirname(__FILE__) + '/runtime/'
-    
     %w(function scope thunk).each do |file|
-      require PATH + file
+      require RUNTIME_PATH + file
     end
     
     attr_reader :order
@@ -14,10 +12,10 @@ module Heist
       
       @order = options[:order] || NORMAL_ORDER
       
-      @scope.instance_eval(File.read("#{ PATH }/builtins.rb"))
-      @scope.instance_eval(File.read("#{ PATH }/builtins/#{ ORDERS[@order] }.rb"))
-      Heist.run("#{ PATH }/builtins.scm", @scope)
-      Heist.run("#{ PATH }/builtins/#{ ORDERS[@order] }.scm", @scope)
+      @scope.instance_eval(File.read("#{ BUILTIN_PATH }common.rb"))
+      @scope.instance_eval(File.read("#{ BUILTIN_PATH }#{ ORDERS[@order] }.rb"))
+      Heist.run("#{ BUILTIN_PATH }common.scm", @scope)
+      Heist.run("#{ BUILTIN_PATH }#{ ORDERS[@order] }.scm", @scope)
     end
     
     def lazy?
