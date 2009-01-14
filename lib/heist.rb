@@ -42,13 +42,16 @@ module Heist
     puts "Evaluation strategy: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }\n\n"
     
     loop do
-      inset = buffer.scan(/\(/).size - buffer.scan(/\)/).size
-      input = Readline.readline(buffer.empty? ? "> " : "  " + "   " * inset)
-      exit if input.nil? or input.strip == "quit"
+      inset  = buffer.scan(/\(/).size - buffer.scan(/\)/).size
+      prompt = buffer.empty? ? "> " : "  " + "   " * inset
+      input  = Readline.readline()
+      exit if input.nil?
+      
       Readline::HISTORY.push(input)
       buffer << input + "\n"
       tree = parse(buffer)
       next if tree.nil?
+      
       buffer = ""
       begin
         puts runtime.eval(tree)

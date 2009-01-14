@@ -12,3 +12,8 @@
 (define (>= x y)
   (not (< x y)))
 
+; newline
+; prints a new-line character
+(define (newline)
+  (display "\n"))
+
