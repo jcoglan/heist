@@ -1,35 +1,35 @@
 module Heist
   grammar Scheme
     rule program
-      (comment / list / atom)* <Program>
+      (comment / cell)* <Program>
     end
     
     rule comment
       space ";" (![\n\r] .)* space <Comment>
     end
     
-    rule list
-      space "(" cell* ")" space <List>
+    rule cell
+      space (list / atom) space <Cell>
     end
     
-    rule cell
-      atom / list
+    rule list
+      "(" cell* ")" <List>
     end
     
     rule atom
-      space (string / number / symbol) space <Atom>
+      (number / string / symbol) <Atom>
+    end
+    
+    rule number
+      "-"? ("0" / [1-9] digit*) ("." digit+)? <Number>
     end
     
     rule string
       '"' ('\\"' / [^"])* '"' <String>
     end
     
-    rule number
-      "-"? ("0" / [1-9] digit*) ("." digit+)? ([eE] [+-]? digit+)? <Number>
-    end
-    
     rule symbol
-      ("#"? [A-Za-z] [A-Za-z0-9\-]* "?"? / "+" / "-" / "*" / "/" / ">=" / "<=" / ">" / "<" / "=") <Symbol>
+      [^\(\)\s]+ <Symbol>
     end
     
     rule digit

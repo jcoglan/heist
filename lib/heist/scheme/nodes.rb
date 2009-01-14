@@ -19,7 +19,7 @@ module Heist
       end
       
       def cells
-        elements[2].elements
+        @cells ||= elements[1].elements.map { |e| e.data }
       end
       
       def as_string
@@ -27,31 +27,21 @@ module Heist
       end
     end
     
-    class Atom < Treetop::Runtime::SyntaxNode
+    class Cell < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        elements[1].eval(scope)
+        data.eval(scope)
+      end
+      
+      def data
+        elements[1]
       end
       
       def as_string
-        elements[1].as_string
+        data.as_string
       end
     end
     
-    module Symbol
-      def eval(scope)
-        scope[text_value]
-      end
-      
-      def as_string
-        text_value
-      end
-    end
-    
-    class String < Treetop::Runtime::SyntaxNode
-      def eval(scope)
-        @value ||= Kernel.eval(text_value)
-      end
-      
+    module Atom
       def as_string
         text_value
       end
@@ -61,9 +51,17 @@ module Heist
       def eval(scope)
         @value ||= Kernel.eval(text_value)
       end
-      
-      def as_string
-        text_value
+    end
+    
+    class String < Treetop::Runtime::SyntaxNode
+      def eval(scope)
+        @value ||= Kernel.eval(text_value)
+      end
+    end
+    
+    class Symbol < Treetop::Runtime::SyntaxNode
+      def eval(scope)
+        scope[text_value]
       end
     end
     
