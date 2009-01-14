@@ -38,7 +38,23 @@ self["*"] = Function.new(self) do |*args|
 end
 
 self["/"] = Function.new(self) do |op1, op2|
-  op1 / op2.to_f
+  op2.nil? ? 1.0 / op1 : op1 / op2.to_f
+end
+
+self["expt"] = Function.new(self) do |op1, op2|
+  op1 ** op2
+end
+
+self["max"] = Function.new(self) do |*args|
+  args.max
+end
+
+self["min"] = Function.new(self) do |*args|
+  args.min
+end
+
+self["min"] = Function.new(self) do |*args|
+  args.min
 end
 
 self["begin"] = Function.new(self) { |*args| args.last }
@@ -59,8 +75,13 @@ self["cond"] = MetaFunction.new(self) do |scope, *pairs|
   result
 end
 
+self["eqv?"] = Function.new(self) do |op1, op2|
+  op1.class == op2.class && op1 == op2
+end
+
 self["="] = Function.new(self) do |op1, op2|
-  op1 == op2
+  # TODO raise an exception if they're not numeric
+  Numeric === op1 && Numeric === op2 && op1 == op2
 end
 
 self[">"] = Function.new(self) do |op1, op2|
@@ -89,7 +110,25 @@ self["or"] = MetaFunction.new(self) do |scope, *args|
   result
 end
 
+self["not"] = Function.new(self) { |value| !value }
+
 self["boolean?"] = Function.new(self) do |value|
   [true, false].include?(value)
+end
+
+self["complex?"] = Function.new(self) do |value|
+  self["real?"].call(self, value) # || TODO
+end
+
+self["real?"] = Function.new(self) do |value|
+  self["rational?"].call(self, value) || Float === value
+end
+
+self["rational?"] = Function.new(self) do |value|
+  self["integer?"].call(self, value) || Float === value # TODO handle this properly
+end
+
+self["integer?"] = Function.new(self) do |value|
+  Integer === value
 end
 

@@ -29,7 +29,23 @@ module Heist
     end
     
     rule number
-      "-"? ("0" / [1-9] digit*) ("." digit+)? <Number>
+      complex / real / rational / integer
+    end
+    
+    rule complex
+      real "+" real "i" <Complex>
+    end
+    
+    rule real
+      integer ("." digit+) <Real>
+    end
+    
+    rule rational
+      numerator:integer "/" denominator:integer <Rational>
+    end
+    
+    rule integer
+      "-"? ("0" / [1-9] digit*) <Integer>
     end
     
     rule string

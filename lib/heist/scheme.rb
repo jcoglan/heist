@@ -349,19 +349,231 @@ module Heist
       return r0
     end
 
-    module Number0
-    end
-
-    module Number1
-    end
-
-    module Number2
-    end
-
     def _nt_number
       start_index = index
       if node_cache[:number].has_key?(index)
         cached = node_cache[:number][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0 = index
+      r1 = _nt_complex
+      if r1
+        r0 = r1
+      else
+        r2 = _nt_real
+        if r2
+          r0 = r2
+        else
+          r3 = _nt_rational
+          if r3
+            r0 = r3
+          else
+            r4 = _nt_integer
+            if r4
+              r0 = r4
+            else
+              self.index = i0
+              r0 = nil
+            end
+          end
+        end
+      end
+
+      node_cache[:number][start_index] = r0
+
+      return r0
+    end
+
+    module Complex0
+      def real
+        elements[0]
+      end
+
+      def real
+        elements[2]
+      end
+
+    end
+
+    def _nt_complex
+      start_index = index
+      if node_cache[:complex].has_key?(index)
+        cached = node_cache[:complex][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      r1 = _nt_real
+      s0 << r1
+      if r1
+        if input.index("+", index) == index
+          r2 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
+        else
+          terminal_parse_failure("+")
+          r2 = nil
+        end
+        s0 << r2
+        if r2
+          r3 = _nt_real
+          s0 << r3
+          if r3
+            if input.index("i", index) == index
+              r4 = (SyntaxNode).new(input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure("i")
+              r4 = nil
+            end
+            s0 << r4
+          end
+        end
+      end
+      if s0.last
+        r0 = (Complex).new(input, i0...index, s0)
+        r0.extend(Complex0)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:complex][start_index] = r0
+
+      return r0
+    end
+
+    module Real0
+    end
+
+    module Real1
+      def integer
+        elements[0]
+      end
+
+    end
+
+    def _nt_real
+      start_index = index
+      if node_cache[:real].has_key?(index)
+        cached = node_cache[:real][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      r1 = _nt_integer
+      s0 << r1
+      if r1
+        i2, s2 = index, []
+        if input.index(".", index) == index
+          r3 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
+        else
+          terminal_parse_failure(".")
+          r3 = nil
+        end
+        s2 << r3
+        if r3
+          s4, i4 = [], index
+          loop do
+            r5 = _nt_digit
+            if r5
+              s4 << r5
+            else
+              break
+            end
+          end
+          if s4.empty?
+            self.index = i4
+            r4 = nil
+          else
+            r4 = SyntaxNode.new(input, i4...index, s4)
+          end
+          s2 << r4
+        end
+        if s2.last
+          r2 = (SyntaxNode).new(input, i2...index, s2)
+          r2.extend(Real0)
+        else
+          self.index = i2
+          r2 = nil
+        end
+        s0 << r2
+      end
+      if s0.last
+        r0 = (Real).new(input, i0...index, s0)
+        r0.extend(Real1)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:real][start_index] = r0
+
+      return r0
+    end
+
+    module Rational0
+      def numerator
+        elements[0]
+      end
+
+      def denominator
+        elements[2]
+      end
+    end
+
+    def _nt_rational
+      start_index = index
+      if node_cache[:rational].has_key?(index)
+        cached = node_cache[:rational][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      r1 = _nt_integer
+      s0 << r1
+      if r1
+        if input.index("/", index) == index
+          r2 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
+        else
+          terminal_parse_failure("/")
+          r2 = nil
+        end
+        s0 << r2
+        if r2
+          r3 = _nt_integer
+          s0 << r3
+        end
+      end
+      if s0.last
+        r0 = (Rational).new(input, i0...index, s0)
+        r0.extend(Rational0)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:rational][start_index] = r0
+
+      return r0
+    end
+
+    module Integer0
+    end
+
+    module Integer1
+    end
+
+    def _nt_integer
+      start_index = index
+      if node_cache[:integer].has_key?(index)
+        cached = node_cache[:integer][index]
         @index = cached.interval.end if cached
         return cached
       end
@@ -415,7 +627,7 @@ module Heist
           end
           if s5.last
             r5 = (SyntaxNode).new(input, i5...index, s5)
-            r5.extend(Number0)
+            r5.extend(Integer0)
           else
             self.index = i5
             r5 = nil
@@ -428,58 +640,16 @@ module Heist
           end
         end
         s0 << r3
-        if r3
-          i10, s10 = index, []
-          if input.index(".", index) == index
-            r11 = (SyntaxNode).new(input, index...(index + 1))
-            @index += 1
-          else
-            terminal_parse_failure(".")
-            r11 = nil
-          end
-          s10 << r11
-          if r11
-            s12, i12 = [], index
-            loop do
-              r13 = _nt_digit
-              if r13
-                s12 << r13
-              else
-                break
-              end
-            end
-            if s12.empty?
-              self.index = i12
-              r12 = nil
-            else
-              r12 = SyntaxNode.new(input, i12...index, s12)
-            end
-            s10 << r12
-          end
-          if s10.last
-            r10 = (SyntaxNode).new(input, i10...index, s10)
-            r10.extend(Number1)
-          else
-            self.index = i10
-            r10 = nil
-          end
-          if r10
-            r9 = r10
-          else
-            r9 = SyntaxNode.new(input, index...index)
-          end
-          s0 << r9
-        end
       end
       if s0.last
-        r0 = (Number).new(input, i0...index, s0)
-        r0.extend(Number2)
+        r0 = (Integer).new(input, i0...index, s0)
+        r0.extend(Integer1)
       else
         self.index = i0
         r0 = nil
       end
 
-      node_cache[:number][start_index] = r0
+      node_cache[:integer][start_index] = r0
 
       return r0
     end

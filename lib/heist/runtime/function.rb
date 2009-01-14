@@ -13,7 +13,9 @@ module Heist
         args.each_with_index do |arg, i|
         
           params[i] = closure[@names[i]] =
-              lazy? ? Thunk.new(arg, scope) : arg.eval(scope)
+              arg.respond_to?(:eval) ?
+                  (lazy? ? Thunk.new(arg, scope) : arg.eval(scope)) :
+                  arg
         end
         primitive? ?
             @body.call(*params) :

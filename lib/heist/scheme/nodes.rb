@@ -53,9 +53,27 @@ module Heist
       end
     end
     
-    class Number < Treetop::Runtime::SyntaxNode
+    class Complex < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        @value ||= Kernel.eval(text_value)
+        # TODO
+      end
+    end
+    
+    class Real < Treetop::Runtime::SyntaxNode
+      def eval(scope)
+        @value ||= Kernel.eval(text_value).to_f
+      end
+    end
+    
+    class Rational < Treetop::Runtime::SyntaxNode
+      def eval(scope)
+        @value ||= numerator.eval(scope).to_f / denominator.eval(scope)
+      end
+    end
+    
+    class Integer < Treetop::Runtime::SyntaxNode
+      def eval(scope)
+        @value ||= Kernel.eval(text_value).to_i
       end
     end
     

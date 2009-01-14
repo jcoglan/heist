@@ -12,10 +12,14 @@
 (define (>= x y)
   (not (< x y)))
 
-; not
-; Inverts the value of a boolean
-(define (not x)
-  (if x #f #t))
+; number?
+; Returns true iff x is any type of number
+(define number? complex?)
+
+; abs
+; Returns the absolute value of a number
+(define (abs x)
+  (if (>= x 0) x (- x)))
 
 ; newline
 ; prints a new-line character

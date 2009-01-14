@@ -11,8 +11,33 @@ Class.new(Test::Unit::TestCase) do
     puts "Application mode: #{ Heist::ORDERS[@@env.order] }\n\n"
   end
   
+  def test_booleans
+    assert  @@env.eval("(boolean? #t)")
+    assert !@@env.eval('(boolean? "Hello, World!")')
+    assert  @@env.eval("(not #f)")
+    assert !@@env.eval('(not #t)')
+    assert !@@env.eval('(not "Hello, World!")')
+  end
+  
   def test_numbers
-    assert_equal 486, @@env.eval("486")
+    assert  @@env.eval("(eqv? 42 42)")
+    assert !@@env.eval("(eqv? 42 #f)")
+    assert !@@env.eval("(eqv? 42 42.0)")
+    assert  @@env.eval("(= 42 42)")
+    assert  @@env.eval("(= 42 42.0)")
+    
+    assert  @@env.eval("(number? 42)")  #t
+    assert !@@env.eval("(number? #t)")  #f
+    #assert  @@env.eval("(complex? 2+3i)")  #t
+    assert !@@env.eval("(real? 2+3i)")  #f
+    assert  @@env.eval("(real? 3.1416)")  #t
+    assert  @@env.eval("(real? 22/7)")  #t
+    assert  @@env.eval("(real? 42)")  #t
+    #assert !@@env.eval("(rational? 2+3i)")  #f
+    #assert  @@env.eval("(rational? 3.1416)")  #t
+    #assert  @@env.eval("(rational? 22/7)")  #t
+    assert !@@env.eval("(integer? 22/7)")  #f
+    assert  @@env.eval("(integer? 42)")  #t
   end
   
   def test_arithmetic
@@ -25,6 +50,8 @@ Class.new(Test::Unit::TestCase) do
     assert_equal 1200, @@env.eval("(* 25 4 12)")
     assert_equal 19,   @@env.eval("(+ (* 3 5) (- 10 6))")
     assert_equal 57,   @@env.eval("(+ (* 3 (+ (* 2 4) (+ 3 5))) (+ (- 10 7) 6))")
+    assert_equal 8,    @@env.eval("(expt 2 3)")
+    assert_equal 2,    @@env.eval("(expt 4 1/2)")
   end
   
   def test_define_values
@@ -142,14 +169,6 @@ Class.new(Test::Unit::TestCase) do
     @@env.eval("(define x 7)")
     assert_equal true, @@env.eval("(and (> x 5) (<= x 10))")
     assert_equal true, @@env.eval("(or (>= x 5) (< x 3))")
-  end
-  
-  def test_booleans
-    assert  @@env.eval("(boolean? #t)")
-    assert !@@env.eval('(boolean? "Hello, World!")')
-    assert  @@env.eval("(not #f)")
-    assert !@@env.eval('(not #t)')
-    assert !@@env.eval('(not "Hello, World!")')
   end
   
   def test_birds
