@@ -43,8 +43,8 @@ module Heist
     
     loop do
       inset  = buffer.scan(/\(/).size - buffer.scan(/\)/).size
-      prompt = buffer.empty? ? "> " : "  " + "   " * inset
-      input  = Readline.readline()
+      prompt = buffer == "" ? "> " : "  " + "   " * inset
+      input  = Readline.readline(prompt)
       exit if input.nil?
       
       Readline::HISTORY.push(input)
@@ -53,11 +53,7 @@ module Heist
       next if tree.nil?
       
       buffer = ""
-      begin
-        puts runtime.eval(tree)
-      rescue
-        puts "[error]"
-      end
+      puts "=>  #{ runtime.eval(tree) rescue '[error]' }\n\n"
     end
   end
   
