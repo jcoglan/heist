@@ -47,6 +47,12 @@ module Heist
       end
     end
     
+    module Boolean
+      def eval(scope)
+        @value ||= (text_value == "#t")
+      end
+    end
+    
     class Number < Treetop::Runtime::SyntaxNode
       def eval(scope)
         @value ||= Kernel.eval(text_value)
@@ -59,7 +65,7 @@ module Heist
       end
     end
     
-    class Symbol < Treetop::Runtime::SyntaxNode
+    class Identifier < Treetop::Runtime::SyntaxNode
       def eval(scope)
         scope[text_value]
       end

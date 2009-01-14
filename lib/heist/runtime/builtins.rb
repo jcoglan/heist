@@ -89,7 +89,7 @@ self["or"] = MetaFunction.new(self) do |scope, *args|
   result
 end
 
-self["not"] = Function.new(self) do |expr|
-  !expr
+self["boolean?"] = Function.new(self) do |value|
+  [true, false].include?(value)
 end
 

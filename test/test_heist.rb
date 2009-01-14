@@ -144,6 +144,14 @@ Class.new(Test::Unit::TestCase) do
     assert_equal true, @@env.eval("(or (>= x 5) (< x 3))")
   end
   
+  def test_booleans
+    assert  @@env.eval("(boolean? #t)")
+    assert !@@env.eval('(boolean? "Hello, World!")')
+    assert  @@env.eval("(not #f)")
+    assert !@@env.eval('(not #t)')
+    assert !@@env.eval('(not "Hello, World!")')
+  end
+  
   def test_birds
     return unless @@env.lazy?
     @@env.eval('(load "birds")')

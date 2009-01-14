@@ -17,7 +17,15 @@ module Heist
     end
     
     rule atom
-      (number / string / symbol) <Atom>
+      (datum / identifier) <Atom>
+    end
+    
+    rule datum
+      boolean / number / string
+    end
+    
+    rule boolean
+      ("#t" / "#f") <Boolean>
     end
     
     rule number
@@ -28,8 +36,8 @@ module Heist
       '"' ('\\"' / [^"])* '"' <String>
     end
     
-    rule symbol
-      [^\(\)\s]+ <Symbol>
+    rule identifier
+      [^\(\)\s]+ <Identifier>
     end
     
     rule digit

@@ -12,6 +12,11 @@
 (define (>= x y)
   (not (< x y)))
 
+; not
+; Inverts the value of a boolean
+(define (not x)
+  (if x #f #t))
+
 ; newline
 ; prints a new-line character
 (define (newline)

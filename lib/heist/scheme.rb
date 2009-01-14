@@ -256,20 +256,46 @@ module Heist
       end
 
       i0 = index
-      r1 = _nt_number
+      r1 = _nt_datum
       if r1
         r0 = r1
         r0.extend(Atom)
       else
-        r2 = _nt_string
+        r2 = _nt_identifier
         if r2
           r0 = r2
           r0.extend(Atom)
         else
-          r3 = _nt_symbol
+          self.index = i0
+          r0 = nil
+        end
+      end
+
+      node_cache[:atom][start_index] = r0
+
+      return r0
+    end
+
+    def _nt_datum
+      start_index = index
+      if node_cache[:datum].has_key?(index)
+        cached = node_cache[:datum][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0 = index
+      r1 = _nt_boolean
+      if r1
+        r0 = r1
+      else
+        r2 = _nt_number
+        if r2
+          r0 = r2
+        else
+          r3 = _nt_string
           if r3
             r0 = r3
-            r0.extend(Atom)
           else
             self.index = i0
             r0 = nil
@@ -277,7 +303,48 @@ module Heist
         end
       end
 
-      node_cache[:atom][start_index] = r0
+      node_cache[:datum][start_index] = r0
+
+      return r0
+    end
+
+    def _nt_boolean
+      start_index = index
+      if node_cache[:boolean].has_key?(index)
+        cached = node_cache[:boolean][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0 = index
+      if input.index("#t", index) == index
+        r1 = (SyntaxNode).new(input, index...(index + 2))
+        @index += 2
+      else
+        terminal_parse_failure("#t")
+        r1 = nil
+      end
+      if r1
+        r0 = r1
+        r0.extend(Boolean)
+      else
+        if input.index("#f", index) == index
+          r2 = (SyntaxNode).new(input, index...(index + 2))
+          @index += 2
+        else
+          terminal_parse_failure("#f")
+          r2 = nil
+        end
+        if r2
+          r0 = r2
+          r0.extend(Boolean)
+        else
+          self.index = i0
+          r0 = nil
+        end
+      end
+
+      node_cache[:boolean][start_index] = r0
 
       return r0
     end
@@ -496,10 +563,10 @@ module Heist
       return r0
     end
 
-    def _nt_symbol
+    def _nt_identifier
       start_index = index
-      if node_cache[:symbol].has_key?(index)
-        cached = node_cache[:symbol][index]
+      if node_cache[:identifier].has_key?(index)
+        cached = node_cache[:identifier][index]
         @index = cached.interval.end if cached
         return cached
       end
@@ -522,10 +589,10 @@ module Heist
         self.index = i0
         r0 = nil
       else
-        r0 = Symbol.new(input, i0...index, s0)
+        r0 = Identifier.new(input, i0...index, s0)
       end
 
-      node_cache[:symbol][start_index] = r0
+      node_cache[:identifier][start_index] = r0
 
       return r0
     end
