@@ -73,6 +73,16 @@ Class.new(Test::Unit::TestCase) do
       (add4 11)
     CODE
     assert_equal 15, result
+    
+    @@env.eval <<-CODE
+      (define (weird x y)
+        (begin
+          (define (+ x y)
+            (* x y))
+          (+ x y)))
+    CODE
+    assert_equal 7,  @@env.eval("(+ 3 4)")
+    assert_equal 12,  @@env.eval("(weird 3 4)")
   end
   
   def test_cond

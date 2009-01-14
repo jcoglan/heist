@@ -41,6 +41,10 @@ self["/"] = Function.new(self) do |op1, op2|
   op1 / op2.to_f
 end
 
+self["begin"] = Function.new(self) { |*args| args.last }
+
+self["exit"] = Function.new(self) { exit }
+
 self["cond"] = MetaFunction.new(self) do |scope, *pairs|
   matched, result = false, nil
   pairs.each do |pair|
