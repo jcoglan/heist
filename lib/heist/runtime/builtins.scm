@@ -2,6 +2,9 @@
 ; in Scheme should go here. If at all possible, write
 ; builtins in Scheme rather than Ruby.
 
+(define (not x)
+  (if x #f #t))
+
 ; less than or equal to
 ; Returns true iff x <= y
 (define (<= x y)

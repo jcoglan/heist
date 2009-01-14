@@ -14,7 +14,9 @@ module Heist
       end
       
       def [](name)
-        value = @symbols[name] || @parent[name]
+        value = @symbols.has_key?(name) ?
+                @symbols[name] :
+                @parent[name]
         value = value.eval if Thunk === value
         value
       end
