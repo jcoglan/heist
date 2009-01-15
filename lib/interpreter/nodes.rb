@@ -15,11 +15,19 @@ module Heist
     
     class List < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        cells.first.eval(scope).call(scope, *cells[1..-1])
+        scope.runtime.eval_list(self, scope)
       end
       
       def cells
         @cells ||= elements[1].elements.map { |e| e.data }
+      end
+      
+      def function(scope)
+        cells.first.eval(scope)
+      end
+      
+      def arguments
+        cells[1..-1]
       end
       
       def as_string

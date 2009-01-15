@@ -17,7 +17,7 @@ module Heist
         value = @symbols.has_key?(name) ?
                 @symbols[name] :
                 @parent[name]
-        value = value.eval if Thunk === value
+        value = value.eval if Binding === value
         value
       end
       

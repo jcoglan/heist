@@ -1,7 +1,7 @@
 module Heist
   class Runtime
     
-    %w(function scope thunk).each do |file|
+    %w(frame function scope binding).each do |file|
       require RUNTIME_PATH + file
     end
     
@@ -10,12 +10,20 @@ module Heist
     def initialize(options = {})
       @scope = Scope.new(self)
       
-      @order = options[:order] || NORMAL_ORDER
+      @order = options[:order] || EAGER
       
       @scope.instance_eval(File.read("#{ BUILTIN_PATH }common.rb"))
       @scope.instance_eval(File.read("#{ BUILTIN_PATH }#{ ORDERS[@order] }.rb"))
       Heist.run("#{ BUILTIN_PATH }common.scm", @scope)
       Heist.run("#{ BUILTIN_PATH }#{ ORDERS[@order] }.scm", @scope)
+    end
+    
+    def eval_list(list, scope)
+      function = list.function(scope)
+      bindings = list.arguments.map { |arg| Binding.new(arg, scope) }
+      frame    = Frame.new(function, scope, bindings)
+      frame.eval
+      frame.value
     end
     
     def lazy?
