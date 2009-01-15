@@ -10,7 +10,7 @@ module Heist
     def initialize(options = {})
       @scope = Scope.new(self)
       
-      @order = options[:order] || NORMAL_ORDER
+      @order = options[:order] || EAGER
       
       @scope.instance_eval(File.read("#{ BUILTIN_PATH }common.rb"))
       @scope.instance_eval(File.read("#{ BUILTIN_PATH }#{ ORDERS[@order] }.rb"))

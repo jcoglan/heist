@@ -29,3 +29,11 @@
 (define (newline)
   (display "\n"))
 
+; fact
+; Returns the factorial of x
+(define (fact x)
+  (if (= x 0)
+    1
+    (* x
+      (fact (- x 1)))))
+
