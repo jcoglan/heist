@@ -10,6 +10,8 @@ module Heist
   
   ORDERS = %w(normal applicative)
   
+  LOG_STACK = false
+  
   ROOT_PATH    = File.expand_path(File.dirname(__FILE__))
   PARSER_PATH  = ROOT_PATH + '/interpreter/'
   RUNTIME_PATH = ROOT_PATH + '/runtime/'

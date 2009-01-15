@@ -5,10 +5,28 @@ module Heist
       require RUNTIME_PATH + file
     end
     
-    attr_reader :order
+    if LOG_STACK
+      [Function, MetaFunction].each do |klass|
+        old_call = klass.instance_method(:call)
+        klass.__send__(:define_method, :call) do |scope, *args|
+          begin
+            puts scope.runtime.stack.size
+            scope.runtime.stack << self
+            result = old_call.bind(self)[scope, *args]
+            scope.runtime.stack.pop
+            result
+          rescue
+            scope.runtime.stack.pop
+          end
+        end
+      end
+    end
+    
+    attr_reader :order, :stack
     
     def initialize(options = {})
       @scope = Scope.new(self)
+      @stack = []
       
       @order = options[:order] || EAGER
       
