@@ -11,7 +11,7 @@ module Heist
       def call(frame, scope, bindings)
         params, closure = [], Scope.new(@scope)
         bindings.each_with_index do |arg, i|
-          params[i] = closure[@names[i]] = arg.eval
+          params[i] = closure[@names[i]] = lazy? ? arg : arg.eval
         end
         if primitive?
           frame.send(@body.call(*params))
