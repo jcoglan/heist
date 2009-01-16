@@ -1,5 +1,5 @@
 # if -- cannot be written in Scheme using applicative order
-self["if"] = MetaFunction.new(self) do |frame, scope, cond, cons, alt|
+metadef('if') do |frame, scope, cond, cons, alt|
   which = cond.eval(scope) ? cons : alt
   frame.push(which, scope)
 end
