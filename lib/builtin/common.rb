@@ -1,11 +1,11 @@
-self["define"] = MetaFunction.new(self) do |scope, names, body|
+self["define"] = MetaFunction.new(self) do |frame, scope, names, body|
   names = names.as_string
   scope[names.first] = (Array === names) ?
       Function.new(scope, names[1..-1], body) :
       body.eval(scope)
 end
 
-self["lambda"] = MetaFunction.new(self) do |scope, names, body|
+self["lambda"] = MetaFunction.new(self) do |frame, scope, names, body|
   Function.new(scope, names.as_string, body)
 end
 
@@ -57,11 +57,21 @@ self["min"] = Function.new(self) do |*args|
   args.min
 end
 
-self["begin"] = Function.new(self) { |*args| args.last }
+self["begin"] = MetaFunction.new(self) do |frame, scope, *args|
+  args[0...-1].each { |arg| arg.eval(scope) }
+  final = args.last
+  if Scheme::List === final
+    bindings = final.arguments.map { |arg| Binding.new(arg, scope) }
+    frame.push(final.function(scope), scope, bindings)
+  else
+    frame.send(final.eval(scope))
+  end
+end
 
 self["exit"] = Function.new(self) { exit }
 
-self["cond"] = MetaFunction.new(self) do |scope, *pairs|
+# Lazy mode currently complains if this does not return a value
+self["cond"] = MetaFunction.new(self) do |frame, scope, *pairs|
   matched, result = false, nil
   pairs.each do |pair|
     next if matched
@@ -69,7 +79,13 @@ self["cond"] = MetaFunction.new(self) do |scope, *pairs|
     
     if matched ||
         (pair == pairs.last && pair.cells.first.as_string == "else")
-      result  = pair.cells.last.eval(scope)
+      which  = pair.cells.last
+      if Scheme::List === which
+        bindings = which.arguments.map { |arg| Binding.new(arg, scope) }
+        frame.push(which.function(scope), scope, bindings)
+      else
+        frame.send(result = which.eval(scope))
+      end
     end
   end
   result
@@ -92,7 +108,7 @@ self["<"] = Function.new(self) do |op1, op2|
   op1 < op2
 end
 
-self["and"] = MetaFunction.new(self) do |scope, *args|
+self["and"] = MetaFunction.new(self) do |frame, scope, *args|
   result = true
   args.each do |arg|
     next if !result
@@ -101,7 +117,7 @@ self["and"] = MetaFunction.new(self) do |scope, *args|
   result
 end
 
-self["or"] = MetaFunction.new(self) do |scope, *args|
+self["or"] = MetaFunction.new(self) do |frame, scope, *args|
   result = false
   args.each do |arg|
     next if result
