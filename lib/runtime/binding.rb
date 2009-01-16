@@ -1,12 +1,14 @@
 module Heist
   class Runtime
     
-    class Thunk
+    class Binding
+      attr_reader :expression
+      
       def initialize(expression, scope)
         @expression, @scope = expression, scope
       end
       
-      def eval
+      def eval(scope = nil)
         @value ||= @expression.eval(@scope)
       end
     end

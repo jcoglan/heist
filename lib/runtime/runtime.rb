@@ -1,18 +1,18 @@
 module Heist
   class Runtime
     
-    %w(function scope thunk).each do |file|
+    %w(frame function scope binding).each do |file|
       require RUNTIME_PATH + file
     end
     
     if LOG_STACK
       [Function, MetaFunction].each do |klass|
         old_call = klass.instance_method(:call)
-        klass.__send__(:define_method, :call) do |scope, *args|
+        klass.__send__(:define_method, :call) do |frame, scope, bindings|
           begin
             puts scope.runtime.stack.size
             scope.runtime.stack << self
-            result = old_call.bind(self)[scope, *args]
+            result = old_call.bind(self)[frame, scope, bindings]
             scope.runtime.stack.pop
             result
           rescue
@@ -34,6 +34,12 @@ module Heist
       @scope.instance_eval(File.read("#{ BUILTIN_PATH }#{ ORDERS[@order] }.rb"))
       Heist.run("#{ BUILTIN_PATH }common.scm", @scope)
       Heist.run("#{ BUILTIN_PATH }#{ ORDERS[@order] }.scm", @scope)
+    end
+    
+    def eval_list(list, scope)
+      frame = Frame.new
+      frame.push(list, scope)
+      frame.eval
     end
     
     def lazy?

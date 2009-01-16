@@ -8,18 +8,12 @@ module Heist
         @names = names.dup
       end
       
-      def call(scope, *args)
+      def call(frame, scope, bindings)
         params, closure = [], Scope.new(@scope)
-        args.each_with_index do |arg, i|
-        
-          params[i] = closure[@names[i]] =
-              arg.respond_to?(:eval) ?
-                  (lazy? ? Thunk.new(arg, scope) : arg.eval(scope)) :
-                  arg
+        bindings.each_with_index do |arg, i|
+          params[i] = closure[@names[i]] = lazy? ? arg : arg.eval
         end
-        primitive? ?
-            @body.call(*params) :
-            @body.eval(closure)
+        frame.push(primitive? ? @body.call(*params) : @body, closure)
       end
       
       def primitive?
@@ -45,8 +39,9 @@ module Heist
     end
     
     class MetaFunction < Function
-      def call(scope, *args)
-        @body.call(scope, *args)
+      def call(frame, scope, bindings)
+        cells = bindings.map { |b| b.expression }
+        frame.push(@body.call(frame, scope, *cells), scope)
       end
     end
     
