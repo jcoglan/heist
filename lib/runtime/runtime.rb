@@ -37,10 +37,9 @@ module Heist
     end
     
     def eval_list(list, scope)
-      function, bindings = *list.bindings(scope)
-      frame    = Frame.new(function, scope, bindings)
+      frame = Frame.new
+      frame.push(list, scope)
       frame.eval
-      frame.value
     end
     
     def lazy?

@@ -13,12 +13,7 @@ module Heist
         bindings.each_with_index do |arg, i|
           params[i] = closure[@names[i]] = lazy? ? arg : arg.eval
         end
-        if primitive?
-          frame.send(@body.call(*params))
-        else
-          function, bindings = *@body.bindings(closure)
-          frame.push(function, closure, bindings)
-        end
+        frame.push(primitive? ? @body.call(*params) : @body, closure)
       end
       
       def primitive?
@@ -46,7 +41,7 @@ module Heist
     class MetaFunction < Function
       def call(frame, scope, bindings)
         cells = bindings.map { |b| b.expression }
-        frame.send(@body.call(frame, scope, *cells))
+        frame.push(@body.call(frame, scope, *cells), scope)
       end
     end
     

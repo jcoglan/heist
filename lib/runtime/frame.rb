@@ -4,27 +4,26 @@ module Heist
     class Frame
       attr_reader :value
       
-      def initialize(function, scope, bindings)
-        @queue    = [[function, scope, bindings]]
-      end
-      
       def eval
         expand! while !@queue.empty?
+        @value
       end
       
-      def push(function, scope, bindings)
-        @queue << [function, scope, bindings]
-      end
-      
-      def send(value)
-        @value = value
+      def push(cell, scope)
+        unless Scheme::List === cell
+          cell = cell.eval(scope) if cell.respond_to?(:eval)
+          return @value = cell
+        end
+        @queue ||= []
+        @queue << [cell, scope]
       end
       
     private
       
       def expand!
-        call = @queue.shift
-        call[0].call(self, call[1], call[2])
+        cell, scope = *@queue.shift
+        function, bindings = *cell.bindings(scope)
+        function.call(self, scope, bindings)
       end
     end
     

@@ -59,13 +59,7 @@ end
 
 self["begin"] = MetaFunction.new(self) do |frame, scope, *args|
   args[0...-1].each { |arg| arg.eval(scope) }
-  final = args.last
-  if Scheme::List === final
-    function, bindings = *final.bindings(scope)
-    frame.push(function, scope, bindings)
-  else
-    frame.send(final.eval(scope))
-  end
+  frame.push(args.last, scope)
 end
 
 self["exit"] = Function.new(self) { exit }
@@ -80,12 +74,8 @@ self["cond"] = MetaFunction.new(self) do |frame, scope, *pairs|
     if matched ||
         (pair == pairs.last && pair.cells.first.as_string == "else")
       which  = pair.cells.last
-      if Scheme::List === which
-        function, bindings = *which.bindings(scope)
-        frame.push(function, scope, bindings)
-      else
-        frame.send(result = which.eval(scope))
-      end
+      frame.push(which, scope)
+      result = which.eval(scope) unless Scheme::List === which
     end
   end
   result
