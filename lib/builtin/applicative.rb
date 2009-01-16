@@ -2,8 +2,8 @@
 self["if"] = MetaFunction.new(self) do |frame, scope, cond, cons, alt|
   which = cond.eval(scope) ? cons : alt
   if Scheme::List === which
-    bindings = which.arguments.map { |arg| Binding.new(arg, scope) }
-    frame.push(which.function(scope), scope, bindings)
+    function, bindings = *which.bindings(scope)
+    frame.push(function, scope, bindings)
   else
     frame.send(which.eval(scope))
   end

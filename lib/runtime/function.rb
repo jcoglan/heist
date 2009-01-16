@@ -16,8 +16,8 @@ module Heist
         if primitive?
           frame.send(@body.call(*params))
         else
-          bindings = @body.arguments.map { |arg| Binding.new(arg, closure) }
-          frame.push(@body.function(closure), closure, bindings)
+          function, bindings = *@body.bindings(closure)
+          frame.push(function, closure, bindings)
         end
       end
       

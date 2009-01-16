@@ -37,8 +37,7 @@ module Heist
     end
     
     def eval_list(list, scope)
-      function = list.function(scope)
-      bindings = list.arguments.map { |arg| Binding.new(arg, scope) }
+      function, bindings = *list.bindings(scope)
       frame    = Frame.new(function, scope, bindings)
       frame.eval
       frame.value
