@@ -4,29 +4,27 @@ module Heist
     class Frame
       attr_reader :value
       
-      def initialize(function, scope, bindings, parent = nil)
-        @function = function
-        @scope    = scope
-        @bindings = bindings
-        @parent   = parent
-        @queue    = []
+      def initialize(function, scope, bindings)
+        @queue    = [[function, scope, bindings]]
       end
       
       def eval
-        @function.call(self, @scope, @bindings)
-        @queue.shift.eval while !@queue.empty?
+        expand! while !@queue.empty?
       end
       
       def push(function, scope, bindings)
-        @queue << Frame.new(function, scope, bindings, self)
+        @queue << [function, scope, bindings]
       end
       
       def send(value)
-        if @parent
-          @parent.send(value)
-        else
-          @value = value
-        end
+        @value = value
+      end
+      
+    private
+      
+      def expand!
+        call = @queue.shift
+        call[0].call(self, call[1], call[2])
       end
     end
     
