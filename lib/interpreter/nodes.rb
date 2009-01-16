@@ -15,7 +15,7 @@ module Heist
     
     class List < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        scope.runtime.eval_list(self, scope)
+        Runtime::Frame.new(self, scope).eval
       end
       
       def cells

@@ -36,12 +36,6 @@ module Heist
       Heist.run("#{ BUILTIN_PATH }#{ ORDERS[@order] }.scm", @scope)
     end
     
-    def eval_list(list, scope)
-      frame = Frame.new
-      frame.push(list, scope)
-      frame.eval
-    end
-    
     def lazy?
       @order == NORMAL_ORDER
     end

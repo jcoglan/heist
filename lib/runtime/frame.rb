@@ -4,6 +4,10 @@ module Heist
     class Frame
       attr_reader :value
       
+      def initialize(list, scope)
+        push(list, scope)
+      end
+      
       def eval
         expand! while !@queue.empty?
         @value
