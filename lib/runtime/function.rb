@@ -2,6 +2,8 @@ module Heist
   class Runtime
     
     class Function
+      attr_reader :names, :body
+      
       def initialize(scope, names = [], body = nil, &block)
         @scope = scope
         @body  = body || block
@@ -22,19 +24,6 @@ module Heist
       
       def lazy?
         @scope.runtime.lazy? && !primitive?
-      end
-      
-      def to_s
-        return @string if @string
-        return "[native code]" if primitive?
-        
-        string = "lambda (" + (@names * " ") + ")\n"
-        indent, last = 1, ""
-        @body.text_value.split(/\n/).each do |line|
-          string << ("   " * indent) + line.strip + "\n"
-          indent += line.scan(/\(/).size - line.scan(/\)/).size
-        end
-        @string = string.strip
       end
     end
     

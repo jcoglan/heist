@@ -3,7 +3,7 @@
 require File.dirname(__FILE__) + '/../lib/heist'
 
 if ARGV.empty?
-  Heist.repl
+  Heist::REPL.new.run
 else
   puts Heist.run(File.expand_path(ARGV.first))
 end

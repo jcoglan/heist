@@ -4,6 +4,7 @@ README.txt
 Rakefile
 bin/heist
 lib/heist.rb
+lib/repl.rb
 lib/builtin/common.rb
 lib/builtin/applicative.rb
 lib/builtin/normal.rb
@@ -16,7 +17,8 @@ lib/interpreter/nodes.rb
 lib/runtime/runtime.rb
 lib/runtime/scope.rb
 lib/runtime/function.rb
-lib/runtime/thunk.rb
+lib/runtime/binding.rb
+lib/runtime/frame.rb
 test/test_heist.rb
 test/test.scm
 test/mode.scm

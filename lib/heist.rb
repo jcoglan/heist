@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'treetop'
-require 'readline'
 
 module Heist
   VERSION = '0.1.0'
@@ -19,6 +18,7 @@ module Heist
   require PARSER_PATH + 'scheme'
   require PARSER_PATH + 'nodes'
   require RUNTIME_PATH + 'runtime'
+  require ROOT_PATH + '/repl'
   
   LOAD_PATH = [LIB_PATH]
   FILE_EXT  = ".scm"
@@ -39,28 +39,6 @@ module Heist
   def self.parse(source)
     @parser ||= SchemeParser.new
     @parser.parse(source)
-  end
-  
-  def self.repl(options = {})
-    runtime, buffer = Runtime.new(options), ""
-    
-    puts "Heist Scheme interpreter, v. #{ VERSION }"
-    puts "Evaluation strategy: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }\n\n"
-    
-    loop do
-      inset  = buffer.scan(/\(/).size - buffer.scan(/\)/).size
-      prompt = buffer == "" ? "> " : "  " + "   " * inset
-      input  = Readline.readline(prompt)
-      exit if input.nil?
-      
-      Readline::HISTORY.push(input)
-      buffer << input + "\n"
-      tree = parse(buffer)
-      next if tree.nil?
-      
-      buffer = ""
-      puts "=>  #{ runtime.eval(tree) rescue '[error]' }\n\n"
-    end
   end
   
 end
