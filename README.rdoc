@@ -1,0 +1,57 @@
+= Heist
+
+Heist is a Scheme written in Ruby, using as little Ruby and as much Scheme
+as possible. I'm developing it while reading SICP, Mockingbird and other
+Scheme and lambda calculus texts. The goal is to to be able to run all
+the example code I come across while learning something about interpreting
+programs. For the time being, the parser is generated using Treetop as
+Scheme's grammar is ridiculously simple and the interesting work is really
+in the interpreter and runtime.
+
+By the way, Treetop is fantastic and I cannot recommend it highly enough;
+it makes generating parse trees from language grammars almost too easy:
+
+http://treetop.rubyforge.org/
+
+
+== Features
+
+I'm building this Scheme up as I learn the language. Currently implemented
+features include the following:
+
+* Function/value assignment with <tt>(define)</tt>
+* Lambda expressions using <tt>(lambda)</tt>
+* Lexical scoping and closures
+* Tail call optimisation
+* Read-eval-print loop
+* Optional normal-order (lazy) evaluation, useful for doing lambda calculus
+* Numbers and arithmetic (no proper rationals or complexes yet)
+* Booleans, <tt>(cond)</tt>, <tt>(if)</tt>, <tt>(not)</tt>
+* Comparison operators, <tt>(and)</tt>, <tt>(or)</tt>
+* Loading of library files using <tt>(load)</tt>
+
+
+== License
+
+(The MIT License)
+
+Copyright (c) 2009 James Coglan
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
