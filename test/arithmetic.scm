@@ -1,0 +1,12 @@
+(assert-equal 486   (+ 137 349))
+(assert-equal 666   (- 1000 334))
+(assert-equal 495   (* 5 99))
+(assert-equal 2     (/ 10 5))
+(assert-equal 12.7  (+ 2.7 10))
+(assert-equal 75    (+ 21 35 12 7))
+(assert-equal 1200  (* 25 4 12))
+(assert-equal 19    (+ (* 3 5) (- 10 6)))
+(assert-equal 57    (+ (* 3 (+ (* 2 4) (+ 3 5))) (+ (- 10 7) 6)))
+(assert-equal 8     (expt 2 3))
+(assert-equal 2     (expt 4 1/2))
+
