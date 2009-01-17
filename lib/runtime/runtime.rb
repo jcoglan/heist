@@ -10,7 +10,7 @@ module Heist
     extend Forwardable
     def_delegators(:@scope, :[], :eval, :define, :metadef)
     
-    attr_reader :order
+    attr_reader :order, :stack
     
     def initialize(options = {})
       @scope = Scope.new(self)

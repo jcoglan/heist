@@ -6,10 +6,13 @@ module Heist
       
       def initialize(list, scope)
         push(list, scope)
+        @stack = scope.runtime.stack
       end
       
       def eval
+        @stack << self
         expand! while !@queue.empty?
+        @stack.pop
         @value
       end
       
@@ -26,8 +29,10 @@ module Heist
       
       def expand!
         list, scope = *@queue.shift
-        function = list.cells.first.eval(scope)
-        bindings = list.cells[1..-1].map { |cell| Binding.new(cell, scope) }
+        first, others = list.cells.first, list.cells[1..-1]
+        function = first.eval(scope)
+        bindings = others.map { |cell| Binding.new(cell, scope) }
+        # puts ".  " * @stack.size + "(#{first.text_value})" if Scheme::Identifier === first
         function.call(self, scope, bindings)
       end
     end
