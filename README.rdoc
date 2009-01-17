@@ -14,6 +14,18 @@ it makes generating parse trees from language grammars almost too easy:
 http://treetop.rubyforge.org/
 
 
+== Goals
+
+This a vague list right now as I'm just starting out, but I'd like to stick
+to them if at all possible.
+
+* Keep the grammar as small as possible
+* No keywords in the grammar, only generic Lisp syntax and data literals
+* All special forms are regular functions in the symbol table
+* Write as few primitives as possible in Ruby
+* Write as much in Scheme as possible, including tests
+
+
 == Features
 
 I'm building this Scheme up as I learn the language. Currently implemented
