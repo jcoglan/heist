@@ -22,12 +22,6 @@ module Heist
         @cells ||= elements[1].elements.map { |e| e.data }
       end
       
-      def bindings(scope)
-        function = cells.first.eval(scope)
-        bindings = cells[1..-1].map { |cell| Runtime::Binding.new(cell, scope) }
-        [function, bindings]
-      end
-      
       def as_string
         cells.map { |c| c.as_string }
       end

@@ -25,8 +25,9 @@ module Heist
     private
       
       def expand!
-        cell, scope = *@queue.shift
-        function, bindings = *cell.bindings(scope)
+        list, scope = *@queue.shift
+        function = list.cells.first.eval(scope)
+        bindings = list.cells[1..-1].map { |cell| Binding.new(cell, scope) }
         function.call(self, scope, bindings)
       end
     end
