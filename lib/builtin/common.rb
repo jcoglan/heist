@@ -9,6 +9,10 @@ metadef('lambda') do |frame, scope, names, *body|
   Function.new(scope, names.as_string, body)
 end
 
+metadef('eval') do |frame, scope, string|
+  scope.eval(string.eval(scope))
+end
+
 define('display') do |expression|
   puts expression
 end
