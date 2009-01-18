@@ -1,12 +1,12 @@
 metadef('define') do |frame, scope, names, body|
-  names = names.as_string
+  names = names.expression.as_string
   scope[names.first] = (Array === names) ?
-      Function.new(scope, names[1..-1], body) :
-      body.eval(scope)
+      Function.new(scope, names[1..-1], body.expression) :
+      body.eval
 end
 
 metadef('lambda') do |frame, scope, names, body|
-  Function.new(scope, names.as_string, body)
+  Function.new(scope, names.expression.as_string, body.expression)
 end
 
 define('display') do |expression|
@@ -54,6 +54,7 @@ define('min') do |*args|
 end
 
 metadef('begin') do |frame, scope, *args|
+  args = args.map { |a| a.expression }
   args[0...-1].each { |arg| arg.eval(scope) }
   frame.push(args.last, scope)
 end
@@ -62,6 +63,7 @@ define('exit') { exit }
 
 # Lazy mode currently complains if this does not return a value
 metadef('cond') do |frame, scope, *pairs|
+  pairs = pairs.map { |p| p.expression }
   matched, result = false, nil
   pairs.each do |pair|
     next if matched
@@ -99,7 +101,7 @@ metadef('and') do |frame, scope, *args|
   result = true
   args.each do |arg|
     next if !result
-    result = arg.eval(scope)
+    result = arg.eval
   end
   result
 end
@@ -108,7 +110,7 @@ metadef('or') do |frame, scope, *args|
   result = false
   args.each do |arg|
     next if result
-    result = arg.eval(scope)
+    result = arg.eval
   end
   result
 end

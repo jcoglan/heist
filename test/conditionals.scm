@@ -38,7 +38,3 @@
 
 (assert-equal 720 (fact 6))
 
-(define x 7)
-(assert-equal #t (and (> x 5) (<= x 10)))
-(assert-equal #t (or (>= x 5) (< x 3)))
-
