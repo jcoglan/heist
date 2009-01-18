@@ -32,9 +32,8 @@
 ; fact
 ; Returns the factorial of x
 (define (fact x)
-  (begin
-    (define (rec y acc)
-      (cond ((= y 0) acc)
-            (else (rec (- y 1) (* y acc)))))
-    (rec x 1)))
+  (define (rec y acc)
+    (cond ((= y 0) acc)
+          (else (rec (- y 1) (* y acc)))))
+  (rec x 1))
 

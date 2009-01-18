@@ -15,7 +15,9 @@ module Heist
         bindings.each_with_index do |arg, i|
           params[i] = closure[@names[i]] = lazy? ? arg : arg.eval
         end
-        frame.push(primitive? ? @body.call(*params) : @body, closure)
+        return frame.push(@body.call(*params), closure) if primitive?
+        @body[0...-1].each { |part| part.eval(closure) }
+        frame.push(@body.last, closure)
       end
       
       def primitive?

@@ -10,3 +10,21 @@
 (assert-equal 8     (expt 2 3))
 (assert-equal 2     (expt 4 1/2))
 
+(define (sqrt x)
+  (define (square x)
+    (* x x))
+  (define (average x y)
+    (/ (+ x y) 2))
+  (define (good-enough? guess)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess)
+    (average guess (/ x guess)))
+  (define (sqrt-iter guess)
+    (if (good-enough? guess)
+        guess
+        (sqrt-iter (improve guess))))
+  (sqrt-iter 1.0))
+
+(assert (< (abs (- (sqrt 9) 3)) 0.0001))
+(assert (not good-enough?))
+

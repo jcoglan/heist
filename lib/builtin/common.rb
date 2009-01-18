@@ -1,11 +1,11 @@
-metadef('define') do |frame, scope, names, body|
+metadef('define') do |frame, scope, names, *body|
   names = names.as_string
   scope[names.first] = (Array === names) ?
       Function.new(scope, names[1..-1], body) :
-      body.eval(scope)
+      body.first.eval(scope)
 end
 
-metadef('lambda') do |frame, scope, names, body|
+metadef('lambda') do |frame, scope, names, *body|
   Function.new(scope, names.as_string, body)
 end
 
