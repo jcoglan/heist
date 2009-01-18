@@ -66,6 +66,7 @@ metadef('cond') do |frame, scope, *pairs|
   pairs.each do |pair|
     next if matched
     matched = pair.cells.first.eval(scope)
+    matched = matched.eval if Runtime::Binding === matched
     
     if matched ||
         (pair == pairs.last && pair.cells.first.as_string == "else")

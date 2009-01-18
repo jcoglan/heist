@@ -14,11 +14,7 @@ module Heist
       end
       
       def [](name)
-        value = @symbols.has_key?(name) ?
-                @symbols[name] :
-                @parent[name]
-        value = value.eval if Binding === value
-        value
+        @symbols.has_key?(name) ? @symbols[name] : @parent[name]
       end
       
       def []=(name, value)

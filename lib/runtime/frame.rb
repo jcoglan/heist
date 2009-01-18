@@ -31,7 +31,8 @@ module Heist
         list, scope = *@queue.shift
         first, others = list.cells.first, list.cells[1..-1]
         function = first.eval(scope)
-        bindings = others.map { |cell| Binding.new(cell, scope) }
+        function = function.eval if Binding === function
+        bindings = others.map { |cell| Binding.create(cell, scope) }
         # puts ".  " * @stack.size + "(#{first.text_value})" if Scheme::Identifier === first
         function.call(self, scope, bindings)
       end

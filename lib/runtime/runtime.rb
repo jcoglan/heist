@@ -16,7 +16,7 @@ module Heist
       @scope = Scope.new(self)
       @stack = []
       
-      @order = options[:order] || EAGER
+      @order = options[:order] || LAZY
       
       instance_eval(File.read("#{ BUILTIN_PATH }common.rb"))
       instance_eval(File.read("#{ BUILTIN_PATH }#{ ORDERS[@order] }.rb"))
