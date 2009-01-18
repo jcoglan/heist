@@ -98,3 +98,15 @@
 
 (output "(f 6)")
 
+
+(exercise "1.12")
+; Pascal's triangle
+
+(define (pascal line n)
+  (if (or (= n 1) (= n line))
+      1
+      (+ (pascal (- line 1) (- n 1))
+         (pascal (- line 1) n))))
+
+(output "(pascal 5 3)")
+
