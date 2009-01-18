@@ -33,9 +33,11 @@ module Heist
       
       string = "lambda (" + (object.names * " ") + ")\n"
       indent, last = 1, ""
-      object.body.text_value.split(/\n/).each do |line|
-        string << ("   " * indent) + line.strip + "\n"
-        indent += line.scan(/\(/).size - line.scan(/\)/).size
+      object.body.map do |part|
+        part.text_value.split(/\n/).each do |line|
+          string << ("   " * indent) + line.strip + "\n"
+          indent += line.scan(/\(/).size - line.scan(/\)/).size
+        end
       end
       string.strip
     end
