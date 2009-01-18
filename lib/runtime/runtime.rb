@@ -17,6 +17,7 @@ module Heist
       @stack = []
       
       @order = options[:order] || LAZY
+      @lazy_inversion = options[:lazy_inversion] || false
       
       instance_eval(File.read("#{ BUILTIN_PATH }common.rb"))
       instance_eval(File.read("#{ BUILTIN_PATH }#{ ORDERS[@order] }.rb"))
@@ -26,6 +27,10 @@ module Heist
     
     def lazy?
       @order == NORMAL_ORDER
+    end
+    
+    def lazy_inversion?
+      lazy? && !!@lazy_inversion
     end
     
   end
