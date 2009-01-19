@@ -4,6 +4,37 @@
 (load "helpers")
   
 
+(exercise "1.9")
+; This code is slightly different from SICP so as
+; not to overwrite functions we need later
+
+(define (add a b)
+  (if (= a 0)
+      b
+      (inc (add (dec a) b))))
+; (add 4 5)
+; (inc (add 3 5))
+; (inc (inc (add 2 5)))
+; (inc (inc (inc (add 1 5))))
+; (inc (inc (inc (inc (add 0 5)))))
+; (inc (inc (inc (inc 5))))
+; (inc (inc (inc 6)))
+; (inc (inc 7))
+; (inc 8)
+; 9
+
+(define (add a b)
+  (if (= a 0)
+      b
+      (add (dec a) (inc b))))
+; (add 4 5)
+; (add 3 6)
+; (add 2 7)
+; (add 1 8)
+; (add 0 9)
+; 9
+
+
 (exercise "1.10")
 
 (define (A x y)
