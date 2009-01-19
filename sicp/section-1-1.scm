@@ -23,6 +23,20 @@
 (output "(sum-squares-largest-two 7 3 4)")
 
 
+(exercise "1.5")
+
+(define (p) (p))
+
+(define (test x y)
+  (if (= x 0)
+      0
+      y))
+
+; Don't run this unless using lazy evaluation. With Eager
+; evaluation, (p) calls itself repeatedly.
+; (test 0 (p))
+
+
 (define (square x)
   (* x x))
 
@@ -50,12 +64,33 @@
 
 (exercise "1.7")
 
+(define (good-enough? guess last)
+  (< (abs (/ (- guess last) last)) 0.0001))
+
 (define (sqrt-iter guess last x)
-  (if (< (abs (/ (- guess last) last)) 0.0001)
+  (if (good-enough? guess last)
       guess
       (sqrt-iter (improve guess x) guess x)))
 (define (sqrt x)
   (sqrt-iter 0.1 1.0 x))
 
 (output "(sqrt 40000)")
+
+
+(exercise "1.8")
+
+(define (improve-cube guess x)
+  (/  (+ (/ x (square guess)) (* 2 guess))
+      3))
+
+(define (cube-root-iter guess last x)
+  (if (good-enough? guess last)
+      guess
+      (cube-root-iter (improve-cube guess x) guess x)))
+      
+(define (cube-root x)
+  (cube-root-iter 0.1 1.0 x))
+
+(output "(cube-root 27)")
+(output "(cube-root 64)")
 
