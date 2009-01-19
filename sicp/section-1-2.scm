@@ -242,3 +242,33 @@
 (output "(expt 5 13)")
 (output "(fast-expt 5 13)")
 
+
+(exercise "1.17")
+
+(define (double x)
+  (* 2 x))
+
+(define (halve x)
+  (/ x 2))
+
+(define (mult x y)
+  (cond ((= y 0) 0)
+        ((even? y) (double (mult x (halve y))))
+        (else (+ x (mult x (- y 1))))))
+
+(output "(mult 3 7)")
+(output "(mult 5 4)")
+
+
+(exercise "1.18")
+
+(define (fast-mult x y)
+  (define (mult-iter x y a)
+    (cond ((= y 0) a)
+          ((even? y) (mult-iter (double x) (halve y) a))
+          (else (mult-iter x (- y 1) (+ y x)))))
+  (mult-iter x y 1))
+
+(output "(mult 3 7)")
+(output "(mult 5 4)")
+
