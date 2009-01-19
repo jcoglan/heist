@@ -17,14 +17,8 @@ define('display') do |expression|
   puts expression
 end
 
-define('load') do |file|
-  path = LOAD_PATH.find { |p| File.file?(p + file) || File.file?(p + file + FILE_EXT) }
-  if path.nil?
-    false
-  else
-    Heist.run(path + file, self)
-    true
-  end
+metadef('load') do |frame, scope, file|
+  scope.load(file.eval(scope))
 end
 
 define('+') do |*args|

@@ -1,12 +1,7 @@
 ; Section 1.2
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-11.html
 
-(define (exercise x)
-  (newline)
-  (display (+ "Exercise " x)))
-
-(define (output expression)
-  (display (+ expression " = " (eval expression))))
+(load "helpers")
   
 
 (exercise "1.10")

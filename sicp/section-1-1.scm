@@ -1,12 +1,7 @@
 ; Section 1.1
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-10.html
 
-(define (exercise x)
-  (newline)
-  (display (+ "Exercise " x)))
-
-(define (output expression)
-  (display (+ expression " = " (eval expression))))
+(load "helpers")
 
 
 (exercise "1.2")
@@ -60,7 +55,7 @@
       guess
       (sqrt-iter (improve guess x) guess x)))
 (define (sqrt x)
-  (sqrt-iter 0.1 1.0 x 0))
+  (sqrt-iter 0.1 1.0 x))
 
 (output "(sqrt 40000)")
 

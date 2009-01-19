@@ -8,7 +8,7 @@ module Heist
     end
     
     extend Forwardable
-    def_delegators(:@scope, :[], :eval, :define, :metadef)
+    def_delegators(:@scope, :[], :eval, :run, :define, :metadef)
     
     attr_reader :order, :stack
     
