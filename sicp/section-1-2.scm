@@ -156,7 +156,7 @@
         ((= coin-type 4) 25)
         ((= coin-type 5) 50)))
 
-(output "(count-change 100)")
+; (output "(count-change 100)")
 (output "(count-change 11)")
 
 ; Tree:
@@ -222,4 +222,23 @@
 ;   |   |-- (cc -14 4) = 0
 ;   |
 ;   |-- (cc -39 5) = 0
+
+
+(exercise "1.16")
+
+(define (even? n)
+  (= (remainder n 2) 0))
+
+(define (square x)
+  (* x x))
+
+(define (fast-expt b n)
+  (define (expt-iter b n a)
+    (cond ((= n 0) a)
+          ((even? n) (expt-iter (square b) (/ n 2) a))
+          (else (expt-iter b (- n 1) (* b a)))))
+  (expt-iter b n 1))
+
+(output "(expt 5 13)")
+(output "(fast-expt 5 13)")
 

@@ -43,6 +43,10 @@ define('expt') do |op1, op2|
   op1 ** op2
 end
 
+define('remainder') do |op1, op2|
+  op1 % op2
+end
+
 define('max') do |*args|
   args.max
 end
