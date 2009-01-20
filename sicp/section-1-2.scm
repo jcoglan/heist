@@ -283,3 +283,210 @@
 (output "(mult 3 7)")
 (output "(mult 5 4)")
 
+
+(exercise "1.19")
+; Let T be the transformation:      a <- a + b,         b <- a
+; Let T[pq] be the transformation:  a <- bq + aq + ap,  b <- bp + aq
+; => T = T[01]
+; Apply T[pq] twice to a,b:
+; 
+;                                        a                               b
+; 
+; ->                          bq + aq + ap                         bp + aq
+; 
+; ->    (bp + aq)q + (bq + aq + ap)(q + p)    (bp + aq)p + (bq + aq + ap)q
+; 
+; First expression:
+;       bpq + aq^2 + bq^2 + bpq + aq^2 + apq + apq + ap^2
+;     = b(2pq + q^2) + a(p^2 + 2pq + 2q^2)
+; 
+; Second expression:
+;       bp^2 + apq + bq^2 + aq^2 + apq
+;     = b(p^2 + q^2) + a(2pq + q^2)
+; 
+; => q' = 2pq + q^2
+;    p' = p^2 + q^2
+
+(define (fib n)
+  (fib-iter 1 0 0 1 n))
+(define (fib-iter a b p q count)
+  (cond ((= count 0) b)
+        ((even? count)
+         (fib-iter a
+                   b
+                   (+ (* p p) (* q q))        ; compute p'
+                   (+ (* 2 p q) (* q q))      ; compute q'
+                   (/ count 2)))
+        (else (fib-iter (+ (* b q) (* a q) (* a p))
+                        (+ (* b p) (* a q))
+                        p
+                        q
+                        (- count 1)))))
+
+(output "(fib 1)")
+(output "(fib 2)")
+(output "(fib 3)")
+(output "(fib 4)")
+(output "(fib 5)")
+(output "(fib 6)")
+(output "(fib 7)")
+(output "(fib 8)")
+
+
+(exercise "1.20")
+; Euclid's algorithm
+
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
+; Normal order:
+; (gcd 206 40)
+; 
+; (gcd 40 (remainder 206 40))
+;     eval b -> 6, 1 call
+; 
+; (gcd (remainder 206 40)
+;      (remainder 40 (remainder 206 40)))
+;     eval b -> 4, 2 calls
+; 
+; (gcd (remainder 40 (remainder 206 40))
+;      (remainder (remainder 206 40) (remainder 40 (remainder 206 40))))
+;     eval b -> 2, 4 calls
+; 
+; (gcd (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))
+;      (remainder (remainder 40 (remainder 206 40)) (remainder (remainder 206 40) (remainder 40 (remainder 206 40)))))
+;     eval b -> 0, 7 calls
+;     eval a -> 2, 4 calls
+; 
+; Total (remainder) calls for normal order: 1+2+4+7+4 = 18
+; 
+; Applicative order:
+; (gcd 206 40)
+; (gcd 40 (remainder 206 40))
+; (gcd 40 6)
+; (gcd 6 (remainder 40 6))
+; (gcd 6 4)
+; (gcd 4 (remainder 6 4))
+; (gcd 4 2)
+; (gcd 2 (remainder 4 2))
+; (gcd 2 0)
+; 2
+; 
+; Total (remainder) calls for applicative order: 4
+
+
+(exercise "1.21")
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+(define (divides? a b)
+  (= (remainder b a) 0))
+  
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
+
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else false)))
+
+(output "(smallest-divisor 199)")
+(output "(smallest-divisor 1999)")
+(output "(smallest-divisor 19999)")
+
+
+(exercise "1.22")
+; Benchmarking primality tests
+
+(define (timed-prime-test n)
+  ; (newline)
+  ; (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime n (- (runtime) start-time))))
+(define (report-prime n elapsed-time)
+  (display (+ " *** " n))
+  (display elapsed-time)
+  #t)
+
+; Search for first 3 primes above x
+(define (search-for-primes x)
+  (define (iter x found)
+    (cond ((< found 3)
+              (if (timed-prime-test x)
+                  (iter (+ x 2) (+ found 1))
+                  (iter (+ x 2) found)))))
+  (iter (if (even? x) (+ x 1) x) 0))
+
+; (sqrt 10) = 3.16            ; Test time
+(search-for-primes 1000)      ; 12ms
+(search-for-primes 10000)     ; 50ms
+(search-for-primes 100000)    ; 160ms
+(search-for-primes 1000000)   ; 530ms
+
+
+(exercise "1.23")
+; Skip even numbers when looking for divisors
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (next test-divisor)))))
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (next x)
+  (if (= x 2) 3
+              (+ x 2)))
+
+(define (prime-benchmarks)
+  (timed-prime-test 1009)       ; 8ms
+  (timed-prime-test 1013)
+  (timed-prime-test 1019)
+  (timed-prime-test 10007)      ; 30ms
+  (timed-prime-test 10009)
+  (timed-prime-test 10037)
+  (timed-prime-test 100003)     ; 107ms
+  (timed-prime-test 100019)
+  (timed-prime-test 100043)
+  (timed-prime-test 1000003)    ; 333ms
+  (timed-prime-test 1000033)
+  (timed-prime-test 1000037))
+
+(prime-benchmarks)
+
+
+(exercise "1.24")
+; Use Fermat test for prime numbers
+
+(define (start-prime-test n start-time)
+  (if (fast-prime? n 3)
+      (report-prime n (- (runtime) start-time))))
+
+(prime-benchmarks)
+; Times are (using fast-prime? 3 times)
+; 25ms, 30ms, 35ms, 40ms (roughly)
+

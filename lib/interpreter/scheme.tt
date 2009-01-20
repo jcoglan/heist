@@ -17,7 +17,7 @@ module Heist
     end
     
     rule atom
-      (datum / identifier) <Atom>
+      (comment / datum / identifier) <Atom>
     end
     
     rule datum

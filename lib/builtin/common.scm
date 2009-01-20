@@ -5,6 +5,9 @@
 (define (not x)
   (if x #f #t))
 
+(define true #t)
+(define false #f)
+
 ; less than or equal to
 ; Returns true iff x <= y
 (define (<= x y)

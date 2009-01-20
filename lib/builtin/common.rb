@@ -9,6 +9,10 @@ metadef('lambda') do |frame, scope, names, *body|
   Function.new(scope, names.as_string, body)
 end
 
+metadef('runtime') do |frame, scope|
+  scope.runtime.elapsed_time
+end
+
 metadef('eval') do |frame, scope, string|
   scope.eval(string.eval(scope))
 end
@@ -45,6 +49,10 @@ end
 
 define('remainder') do |op1, op2|
   op1 % op2
+end
+
+define('random') do |max|
+  rand(max)
 end
 
 define('max') do |*args|

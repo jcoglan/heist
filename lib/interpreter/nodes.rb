@@ -19,7 +19,9 @@ module Heist
       end
       
       def cells
-        @cells ||= elements[1].elements.map { |e| e.data }
+        @cells ||= elements[1].elements.
+                      map { |e| e.data }.
+                      select { |c| !(Comment === c) }
       end
       
       def as_string
