@@ -225,6 +225,10 @@
 
 
 (exercise "1.16")
+; Compose an iterative fast exponent function using repeated
+; squaring. b^n is invariant each time we divide the problem.
+; This is divide and conquer: n multiplications can be divided
+; into log(n) squarings.
 
 (define (even? n)
   (= (remainder n 2) 0))
@@ -244,6 +248,11 @@
 
 
 (exercise "1.17")
+; Compose a multiplication function that uses addition, double()
+; and halve(). Note that some of these operations are extremely
+; cheap when you get down to the hardware level: even?() just
+; checks if the last bit is zero, double() bit-shifts to the left
+; and halve() bit-shifts to the right.
 
 (define (double x)
   (* 2 x))
@@ -261,6 +270,8 @@
 
 
 (exercise "1.18")
+; Combine 1.16 and 1.17 to make an iterative multiplication
+; function, again using +(), double() and halve()
 
 (define (fast-mult x y)
   (define (mult-iter x y a)
