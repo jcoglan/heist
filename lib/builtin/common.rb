@@ -1,36 +1,28 @@
 metadef('define') do |frame, scope, names, *body|
-  names = Scheme::List === names ?
-      names.cells.map { |cell| cell.text_value } :
-      names.text_value
-  scope[names.first] = (Array === names) ?
-      Function.new(scope, names[1..-1], body) :
-      body.first.eval(scope)
+  List === names ?
+      scope.define(names.first, names.rest, body) :
+      scope[names] = Heist.value_of(body.first, scope)
 end
 
 metadef('lambda') do |frame, scope, names, *body|
-  Function.new(scope, names.cells.map { |cell| cell.text_value }, body)
+  formals = names.map { |cell| cell.to_s }
+  Function.new(scope, formals, body)
 end
 
 metadef('let') do |frame, scope, values, *body|
-  closure = Scope.new(scope)
-  closure.bind(values.cells, scope)
-  body[0...-1].each { |part| part.eval(closure) }
-  frame.push(body.last, closure)
+  
 end
 
 metadef('let*') do |frame, scope, values, *body|
-  closure = Scope.new(scope)
-  closure.bind(values.cells, closure)
-  body[0...-1].each { |part| part.eval(closure) }
-  frame.push(body.last, closure)
+  
 end
 
 metadef('runtime') do |frame, scope|
-  scope.runtime.elapsed_time
+  
 end
 
 metadef('eval') do |frame, scope, string|
-  scope.eval(string.eval(scope))
+  
 end
 
 define('display') do |expression|
@@ -38,7 +30,7 @@ define('display') do |expression|
 end
 
 metadef('load') do |frame, scope, file|
-  scope.load(file.eval(scope))
+  
 end
 
 define('+') do |*args|
@@ -80,27 +72,14 @@ define('min') do |*args|
 end
 
 metadef('begin') do |frame, scope, *args|
-  args[0...-1].each { |arg| arg.eval(scope) }
-  frame.push(args.last, scope)
+  
 end
 
 define('exit') { exit }
 
 # Lazy mode currently complains if this does not return a value
 metadef('cond') do |frame, scope, *pairs|
-  matched, result = false, nil
-  pairs.each do |pair|
-    next if matched
-    matched = pair.cells.first.eval(scope)
-    
-    if matched ||
-        (pair == pairs.last && pair.cells.first.text_value == "else")
-      which  = pair.cells.last
-      frame.push(which, scope)
-      result = which.eval(scope) unless Scheme::List === which
-    end
-  end
-  result
+  
 end
 
 define('eqv?') do |op1, op2|
@@ -121,21 +100,11 @@ define('<') do |op1, op2|
 end
 
 metadef('and') do |frame, scope, *args|
-  result = true
-  args.each do |arg|
-    next if !result
-    result = arg.eval(scope)
-  end
-  result
+  
 end
 
 metadef('or') do |frame, scope, *args|
-  result = false
-  args.each do |arg|
-    next if result
-    result = arg.eval(scope)
-  end
-  result
+  
 end
 
 define('boolean?') do |value|

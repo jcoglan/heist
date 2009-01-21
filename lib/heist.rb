@@ -40,5 +40,11 @@ module Heist
     @parser.parse(source)
   end
   
+  def self.value_of(expression, scope)
+    expression.respond_to?(:eval) ?
+        expression.eval(scope) :
+        expression
+  end
+  
 end
 

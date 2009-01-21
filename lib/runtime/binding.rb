@@ -9,7 +9,7 @@ module Heist
       end
       
       def eval(scope = nil)
-        @value ||= @expression.eval(@scope)
+        @value ||= Heist.value_of(@expression, @scope)
       end
     end
     

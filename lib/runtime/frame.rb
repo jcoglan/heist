@@ -9,16 +9,16 @@ module Heist
         @stack = scope.runtime.stack
       end
       
-      def eval
+      def evaluate
         @stack << self
         expand! while !@queue.empty?
         @stack.pop
         @value
       end
       
-      def push(cell, scope)
-        unless Scheme::List === cell
-          cell = cell.eval(scope) if cell.respond_to?(:eval)
+      def push(cell, scope = nil)
+        unless List === cell
+          cell = Heist.value_of(cell, scope)
           return @value = cell
         end
         @queue ||= []
@@ -29,10 +29,9 @@ module Heist
       
       def expand!
         list, scope = *@queue.shift
-        first, others = list.cells.first, list.cells[1..-1]
-        function = first.eval(scope)
-        bindings = others.map { |cell| Binding.new(cell, scope) }
-        # puts ".  " * @stack.size + "(#{first.text_value})" if Scheme::Identifier === first
+        function = list.first.eval(scope)
+        bindings = list.rest.map { |cell| Binding.new(cell, scope) }
+        # puts ". " * @stack.size + "(#{first.text_value})" if Scheme::Identifier === first
         function.call(self, scope, bindings)
       end
     end

@@ -3,13 +3,18 @@ module Heist
     
     class Program < Treetop::Runtime::SyntaxNode
       def eval(scope)
-        elements.map { |e| e.eval(scope) }.last
+        convert!
+        @data.map { |part| Heist.value_of(part, scope) }.last
+      end
+      
+      def convert!
+        @data ||= elements.map { |e| e.eval }
       end
     end
     
     module List
-      def eval(scope)
-        Runtime::Frame.new(self, scope).eval
+      def eval
+        Runtime::List.new(cells.map { |c| c.eval })
       end
       
       def cells
@@ -18,8 +23,8 @@ module Heist
     end
     
     class Cell < Treetop::Runtime::SyntaxNode
-      def eval(scope)
-        data.eval(scope)
+      def eval
+        data.eval
       end
       
       def data
@@ -28,44 +33,44 @@ module Heist
     end
     
     module Boolean
-      def eval(scope)
+      def eval
         @value ||= (text_value == "#t")
       end
     end
     
     class Complex < Treetop::Runtime::SyntaxNode
-      def eval(scope)
+      def eval
         # TODO
       end
     end
     
     class Real < Treetop::Runtime::SyntaxNode
-      def eval(scope)
+      def eval
         @value ||= Kernel.eval(text_value).to_f
       end
     end
     
     class Rational < Treetop::Runtime::SyntaxNode
-      def eval(scope)
-        @value ||= numerator.eval(scope).to_f / denominator.eval(scope)
+      def eval
+        @value ||= numerator.eval.to_f / denominator.eval
       end
     end
     
     class Integer < Treetop::Runtime::SyntaxNode
-      def eval(scope)
+      def eval
         @value ||= Kernel.eval(text_value).to_i
       end
     end
     
     class String < Treetop::Runtime::SyntaxNode
-      def eval(scope)
+      def eval
         @value ||= Kernel.eval(text_value)
       end
     end
     
     class Identifier < Treetop::Runtime::SyntaxNode
-      def eval(scope)
-        scope[text_value]
+      def eval
+        Runtime::Identifier.new(text_value)
       end
     end
     

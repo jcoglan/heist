@@ -2,21 +2,19 @@ module Heist
   class Runtime
     
     class Function
-      attr_reader :names, :body
-      
-      def initialize(scope, names = [], body = nil, &block)
-        @scope = scope
-        @body  = body || block
-        @names = names.dup
+      def initialize(scope, formals = [], body = nil, &block)
+        @scope   = scope
+        @body    = body || block
+        @formals = formals.map { |f| f.to_s }
       end
       
       def call(frame, scope, bindings)
         params, closure = [], Scope.new(@scope)
         bindings.each_with_index do |arg, i|
-          params[i] = closure[@names[i]] = lazy? ? arg : arg.eval
+          params[i] = closure[@formals[i]] = lazy? ? arg : arg.eval
         end
-        return frame.push(@body.call(*params), closure) if primitive?
-        @body[0...-1].each { |part| part.eval(closure) }
+        return frame.push(@body.call(*params)) if primitive?
+        @body[0...-1].each { |part| Heist.value_of(part, closure) }
         frame.push(@body.last, closure)
       end
       
@@ -32,7 +30,7 @@ module Heist
     class MetaFunction < Function
       def call(frame, scope, bindings)
         cells = bindings.map { |b| b.expression }
-        frame.push(@body.call(frame, scope, *cells), scope)
+        frame.push(@body.call(frame, scope, *cells))
       end
     end
     

@@ -3,7 +3,7 @@ require 'forwardable'
 module Heist
   class Runtime
     
-    %w(frame function scope binding).each do |file|
+    %w(list identifier function frame scope binding).each do |file|
       require RUNTIME_PATH + file
     end
     
