@@ -28,7 +28,7 @@ module Heist
       
       def bind(list, scope)
         list.each do |list|
-          self[list.cells.first.to_s] = Heist.value_of(list.cells.last, scope)
+          self[list.first.to_s] = Heist.value_of(list.last, scope)
         end
       end
       

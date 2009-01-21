@@ -24,6 +24,16 @@ module Heist
       def rest
         self.class.new(@cells[1..-1])
       end
+      
+      def last
+        @cells.last
+      end
+      
+      def to_s
+        '(' + collect { |cell| cell.to_s } * ' ' + ')'
+      end
+      
+      alias :inspect :to_s
     end
     
   end

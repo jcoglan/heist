@@ -6,23 +6,66 @@ end
 
 metadef('lambda') do |frame, scope, names, *body|
   formals = names.map { |cell| cell.to_s }
-  Function.new(scope, formals, body)
+  frame.push(Function.new(scope, formals, body))
 end
 
 metadef('let') do |frame, scope, values, *body|
-  
+  closure = Scope.new(scope)
+  closure.bind(values, scope)
+  body[0...-1].each { |part| Heist.value_of(part, closure) }
+  frame.push(body.last, closure)
 end
 
 metadef('let*') do |frame, scope, values, *body|
-  
+  closure = Scope.new(scope)
+  closure.bind(values, closure)
+  body[0...-1].each { |part| Heist.value_of(part, closure) }
+  frame.push(body.last, closure)
 end
 
+metadef('begin') do |frame, scope, *body|
+  body[0...-1].each { |part| Heist.value_of(part, scope) }
+  frame.push(body.last, scope)
+end
+
+metadef('cond') do |frame, scope, *pairs|
+  matched = false
+  pairs.each do |list|
+    next if matched
+    matched = Heist.value_of(list.first, scope)
+    next unless matched
+    frame.push(list.last, scope)
+  end
+end
+
+define('else') { true }
+
+metadef('and') do |frame, scope, *args|
+  result = true
+  args.each do |arg|
+    next if !result
+    result = arg.eval(scope)
+  end
+  frame.push(result)
+end
+
+metadef('or') do |frame, scope, *args|
+  result = false
+  args.each do |arg|
+    next if result
+    result = arg.eval(scope)
+  end
+  frame.push(result)
+end
+
+define('exit') { exit }
+
 metadef('runtime') do |frame, scope|
-  
+  scope.runtime.elapsed_time
 end
 
 metadef('eval') do |frame, scope, string|
-  
+  scope.eval(string)
 end
 
 define('display') do |expression|
@@ -71,17 +114,6 @@ define('min') do |*args|
   args.min
 end
 
-metadef('begin') do |frame, scope, *args|
-  
-end
-
-define('exit') { exit }
-
-# Lazy mode currently complains if this does not return a value
-metadef('cond') do |frame, scope, *pairs|
-  
-end
-
 define('eqv?') do |op1, op2|
   op1.class == op2.class && op1 == op2
 end
@@ -97,14 +129,6 @@ end
 
 define('<') do |op1, op2|
   op1 < op2
-end
-
-metadef('and') do |frame, scope, *args|
-  
-end
-
-metadef('or') do |frame, scope, *args|
-  
 end
 
 define('boolean?') do |value|

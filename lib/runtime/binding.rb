@@ -8,7 +8,7 @@ module Heist
         @expression, @scope = expression, scope
       end
       
-      def eval(scope = nil)
+      def extract
         @value ||= Heist.value_of(@expression, @scope)
       end
     end

@@ -19,14 +19,6 @@ Class.new(Test::Unit::TestCase) do
     end
   end
   
-  def test_basic
-    @@env.eval <<-CODE
-      (define (square x x)
-        (* x x))
-      (assert-equal 16 (square 4))
-    CODE
-  end
-  
   %w[   booleans
         numbers
         arithmetic
@@ -35,12 +27,11 @@ Class.new(Test::Unit::TestCase) do
         closures
         let
         conditionals
-        file_loading
         
   ].each do |test|
-  #  define_method('test_' + test) do
-  #    Heist.run($dir + '/' + test, @@env)
-  #  end
+    define_method('test_' + test) do
+      Heist.run($dir + '/' + test, @@env)
+    end
   end
   
   def test_birds

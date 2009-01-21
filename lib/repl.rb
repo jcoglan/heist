@@ -23,23 +23,8 @@ module Heist
         next if tree.nil?
         
         @buffer = ""
-        puts "=>  #{ stringify(@runtime.eval(tree)) rescue '[error]' }\n\n"
+        puts "=>  #{ @runtime.eval(tree) rescue '[error]' }\n\n"
       end
-    end
-    
-    def stringify(object)
-      return object.to_s unless Runtime::Function === object
-      return "[native code]" if object.primitive?
-      
-      string = "lambda (" + (object.names * " ") + ")\n"
-      indent, last = 1, ""
-      object.body.map do |part|
-        part.text_value.split(/\n/).each do |line|
-          string << ("   " * indent) + line.strip + "\n"
-          indent += line.scan(/\(/).size - line.scan(/\)/).size
-        end
-      end
-      string.strip
     end
     
   end

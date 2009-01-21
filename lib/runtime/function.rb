@@ -11,7 +11,7 @@ module Heist
       def call(frame, scope, bindings)
         params, closure = [], Scope.new(@scope)
         bindings.each_with_index do |arg, i|
-          params[i] = closure[@formals[i]] = lazy? ? arg : arg.eval
+          params[i] = closure[@formals[i]] = lazy? ? arg : arg.extract
         end
         return frame.push(@body.call(*params)) if primitive?
         @body[0...-1].each { |part| Heist.value_of(part, closure) }
@@ -30,7 +30,7 @@ module Heist
     class MetaFunction < Function
       def call(frame, scope, bindings)
         cells = bindings.map { |b| b.expression }
-        frame.push(@body.call(frame, scope, *cells))
+        @body.call(frame, scope, *cells)
       end
     end
     
