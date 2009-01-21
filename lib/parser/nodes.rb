@@ -13,7 +13,7 @@ module Heist
       end
     end
     
-    class List < Treetop::Runtime::SyntaxNode
+    module List
       def eval(scope)
         Runtime::Frame.new(self, scope).eval
       end

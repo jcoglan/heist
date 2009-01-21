@@ -11,9 +11,9 @@ lib/builtin/normal.rb
 lib/builtin/common.scm
 lib/builtin/applicative.scm
 lib/builtin/normal.scm
-lib/interpreter/scheme.tt
-lib/interpreter/scheme.rb
-lib/interpreter/nodes.rb
+lib/parser/scheme.tt
+lib/parser/scheme.rb
+lib/parser/nodes.rb
 lib/runtime/runtime.rb
 lib/runtime/scope.rb
 lib/runtime/function.rb

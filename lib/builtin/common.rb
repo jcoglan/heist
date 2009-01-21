@@ -9,6 +9,26 @@ metadef('lambda') do |frame, scope, names, *body|
   Function.new(scope, names.as_string, body)
 end
 
+metadef('let') do |frame, scope, values, *body|
+  closure = Scope.new(scope)
+  values.cells.each do |value|
+    cells = value.cells
+    closure[cells.first.text_value] = cells.last.eval(scope)
+  end
+  body[0...-1].each { |part| part.eval(closure) }
+  frame.push(body.last, closure)
+end
+
+metadef('let*') do |frame, scope, values, *body|
+  closure = Scope.new(scope)
+  values.cells.each do |value|
+    cells = value.cells
+    closure[cells.first.text_value] = cells.last.eval(closure)
+  end
+  body[0...-1].each { |part| part.eval(closure) }
+  frame.push(body.last, closure)
+end
+
 metadef('runtime') do |frame, scope|
   scope.runtime.elapsed_time
 end
