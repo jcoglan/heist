@@ -15,10 +15,12 @@ lib/parser/scheme.tt
 lib/parser/scheme.rb
 lib/parser/nodes.rb
 lib/runtime/runtime.rb
-lib/runtime/scope.rb
+lib/runtime/list.rb
+lib/runtime/identifier.rb
 lib/runtime/function.rb
-lib/runtime/binding.rb
 lib/runtime/frame.rb
+lib/runtime/scope.rb
+lib/runtime/binding.rb
 test/test_heist.rb
 test/arithmetic.scm
 test/booleans.scm
@@ -26,4 +28,9 @@ test/closures.scm
 test/conditionals.scm
 test/define_functions.scm
 test/define_values.scm
+test/file_loading.scm
+test/let.scm
+test/lib.scm
+test/numbers.scm
+test/vars.scm
 test/numbers.scm

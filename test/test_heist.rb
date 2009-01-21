@@ -27,6 +27,7 @@ Class.new(Test::Unit::TestCase) do
         closures
         let
         conditionals
+        file_loading
         
   ].each do |test|
     define_method('test_' + test) do
