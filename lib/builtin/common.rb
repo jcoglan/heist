@@ -11,20 +11,14 @@ end
 
 metadef('let') do |frame, scope, values, *body|
   closure = Scope.new(scope)
-  values.cells.each do |value|
-    cells = value.cells
-    closure[cells.first.text_value] = cells.last.eval(scope)
-  end
+  closure.bind(values.cells, scope)
   body[0...-1].each { |part| part.eval(closure) }
   frame.push(body.last, closure)
 end
 
 metadef('let*') do |frame, scope, values, *body|
   closure = Scope.new(scope)
-  values.cells.each do |value|
-    cells = value.cells
-    closure[cells.first.text_value] = cells.last.eval(closure)
-  end
+  closure.bind(values.cells, closure)
   body[0...-1].each { |part| part.eval(closure) }
   frame.push(body.last, closure)
 end

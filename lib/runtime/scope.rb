@@ -27,6 +27,12 @@ module Heist
         @symbols[name] = value
       end
       
+      def bind(cells, scope)
+        cells.each do |cell|
+          self[cell.cells.first.text_value] = cell.cells.last.eval(scope)
+        end
+      end
+      
       def define(name, &block)
         self[name.to_s] = Function.new(self, &block)
       end
