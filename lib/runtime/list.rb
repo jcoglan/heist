@@ -1,9 +1,14 @@
+require 'forwardable'
+
 module Heist
   class Runtime
     
     class List
       include Enumerable
       attr_reader :cells
+      
+      extend Forwardable
+      def_delegators(:@cells, :first, :last, :[], :each)
       
       def initialize(cells)
         @cells = cells
@@ -13,20 +18,8 @@ module Heist
         Frame.new(self, scope).evaluate
       end
       
-      def each(&block)
-        @cells.each(&block)
-      end
-      
-      def first
-        @cells.first
-      end
-      
       def rest
-        self.class.new(@cells[1..-1])
-      end
-      
-      def last
-        @cells.last
+        @cells[1..-1]
       end
       
       def to_s
