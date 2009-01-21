@@ -7,21 +7,13 @@ module Heist
       end
     end
     
-    class Comment < Treetop::Runtime::SyntaxNode
-      def eval(scope)
-        nil
-      end
-    end
-    
     module List
       def eval(scope)
         Runtime::Frame.new(self, scope).eval
       end
       
       def cells
-        @cells ||= elements[1].elements.
-                      map { |e| e.data }.
-                      select { |c| !(Comment === c) }
+        @cells ||= elements[1].elements.map { |e| e.data }
       end
     end
     

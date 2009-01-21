@@ -1,11 +1,7 @@
 module Heist
   grammar Scheme
     rule program
-      (comment / cell)* <Program>
-    end
-    
-    rule comment
-      space ";" (![\n\r] .)* space <Comment>
+      cell* <Program>
     end
     
     rule cell
@@ -61,7 +57,11 @@ module Heist
     end
     
     rule space
-      [\s\n\r\t]*
+      [\s\n\r\t]* comment?
+    end
+    
+    rule comment
+      ";" (![\n\r] .)* space
     end
   end
 end
