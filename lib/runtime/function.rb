@@ -30,7 +30,7 @@ module Heist
     class MetaFunction < Function
       def call(frame, scope, bindings)
         cells = bindings.map { |b| b.expression }
-        @body.call(frame, scope, *cells)
+        frame.push(@body.call(frame, scope, *cells))
       end
     end
     

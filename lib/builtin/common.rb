@@ -6,7 +6,7 @@ end
 
 metadef('lambda') do |frame, scope, names, *body|
   formals = names.map { |cell| cell.to_s }
-  frame.push(Function.new(scope, formals, body))
+  Function.new(scope, formals, body)
 end
 
 metadef('let') do |frame, scope, values, *body|
@@ -36,6 +36,7 @@ metadef('cond') do |frame, scope, *pairs|
     next unless matched
     frame.push(list.last, scope)
   end
+  nil
 end
 
 define('else') { true }
@@ -46,7 +47,7 @@ metadef('and') do |frame, scope, *args|
     next if !result
     result = arg.eval(scope)
   end
-  frame.push(result)
+  result
 end
 
 metadef('or') do |frame, scope, *args|
@@ -55,7 +56,7 @@ metadef('or') do |frame, scope, *args|
     next if result
     result = arg.eval(scope)
   end
-  frame.push(result)
+  result
 end
 
 define('exit') { exit }
@@ -65,7 +66,7 @@ metadef('runtime') do |frame, scope|
 end
 
 metadef('eval') do |frame, scope, string|
-  scope.eval(string)
+  scope.eval(Heist.value_of(string, scope))
 end
 
 define('display') do |expression|

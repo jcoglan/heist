@@ -17,6 +17,7 @@ module Heist
       end
       
       def push(cell, scope = nil)
+        return if cell.nil?
         unless List === cell
           cell = Heist.value_of(cell, scope)
           return @value = cell
