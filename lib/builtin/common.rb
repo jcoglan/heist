@@ -73,7 +73,7 @@ define('display') do |expression|
 end
 
 metadef('load') do |frame, scope, file|
-  
+  scope.load(file)
 end
 
 define('+') do |*args|

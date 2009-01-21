@@ -41,14 +41,47 @@ module Heist
       end
       
       def run(path)
-        path = path + FILE_EXT unless File.file?(path)
+        path   = path + FILE_EXT unless File.file?(path)
         source = Heist.parse(File.read(path))
-        source.eval(self)
+        scope  = FileScope.new(self, path)
+        source.eval(scope)
       end
       
       def eval(source)
         source = Heist.parse(source) if String === source
         source.eval(self)
+      end
+      
+      def load(path)
+        dir = load_path.find do |dir|
+          File.file?("#{dir}/#{path}") or File.file?("#{dir}/#{path}#{FILE_EXT}")
+        end
+        return false unless dir
+        runtime.run("#{dir}/#{path}")
+        true
+      end
+      
+      def current_file
+        @path || @parent.current_file rescue nil
+      end
+      
+    private
+      
+      def load_path
+        paths, file = [], current_file
+        paths << File.dirname(file) if file
+        paths + LOAD_PATH
+      end
+    end
+    
+    class FileScope < Scope
+      extend Forwardable
+      def_delegators(:@parent, :[]=, :eval, :run)
+      
+      def initialize(parent, path)
+        super(parent)
+        @path = path
+        self['__FILE__'] = path
       end
     end
     
