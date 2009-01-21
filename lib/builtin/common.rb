@@ -1,12 +1,14 @@
 metadef('define') do |frame, scope, names, *body|
-  names = names.as_string
+  names = Scheme::List === names ?
+      names.cells.map { |cell| cell.text_value } :
+      names.text_value
   scope[names.first] = (Array === names) ?
       Function.new(scope, names[1..-1], body) :
       body.first.eval(scope)
 end
 
 metadef('lambda') do |frame, scope, names, *body|
-  Function.new(scope, names.as_string, body)
+  Function.new(scope, names.cells.map { |cell| cell.text_value }, body)
 end
 
 metadef('let') do |frame, scope, values, *body|
@@ -92,7 +94,7 @@ metadef('cond') do |frame, scope, *pairs|
     matched = pair.cells.first.eval(scope)
     
     if matched ||
-        (pair == pairs.last && pair.cells.first.as_string == "else")
+        (pair == pairs.last && pair.cells.first.text_value == "else")
       which  = pair.cells.last
       frame.push(which, scope)
       result = which.eval(scope) unless Scheme::List === which

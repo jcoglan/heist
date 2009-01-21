@@ -23,10 +23,6 @@ module Heist
                       map { |e| e.data }.
                       select { |c| !(Comment === c) }
       end
-      
-      def as_string
-        cells.map { |c| c.as_string }
-      end
     end
     
     class Cell < Treetop::Runtime::SyntaxNode
@@ -36,16 +32,6 @@ module Heist
       
       def data
         elements[1]
-      end
-      
-      def as_string
-        data.as_string
-      end
-    end
-    
-    module Atom
-      def as_string
-        text_value
       end
     end
     

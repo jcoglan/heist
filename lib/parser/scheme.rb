@@ -314,17 +314,14 @@ module Heist
       r1 = _nt_comment
       if r1
         r0 = r1
-        r0.extend(Atom)
       else
         r2 = _nt_datum
         if r2
           r0 = r2
-          r0.extend(Atom)
         else
           r3 = _nt_identifier
           if r3
             r0 = r3
-            r0.extend(Atom)
           else
             self.index = i0
             r0 = nil
