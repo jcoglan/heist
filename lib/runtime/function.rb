@@ -2,6 +2,8 @@ module Heist
   class Runtime
     
     class Function
+      attr_reader :body
+      
       def initialize(scope, formals = [], body = nil, &block)
         @scope   = scope
         @body    = body || block

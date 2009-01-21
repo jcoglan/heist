@@ -137,15 +137,15 @@ define('boolean?') do |value|
 end
 
 define('complex?') do |value|
-  self["real?"].call(self, value) # || TODO
+  call('real?', value) # || TODO
 end
 
 define('real?') do |value|
-  self["rational?"].call(self, value) || Float === value
+  call('rational?', value) || Float === value
 end
 
 define('rational?') do |value|
-  self["integer?"].call(self, value) || Float === value # TODO handle this properly
+  call('integer?', value) || Float === value # TODO handle this properly
 end
 
 define('integer?') do |value|

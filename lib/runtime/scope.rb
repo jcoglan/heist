@@ -40,6 +40,13 @@ module Heist
         self[name] = MetaFunction.new(self, &block)
       end
       
+      # TODO: this isn't great, figure out a way for functions
+      # to transparently handle inter-primitive calls so Ruby can
+      # call Scheme code as well as other Ruby code
+      def call(name, *params)
+        self[name].body.call(*params)
+      end
+      
       def run(path)
         path   = path + FILE_EXT unless File.file?(path)
         source = Heist.parse(File.read(path))
