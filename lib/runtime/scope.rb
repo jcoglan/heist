@@ -14,7 +14,7 @@ module Heist
       end
       
       def [](name)
-        name = name.to_s
+        name = name.to_s.downcase
         value = @symbols.has_key?(name) ?
                 @symbols[name] :
                 @parent[name]
@@ -23,7 +23,7 @@ module Heist
       end
       
       def []=(name, value)
-        @symbols[name.to_s] = value
+        @symbols[name.to_s.downcase] = value
       end
       
       def define(name, *args, &block)

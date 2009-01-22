@@ -27,6 +27,5 @@ test/define_values.scm
 test/file_loading.scm
 test/let.scm
 test/lib.scm
-test/numbers.scm
 test/vars.scm
 test/numbers.scm
