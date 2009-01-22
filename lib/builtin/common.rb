@@ -1,14 +1,31 @@
+# Functions that create other functions
+
+# (define) binds values to names in the current scope.
+# If the first parameter is a list it creates a function,
+# otherwise it eval's the second parameter and binds it
+# to the name given by the first.
 metadef('define') do |frame, scope, names, *body|
   List === names ?
       scope.define(names.first, names.rest, body) :
       scope[names] = Heist.value_of(body.first, scope)
 end
 
+# (lambda) returns an anonymous function whose arguments
+# are named by the first parameter and whose body is given
+# by the remaining parameters.
 metadef('lambda') do |frame, scope, names, *body|
   formals = names.map { |cell| cell.to_s }
   Function.new(scope, formals, body)
 end
 
+#----------------------------------------------------------------
+
+# Functions that create new scopes
+
+# (let) creates a new scope and binds values to names before
+# executing a series of lists. Variable definitions cannot
+# refer to each other: symbols used in definitions refer to
+# the outer scope.
 metadef('let') do |frame, scope, values, *body|
   closure = Scope.new(scope)
   closure.bind(values, scope)
@@ -16,6 +33,10 @@ metadef('let') do |frame, scope, values, *body|
   frame.push(body.last, closure)
 end
 
+# (let*) creates a new scope and binds values to names before
+# executing a series of lists. Variable definitions can
+# refer to prior definitions; each definition is executed
+# in series within the newly created scope.
 metadef('let*') do |frame, scope, values, *body|
   closure = Scope.new(scope)
   closure.bind(values, closure)
@@ -23,11 +44,19 @@ metadef('let*') do |frame, scope, values, *body|
   frame.push(body.last, closure)
 end
 
+#----------------------------------------------------------------
+
+# Control structures
+
+# (begin) simply executes a series of lists in the current scope.
 metadef('begin') do |frame, scope, *body|
   body[0...-1].each { |part| Heist.value_of(part, scope) }
   frame.push(body.last, scope)
 end
 
+# (cond) acts like the 'switch' statement in C-style languages.
+# Once a matching precondition is found, its consequent is
+# tail-called and no further preconditions are evaluated.
 metadef('cond') do |frame, scope, *pairs|
   matched = false
   pairs.each do |list|
@@ -39,8 +68,15 @@ metadef('cond') do |frame, scope, *pairs|
   nil
 end
 
+# 'else' should really only be used inside (cond) blocks.
 define('else') { true }
 
+#----------------------------------------------------------------
+
+# Boolean combinators
+
+# (and) evaluates its arguments until one of them returns
+# false. Returns true iff all arguments eval to true.
 metadef('and') do |frame, scope, *args|
   result = true
   args.each do |arg|
@@ -50,6 +86,8 @@ metadef('and') do |frame, scope, *args|
   result
 end
 
+# (or) evaluates its arguments until one of them returns
+# true. Returns false iff all arguments eval to false.
 metadef('or') do |frame, scope, *args|
   result = false
   args.each do |arg|
@@ -58,6 +96,10 @@ metadef('or') do |frame, scope, *args|
   end
   result
 end
+
+#----------------------------------------------------------------
+
+# Runtime utilities
 
 define('exit') { exit }
 
@@ -76,6 +118,10 @@ end
 metadef('load') do |frame, scope, file|
   scope.load(file)
 end
+
+#----------------------------------------------------------------
+
+# Arithmetic and other math functions
 
 define('+') do |*args|
   args.any? { |arg| String === arg } ?
@@ -115,6 +161,10 @@ define('min') do |*args|
   args.min
 end
 
+#----------------------------------------------------------------
+
+# Comparators
+
 define('eqv?') do |op1, op2|
   op1.class == op2.class && op1 == op2
 end
@@ -131,6 +181,10 @@ end
 define('<') do |op1, op2|
   op1 < op2
 end
+
+#----------------------------------------------------------------
+
+# Type-checking predicates
 
 define('boolean?') do |value|
   [true, false].include?(value)
