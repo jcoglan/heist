@@ -6,11 +6,7 @@ bin/heist
 lib/heist.rb
 lib/repl.rb
 lib/builtin/common.rb
-lib/builtin/applicative.rb
-lib/builtin/normal.rb
 lib/builtin/common.scm
-lib/builtin/applicative.scm
-lib/builtin/normal.scm
 lib/parser/scheme.tt
 lib/parser/scheme.rb
 lib/parser/nodes.rb

@@ -71,6 +71,13 @@ end
 # 'else' should really only be used inside (cond) blocks.
 define('else') { true }
 
+# (if) evaluates the consequent if the condition eval's to
+# true, otherwise it evaluates the alternative
+metadef('if') do |frame, scope, cond, cons, alt|
+  which = cond.eval(scope) ? cons : alt
+  frame.push(which, scope)
+end
+
 #----------------------------------------------------------------
 
 # Boolean combinators
