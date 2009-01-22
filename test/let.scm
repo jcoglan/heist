@@ -1,23 +1,29 @@
-(define (pythag)
+(define (let-test)
   (define x 4)
   (let ([x 3]
-        [y x]
+        [y (lambda () x)]   ; 4
         [z 5])
-    (define sum-of-sides (+ (* x x) (* y y)))
-    (define hypot (* z z))
-    (- hypot sum-of-sides)))
+    (+ x (y) z)))
 
-(assert-equal 0 (pythag))
+(assert-equal 12 (let-test))
 
-(define (pythag)
-  (define x 4)
-  (define y 5)
-  (let* ([z y]
-         [x 3]
-         [y x])
-    (define sum-of-sides (+ (* x x) (* y y)))
-    (define hypot (* z z))
-    (- hypot sum-of-sides)))
 
-(assert-equal 7 (pythag))
+(define (let*-test)
+  (define y 50)
+  (let* ([x (lambda () y)]    ; 50
+         [y 4]
+         [z (lambda () y)])   ; 4
+    (define y 7)    ; Make sure (z) is correctly scoped
+    (+ (x) y (z))))
+
+(assert-equal 61 (let*-test))
+
+(define (letrec-test)
+  (define z 13)
+  (letrec ([x 3]
+           [y (lambda () z)]  ; 5
+           [z 5])
+    (+ x (y) z)))
+
+(assert-equal 13 (letrec-test))
 

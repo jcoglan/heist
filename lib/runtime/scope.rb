@@ -26,12 +26,6 @@ module Heist
         @symbols[name.to_s] = value
       end
       
-      def bind(list, scope)
-        list.each do |list|
-          self[list.first.to_s] = Heist.value_of(list.last, scope)
-        end
-      end
-      
       def define(name, *args, &block)
         self[name] = Function.new(self, *args, &block)
       end
