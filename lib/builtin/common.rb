@@ -222,10 +222,6 @@ end
 
 # Type-checking predicates
 
-define('boolean?') do |value|
-  [true, false].include?(value)
-end
-
 define('complex?') do |value|
   call('real?', value) # || TODO
 end
