@@ -30,10 +30,16 @@ module Heist
       
       def expand!
         list, scope = *@queue.shift
-        function = list.first.eval(scope)
+        
+        first = Heist.value_of(list.first, scope)
+        unless Function === first
+          rest = list.rest.map { |cell| Heist.value_of(cell, scope) }
+          return @value = List.new([first] + rest)
+        end
+        
         bindings = list.rest.map { |cell| Binding.new(cell, scope) }
         # puts ". " * @stack.size + "(#{list.first})" if Identifier === list.first
-        function.call(self, scope, bindings)
+        first.call(self, scope, bindings)
       end
     end
     

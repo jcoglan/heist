@@ -18,17 +18,16 @@ module Heist
       end
       
       def cells
-        @cells ||= elements[1].elements.map { |e| e.data }
+        @cells ||= elements[1].elements
       end
     end
     
     class Cell < Treetop::Runtime::SyntaxNode
       def eval
-        data.eval
-      end
-      
-      def data
-        elements[1]
+        result = elements[2].eval
+        elements[1].text_value == "'" ?
+            Runtime::List.new([Runtime::Identifier.new(:quote), result]) :
+            result
       end
     end
     

@@ -5,7 +5,11 @@ module Heist
     end
     
     rule cell
-      space (list / atom) space <Cell>
+      space quote? (list / atom) space <Cell>
+    end
+    
+    rule quote
+      "'"
     end
     
     rule list
@@ -13,7 +17,7 @@ module Heist
     end
     
     rule atom
-      comment / datum / identifier
+      datum / identifier
     end
     
     rule datum

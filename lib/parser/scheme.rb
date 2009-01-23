@@ -36,7 +36,7 @@ module Heist
       end
 
       def space
-        elements[2]
+        elements[3]
       end
     end
 
@@ -52,23 +52,32 @@ module Heist
       r1 = _nt_space
       s0 << r1
       if r1
-        i2 = index
-        r3 = _nt_list
+        r3 = _nt_quote
         if r3
           r2 = r3
         else
-          r4 = _nt_atom
-          if r4
-            r2 = r4
-          else
-            self.index = i2
-            r2 = nil
-          end
+          r2 = SyntaxNode.new(input, index...index)
         end
         s0 << r2
         if r2
-          r5 = _nt_space
-          s0 << r5
+          i4 = index
+          r5 = _nt_list
+          if r5
+            r4 = r5
+          else
+            r6 = _nt_atom
+            if r6
+              r4 = r6
+            else
+              self.index = i4
+              r4 = nil
+            end
+          end
+          s0 << r4
+          if r4
+            r7 = _nt_space
+            s0 << r7
+          end
         end
       end
       if s0.last
@@ -80,6 +89,27 @@ module Heist
       end
 
       node_cache[:cell][start_index] = r0
+
+      return r0
+    end
+
+    def _nt_quote
+      start_index = index
+      if node_cache[:quote].has_key?(index)
+        cached = node_cache[:quote][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      if input.index("'", index) == index
+        r0 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure("'")
+        r0 = nil
+      end
+
+      node_cache[:quote][start_index] = r0
 
       return r0
     end
@@ -204,21 +234,16 @@ module Heist
       end
 
       i0 = index
-      r1 = _nt_comment
+      r1 = _nt_datum
       if r1
         r0 = r1
       else
-        r2 = _nt_datum
+        r2 = _nt_identifier
         if r2
           r0 = r2
         else
-          r3 = _nt_identifier
-          if r3
-            r0 = r3
-          else
-            self.index = i0
-            r0 = nil
-          end
+          self.index = i0
+          r0 = nil
         end
       end
 

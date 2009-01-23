@@ -5,7 +5,6 @@ module Heist
     
     class List
       include Enumerable
-      attr_reader :cells
       
       extend Forwardable
       def_delegators(:@cells, :first, :last, :[], :each)
@@ -15,11 +14,20 @@ module Heist
       end
       
       def eval(scope)
+        return self unless scope
         Frame.new(self, scope).evaluate
+      end
+      
+      def map(&block)
+        self.class.new(@cells.map(&block))
       end
       
       def rest
         @cells[1..-1]
+      end
+      
+      def to_a
+        @cells.map { |cell| List === cell ? cell.to_a : cell }
       end
       
       def to_s

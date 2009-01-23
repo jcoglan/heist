@@ -20,6 +20,20 @@ end
 
 #----------------------------------------------------------------
 
+# Quoting functions
+
+# (quote) casts identifiers to symbols. If given a list, it
+# quotes all items in the list recursively.
+metadef('quote') do |frame, scope, arg|
+  case arg
+  when List then arg.map { |cell| call('quote', frame, scope, cell) }
+  when Identifier then arg.to_s.to_sym
+  else arg
+  end
+end
+
+#----------------------------------------------------------------
+
 # Functions that create new scopes
 
 # (let), (let*) and (letrec) each create a new scope and bind

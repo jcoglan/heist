@@ -35,6 +35,14 @@ Class.new(Test::Unit::TestCase) do
     end
   end
   
+  def test_quotes
+    assert_equal 7, @@env.eval("(+ 3 4)")
+    assert_equal [:+, 3, 4], @@env.eval("'(+ 3 4)").to_a
+    assert_equal [:+, 3, 4], @@env.eval("('+ 3 4)").to_a
+    assert_equal [:+, [:-, 7, 9], 4], @@env.eval("'(+ (- 7 9) 4)").to_a
+    assert_equal [:+, -2, 4], @@env.eval("('+ (- 7 9) 4)").to_a
+  end
+  
   def test_birds
     return unless @@env.lazy?
     @@env.eval('(load "birds")')
