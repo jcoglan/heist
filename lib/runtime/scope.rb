@@ -26,6 +26,12 @@ module Heist
         @symbols[name.to_s.downcase] = value
       end
       
+      def set(name, value)
+        name = name.to_s.downcase
+        return self[name] = value if @symbols.has_key?(name)
+        @parent[name] = value if Scope === @parent
+      end
+      
       def define(name, *args, &block)
         self[name] = Function.new(self, *args, &block)
       end
