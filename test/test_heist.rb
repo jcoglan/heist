@@ -28,6 +28,7 @@ Class.new(Test::Unit::TestCase) do
         let
         conditionals
         file_loading
+        macros
         
   ].each do |test|
     define_method('test_' + test) do
