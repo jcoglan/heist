@@ -5,41 +5,33 @@ module Heist
       attr_reader :value
       
       def initialize(list, scope)
-        push(list, scope)
+        @current = Binding.new(list, scope)
         @stack = scope.runtime.stack
       end
       
       def evaluate
         @stack << self
-        expand! while !@queue.empty?
+        expand! while Binding === @current
         @stack.pop
-        @value
-      end
-      
-      def push(cell, scope = nil)
-        return if cell.nil?
-        unless List === cell
-          cell = Heist.value_of(cell, scope)
-          return @value = cell
-        end
-        @queue ||= []
-        @queue << [cell, scope]
+        @current
       end
       
     private
       
       def expand!
-        list, scope = *@queue.shift
+        list, scope = @current.expression, @current.scope
+        return @current = @current.extract if Identifier === list
+        return @current = list unless List === list
         
         first = Heist.value_of(list.first, scope)
         unless Function === first
           rest = list.rest.map { |cell| Heist.value_of(cell, scope) }
-          return @value = List.new([first] + rest)
+          return @current = List.new([first] + rest)
         end
         
         bindings = list.rest.map { |cell| Binding.new(cell, scope) }
         # puts ". " * @stack.size + "(#{list.first})" if Identifier === list.first
-        first.call(self, scope, bindings)
+        @current = first.call(scope, bindings)
       end
     end
     

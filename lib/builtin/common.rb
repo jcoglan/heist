@@ -4,7 +4,7 @@
 # If the first parameter is a list it creates a function,
 # otherwise it eval's the second parameter and binds it
 # to the name given by the first.
-metadef('define') do |frame, scope, names, *body|
+metadef('define') do |scope, names, *body|
   List === names ?
       scope.define(names.first, names.rest, body) :
       scope[names] = Heist.value_of(body.first, scope)
@@ -13,7 +13,7 @@ end
 # (lambda) returns an anonymous function whose arguments
 # are named by the first parameter and whose body is given
 # by the remaining parameters.
-metadef('lambda') do |frame, scope, names, *body|
+metadef('lambda') do |scope, names, *body|
   formals = names.map { |cell| cell.to_s }
   Function.new(scope, formals, body)
 end
@@ -24,9 +24,9 @@ end
 
 # (quote) casts identifiers to symbols. If given a list, it
 # quotes all items in the list recursively.
-metadef('quote') do |frame, scope, arg|
+metadef('quote') do |scope, arg|
   case arg
-  when List then arg.map { |cell| call('quote', frame, scope, cell) }
+  when List then arg.map { |cell| call('quote', scope, cell) }
   when Identifier then arg.to_s.to_sym
   else arg
   end
@@ -42,35 +42,35 @@ end
 
 # (let) evaluates values in the enclosing scope, so lambdas will
 # not be able to refer to other values assigned using the (let).
-metadef('let') do |frame, scope, assignments, *body|
+metadef('let') do |scope, assignments, *body|
   closure = Scope.new(scope)
   assignments.each do |assign|
     closure[assign.first] = Heist.value_of(assign.last, scope)
   end
-  call('begin', frame, closure, *body)
+  call('begin', closure, *body)
 end
 
 # (let*) creates a new scope for each variable and evaluates
 # each expression in its enclosing scope. Basically a shorthand
 # for several nested (let)s. Variables may refer to those that
 # preceed them but not vice versa.
-metadef('let*') do |frame, scope, assignments, *body|
+metadef('let*') do |scope, assignments, *body|
   closure = assignments.inject(scope) do |outer, assign|
     inner = Scope.new(outer)
     inner[assign.first] = Heist.value_of(assign.last, outer)
     inner
   end
-  call('begin', frame, closure, *body)
+  call('begin', closure, *body)
 end
 
 # (letrec) evaluates values in the inner scope, so lambdas are
 # able to refer to other values assigned using the (letrec).
-metadef('letrec') do |frame, scope, assignments, *body|
+metadef('letrec') do |scope, assignments, *body|
   closure = Scope.new(scope)
   assignments.each do |assign|
     closure[assign.first] = Heist.value_of(assign.last, closure)
   end
-  call('begin', frame, closure, *body)
+  call('begin', closure, *body)
 end
 
 #----------------------------------------------------------------
@@ -78,23 +78,22 @@ end
 # Control structures
 
 # (begin) simply executes a series of lists in the current scope.
-metadef('begin') do |frame, scope, *body|
+metadef('begin') do |scope, *body|
   body[0...-1].each { |part| Heist.value_of(part, scope) }
-  frame.push(body.last, scope)
+  Binding.new(body.last, scope)
 end
 
 # (cond) acts like the 'switch' statement in C-style languages.
 # Once a matching precondition is found, its consequent is
 # tail-called and no further preconditions are evaluated.
-metadef('cond') do |frame, scope, *pairs|
-  matched = false
+metadef('cond') do |scope, *pairs|
+  result = nil
   pairs.each do |list|
-    next if matched
-    matched = Heist.value_of(list.first, scope)
-    next unless matched
-    frame.push(list.last, scope)
+    next if result
+    next unless Heist.value_of(list.first, scope)
+    result = Binding.new(list.last, scope)
   end
-  nil
+  result
 end
 
 # 'else' should really only be used inside (cond) blocks.
@@ -102,9 +101,9 @@ define('else') { true }
 
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
-metadef('if') do |frame, scope, cond, cons, alt|
+metadef('if') do |scope, cond, cons, alt|
   which = cond.eval(scope) ? cons : alt
-  frame.push(which, scope)
+  Binding.new(which, scope)
 end
 
 #----------------------------------------------------------------
@@ -113,7 +112,7 @@ end
 
 # (and) evaluates its arguments until one of them returns
 # false. Returns true iff all arguments eval to true.
-metadef('and') do |frame, scope, *args|
+metadef('and') do |scope, *args|
   result = true
   args.each do |arg|
     next if !result
@@ -124,7 +123,7 @@ end
 
 # (or) evaluates its arguments until one of them returns
 # true. Returns false iff all arguments eval to false.
-metadef('or') do |frame, scope, *args|
+metadef('or') do |scope, *args|
   result = false
   args.each do |arg|
     next if result
@@ -139,11 +138,11 @@ end
 
 define('exit') { exit }
 
-metadef('runtime') do |frame, scope|
+metadef('runtime') do |scope|
   scope.runtime.elapsed_time
 end
 
-metadef('eval') do |frame, scope, string|
+metadef('eval') do |scope, string|
   scope.eval(Heist.value_of(string, scope))
 end
 
@@ -151,7 +150,7 @@ define('display') do |expression|
   puts expression
 end
 
-metadef('load') do |frame, scope, file|
+metadef('load') do |scope, file|
   scope.load(file)
 end
 

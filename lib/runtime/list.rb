@@ -14,7 +14,6 @@ module Heist
       end
       
       def eval(scope)
-        return self unless scope
         Frame.new(self, scope).evaluate
       end
       
