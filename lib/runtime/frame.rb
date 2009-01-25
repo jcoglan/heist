@@ -29,10 +29,8 @@ module Heist
             rest = list.rest.map { |cell| Heist.value_of(cell, scope) }
             return @current = List.new([first] + rest)
           end
-          
-          bindings = list.rest.map { |cell| Binding.new(cell, scope) }
           # puts ". " * @stack.size + "(#{list.first})" if Identifier === list.first
-          @current = first.call(scope, bindings)
+          @current = first.call(scope, list.rest)
         
         else
           @current = list
