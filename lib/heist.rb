@@ -23,18 +23,6 @@ module Heist
   LOAD_PATH = [LIB_PATH]
   FILE_EXT  = ".scm"
   
-  def self.run(file, scope = nil)
-    (scope || env).run(file)
-  end
-  
-  def self.eval(source, scope = nil)
-    (scope || env).eval(source)
-  end
-  
-  def self.env
-    @env ||= Runtime.new
-  end
-  
   def self.parse(source)
     @parser ||= SchemeParser.new
     @parser.parse(source)

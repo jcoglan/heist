@@ -31,7 +31,7 @@ Class.new(Test::Unit::TestCase) do
         
   ].each do |test|
     define_method('test_' + test) do
-      Heist.run($dir + '/' + test, @@env)
+      @@env.run($dir + '/' + test)
     end
   end
   

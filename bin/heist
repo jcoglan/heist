@@ -5,6 +5,7 @@ require File.dirname(__FILE__) + '/../lib/heist'
 if ARGV.empty?
   Heist::REPL.new.run
 else
-  puts Heist.run(File.expand_path(ARGV.first))
+  env = Heist::Runtime.new
+  env.run(File.expand_path(ARGV.first))
 end
 

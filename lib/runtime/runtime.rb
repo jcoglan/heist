@@ -19,7 +19,7 @@ module Heist
       @order = options[:order] || EAGER
       
       instance_eval(File.read("#{ BUILTIN_PATH }common.rb"))
-      Heist.run("#{ BUILTIN_PATH }common.scm", @scope)
+      run("#{ BUILTIN_PATH }common.scm")
       
       @start_time = Time.now.to_f
     end
