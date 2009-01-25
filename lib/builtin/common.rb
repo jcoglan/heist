@@ -31,6 +31,14 @@ metadef('define-syntax') do |scope, name, transformer|
   scope[name] = Heist.value_of(transformer, scope)
 end
 
+metadef('let-syntax') do |*args|
+  call('let', *args)
+end
+
+metadef('letrec-syntax') do |*args|
+  call('letrec', *args)
+end
+
 metadef('syntax-rules') do |scope, keywords, *rules|
   Transformer.new(scope, keywords, rules)
 end
