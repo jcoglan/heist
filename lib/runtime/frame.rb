@@ -2,8 +2,6 @@ module Heist
   class Runtime
     
     class Frame
-      attr_reader :value
-      
       def initialize(list, scope)
         @current = Binding.new(list, scope)
         @stack = scope.runtime.stack
@@ -20,18 +18,25 @@ module Heist
       
       def expand!
         list, scope = @current.expression, @current.scope
-        return @current = @current.extract if Identifier === list
-        return @current = list unless List === list
+        case list
         
-        first = Heist.value_of(list.first, scope)
-        unless Function === first
-          rest = list.rest.map { |cell| Heist.value_of(cell, scope) }
-          return @current = List.new([first] + rest)
+        when Identifier then
+          @current = @current.extract
+        
+        when List then
+          first = Heist.value_of(list.first, scope)
+          unless Function === first
+            rest = list.rest.map { |cell| Heist.value_of(cell, scope) }
+            return @current = List.new([first] + rest)
+          end
+          
+          bindings = list.rest.map { |cell| Binding.new(cell, scope) }
+          # puts ". " * @stack.size + "(#{list.first})" if Identifier === list.first
+          @current = first.call(scope, bindings)
+        
+        else
+          @current = list
         end
-        
-        bindings = list.rest.map { |cell| Binding.new(cell, scope) }
-        # puts ". " * @stack.size + "(#{list.first})" if Identifier === list.first
-        @current = first.call(scope, bindings)
       end
     end
     
