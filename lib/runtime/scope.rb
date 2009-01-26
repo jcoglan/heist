@@ -15,7 +15,7 @@ module Heist
       
       def [](name)
         name = to_name(name)
-        value = binds?(name) ?
+        value = @symbols.has_key?(to_name(name)) ?
                 @symbols[name] :
                 @parent[name]
         value = value.extract if Binding === value
@@ -26,13 +26,15 @@ module Heist
         @symbols[to_name(name)] = value
       end
       
-      def binds?(name)
-        @symbols.has_key?(to_name(name))
+      def defined?(name)
+        @symbols.has_key?(to_name(name)) ||
+            (Scope === @parent && @parent.defined?(name))
       end
       
       def set(name, value)
-        return self[name] = value if binds?(name)
-        @parent[name] = value if Scope === @parent
+        name = to_name(name)
+        return self[name] = value if @symbols.has_key?(name)
+        @parent.set(name, value) if Scope === @parent
       end
       
       def define(name, *args, &block)

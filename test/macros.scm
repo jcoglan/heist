@@ -43,3 +43,15 @@
 (assert-equal 7 a)
 (assert-equal 4 b)
 
+(let ([temp 5]
+      [other 6])
+  (swap temp other)
+  (assert-equal 6 temp)
+  (assert-equal 5 other))
+
+(let ([set! 5]
+      [other 6])
+  (swap set! other)
+  (assert-equal 6 set!)
+  (assert-equal 5 other))
+
