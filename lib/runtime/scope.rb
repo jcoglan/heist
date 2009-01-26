@@ -29,7 +29,7 @@ module Heist
       def set(name, value)
         name = name.to_s.downcase
         return self[name] = value if @symbols.has_key?(name)
-        @parent[name] = value if Scope === @parent
+        @parent.set(name, value) if Scope === @parent
       end
       
       def define(name, *args, &block)

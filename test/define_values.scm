@@ -11,3 +11,12 @@
 (define circumference (* 2 pi radius))
 (assert-equal 62.8318 circumference)
 
+(let* ([x 6]
+       [y 7]
+       [pi 12])
+  (set! size 4)
+  (set! pi 3))
+
+(assert-equal 4 size)
+(assert-equal 3.14159 pi)
+
