@@ -9,9 +9,7 @@ module Heist
         @renames = {}
       end
       
-      # TODO:   * figure out the right rule to pick
-      #         * execute body in the same scope
-      #         * throw an error if no rules match
+      # TODO:   * throw an error if no rules match
       def call(scope, cells)
         rule, bindings = *rule_for(cells, scope)
         return nil unless rule
@@ -55,21 +53,35 @@ module Heist
       end
       
       def expand_template(template, bindings)
-        template.map do |cell|
+        result = template.class.new
+        last_splice = nil
+        template.each do |cell|
           case cell
           
           when List then
-            expand_template(cell, bindings)
+            result << expand_template(cell, bindings)
           
           when Identifier then
-            binding_scope = [bindings, @scope].find { |env| env.defined?(cell) }
-            binding_scope ?
-                binding_scope[cell] :
-                rename(cell)
+            if cell.to_s == ELLIPSIS
+              last_splice.cells.each { |cell| result << cell }
+            else
+              binding_scope = [bindings, @scope].find { |env| env.defined?(cell) }
+              value = binding_scope ?
+                  binding_scope[cell] :
+                  rename(cell)
+              
+              if Splice === value
+                last_splice = value
+              else
+                result << value
+              end
+            end
+            
           else
-            cell
+            result << cell
           end
         end
+        result
       end
       
       def rename(identifier)
