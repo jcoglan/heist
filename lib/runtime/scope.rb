@@ -2,7 +2,7 @@ module Heist
   class Runtime
     
     class Scope
-      def initialize(parent)
+      def initialize(parent = nil)
         @symbols = {}
         return @parent = parent unless Runtime === parent
         @runtime = parent
@@ -14,8 +14,8 @@ module Heist
       end
       
       def [](name)
-        name = name.to_s.downcase
-        value = @symbols.has_key?(name) ?
+        name = to_name(name)
+        value = binds?(name) ?
                 @symbols[name] :
                 @parent[name]
         value = value.extract if Binding === value
@@ -23,12 +23,15 @@ module Heist
       end
       
       def []=(name, value)
-        @symbols[name.to_s.downcase] = value
+        @symbols[to_name(name)] = value
+      end
+      
+      def binds?(name)
+        @symbols.has_key?(to_name(name))
       end
       
       def set(name, value)
-        name = name.to_s.downcase
-        return self[name] = value if @symbols.has_key?(name)
+        return self[name] = value if binds?(name)
         @parent[name] = value if Scope === @parent
       end
       
@@ -73,6 +76,10 @@ module Heist
       end
       
     private
+      
+      def to_name(name)
+        name.to_s.downcase
+      end
       
       def load_path
         paths, file = [], current_file
