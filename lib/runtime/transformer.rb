@@ -56,25 +56,39 @@ module Heist
       # It is an error to use a macro keyword, within the scope of its
       # binding, in an expression that does not match any of the patterns.
       # 
-      def rule_bindings(tokens, input, bindings = Scope.new)
+      def rule_bindings(tokens, input, bindings = Scope.new, splicing = false)
         return nil if input.size > tokens.size &&
                       tokens.last.to_s != ELLIPSIS
         
         tokens.each_with_index do |token, i|
+          followed_by_ellipsis = (tokens[i+1].to_s == ELLIPSIS)
+          
           case token
             # TODO handle improper lists and vectors
             #      when they are implemented
             
             when List then
               return nil unless List === input[i]
-              value = rule_bindings(token, input[i], bindings)
+              value = rule_bindings(token, input[i], bindings,
+                                    followed_by_ellipsis || splicing)
               return nil if value.nil?
+              
+              if followed_by_ellipsis
+                while input[i+1]
+                  rule_bindings(token, input[i+1], bindings, true)
+                  i += 1
+                end
+                break
+              end
             
             when Identifier then
               return nil if @formals.include?(token.to_s) &&
                             token.to_s != input[i].to_s
               
-              if tokens[i+1].to_s == ELLIPSIS
+              if splicing
+                splice = (bindings[token] ||= Splice.new)
+                splice.cells << input[i]
+              elsif followed_by_ellipsis
                 bindings[token] = Splice.new(input[i..-1])
                 break
               else
@@ -141,7 +155,7 @@ module Heist
     
     class Splice
       attr_reader :cells
-      def initialize(cells)
+      def initialize(cells = [])
         @cells = cells
       end
     end

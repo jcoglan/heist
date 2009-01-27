@@ -221,7 +221,12 @@
         tag)
       val ...))))
 
+(define let-with-macro #f)
+
 (r5rs-let ([x 45] [y 89])
   (assert-equal 45 x)
-  (assert-equal 89 y))
+  (assert-equal 89 y)
+  (set! let-with-macro #t))
+
+(assert let-with-macro)
 
