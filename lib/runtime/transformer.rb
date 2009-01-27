@@ -69,17 +69,13 @@ module Heist
             
             when List then
               return nil unless List === input[i]
-              value = rule_bindings(token, input[i], bindings,
-                                    followed_by_ellipsis || splicing)
-              return nil if value.nil?
-              
-              if followed_by_ellipsis
-                while input[i+1]
-                  rule_bindings(token, input[i+1], bindings, true)
-                  i += 1
-                end
-                break
+              while value = rule_bindings(token, input[i], bindings,
+                                          followed_by_ellipsis || splicing) &&
+                    followed_by_ellipsis
+                i += 1
+                break unless input[i]
               end
+              return nil if value.nil?
             
             when Identifier then
               return nil if @formals.include?(token.to_s) &&
