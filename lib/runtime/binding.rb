@@ -4,17 +4,13 @@ module Heist
     class Binding
       attr_reader :expression, :scope
       
-      def initialize(expression, scope, memoized = true)
+      def initialize(expression, scope)
         @expression = expression
         @scope      = scope
-        @memoized   = !!memoized
       end
       
       def extract
-        return @value if defined?(@value)
-        value = Heist.value_of(@expression, @scope)
-        @value = value if @memoized
-        value
+        @value ||= Heist.value_of(@expression, @scope)
       end
     end
     

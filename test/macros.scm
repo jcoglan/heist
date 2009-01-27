@@ -148,3 +148,43 @@
 (assert-equal 8 m)
 (assert-equal 3 n)
 
+
+(define-syntax parallel-set!
+  (syntax-rules ()
+    [(_ (symbol ...) (value ...))
+      (begin
+        (set! symbol value)
+        ...)]))
+
+(parallel-set! (a b c) (74 56 19))
+(assert-equal 74 a)
+(assert-equal 56 b)
+(assert-equal 19 c)
+
+
+; Test that ellipses are correctly matched
+; to numbers of splices in subexpressions
+
+(define-syntax p-let*
+  (syntax-rules ()
+    [(_ (name ...) (value ...) stmt ...)
+      (let* ([name value] ...)
+        stmt
+        ...)]))
+
+(define indicator #f)
+
+(p-let* (k l m) (3 4 5)
+  (assert-equal 5 m)
+  (define temp m)
+  (set! m (+ l k))
+  (set! k (- l temp))
+  (set! l (* 6 (+ k m)))
+  (rotate k l m)
+  (assert-equal 7 l)
+  (assert-equal -1 m)
+  (assert-equal 36 k)
+  (set! indicator #t))
+
+(assert indicator)
+

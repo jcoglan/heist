@@ -15,8 +15,9 @@ module Heist
       def call(scope, cells)
         rule, bindings = *rule_for(cells, scope)
         return nil unless rule
-        expanded = expand_template(rule[1..-1], bindings)
-        expanded.map { |part| Heist.value_of(part, scope) }.last
+        @splices = {}
+        expanded = expand_template(rule.last, bindings)
+        Binding.new(expanded, scope)
       end
       
     private
@@ -55,9 +56,7 @@ module Heist
       # It is an error to use a macro keyword, within the scope of its
       # binding, in an expression that does not match any of the patterns.
       # 
-      def rule_bindings(tokens, input, bindings = nil)
-        bindings ||= Scope.new
-        
+      def rule_bindings(tokens, input, bindings = Scope.new)
         return nil if input.size > tokens.size &&
                       tokens.last.to_s != ELLIPSIS
         
@@ -105,37 +104,35 @@ module Heist
       # inadvertent captures of free identifiers.
       # 
       def expand_template(template, bindings)
-        result = template.class.new
-        last_splice = nil
-        template.each do |cell|
-          case cell
-          
+        case template
+        
           when List then
-            result << expand_template(cell, bindings)
-          
-          when Identifier then
-            if cell.to_s == ELLIPSIS
-              last_splice.cells.each { |cell| result << cell }
-            else
-              binding_scope = [bindings, @scope].find { |env| env.defined?(cell) }
-              value = binding_scope ? binding_scope[cell] : rename(cell)
-              
-              if Splice === value
-                last_splice = value
+            result = List.new
+            template.each_with_index do |cell, i|
+              if cell.to_s == ELLIPSIS
+                # TODO throw error if we have mismatched sets of splices
+                n = @splices.map { |k,v| v.cells.size }.uniq.first
+                n.times { result << expand_template(template[i-1], bindings) }
+                @splices = {}
               else
-                result << value
+                result << expand_template(cell, bindings)
               end
             end
-            
+            result
+          
+          when Identifier then
+            scope = [bindings, @scope].find { |env| env.defined?(template) }
+            value = scope ? scope[template] : rename(template)
+            @splices[template.to_s] = value if Splice === value
+            Splice === value ? value.cells.shift : value
+          
           else
-            result << cell
-          end
+            template
         end
-        result
       end
       
-      def rename(identifier)
-        @renames[identifier.to_s] ||= Identifier.new("__#{identifier}__")
+      def rename(id)
+        @renames[id.to_s] ||= Identifier.new("__macrorename:#{id}")
       end
     end
     
