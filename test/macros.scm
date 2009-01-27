@@ -207,3 +207,21 @@
 (assert-equal 9 foo)
 (assert-equal 7 bar)
 
+
+; R5RS version of (let), uses ellipsis after lists in patterns
+
+(define-syntax r5rs-let
+  (syntax-rules ()
+    ((let ((name val) ...) body1 body2 ...)
+     ((lambda (name ...) body1 body2 ...)
+      val ...))
+    ((let tag ((name val) ...) body1 body2 ...)
+     ((letrec ((tag (lambda (name ...)
+                      body1 body2 ...)))
+        tag)
+      val ...))))
+
+(r5rs-let ([x 45] [y 89])
+  (assert-equal 45 x)
+  (assert-equal 89 y))
+
