@@ -71,6 +71,9 @@ module Heist
               return nil if value.nil?
             
             when Identifier then
+              return nil if @formals.include?(token.to_s) &&
+                            token.to_s != input[i].to_s
+              
               if tokens[i+1].to_s == ELLIPSIS
                 bindings[token] = Splice.new(input[i..-1])
                 break

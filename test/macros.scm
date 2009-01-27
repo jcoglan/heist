@@ -188,3 +188,22 @@
 
 (assert indicator)
 
+
+; Test keywords
+
+(define-syntax assign
+  (syntax-rules (values to)
+    [(assign values (value ...) to (name ...))
+      (begin
+        (define name value)
+        ...)]))
+
+(assign values (9 7 6) to (foo bar baz))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
+(assert-equal 6 baz)
+
+(assign stuff (3 2) to (foo bar))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
+
