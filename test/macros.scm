@@ -1,3 +1,5 @@
+; Basic test: no subpatterns or ellipses
+
 (define-syntax while
   (syntax-rules ()
     [(while condition expression)
@@ -14,6 +16,9 @@
   (set! i (- i 1)))
 
 (assert-equal 0 i)
+
+
+; Test ellipses
 
 (define-syntax when
   (syntax-rules ()
@@ -35,11 +40,29 @@
 
 (assert-equal 4 i)
 
+
+; Test scoping - example from R5RS
+
 (assert-equal 'outer
   (let ((x 'outer))
     (let-syntax ((m (syntax-rules () [(m) x])))
       (let ((x 'inner))
         (m)))))
+
+
+; Test literal matching
+
+(define-syntax iffy
+  (syntax-rules ()
+    [(iffy x #t y) x]
+    [(iffy x #f y) y]))
+
+(assert-equal 7 (iffy 7 #t 3))
+(assert-equal 3 (iffy 7 #f 3))
+
+
+; Test execution scope using (swap)
+; Example from PLT docs
 
 (define-syntax swap (syntax-rules ()
   [(swap x y)
@@ -54,6 +77,9 @@
 (assert-equal 7 a)
 (assert-equal 4 b)
 
+
+; Test macro bound variable renaming
+
 (let ([temp 5]
       [other 6])
   (swap temp other)
@@ -65,6 +91,9 @@
   (swap set! other)
   (assert-equal 6 set!)
   (assert-equal 5 other))
+
+
+; More ellipsis tests from PLT docs
 
 (define-syntax rotate
   (syntax-rules ()
@@ -81,6 +110,9 @@
 (assert-equal 2 a)  (assert-equal 3 b)
 (assert-equal 4 c)  (assert-equal 5 d)
 (assert-equal 1 e)
+
+
+; Test input execution - example from R5RS
 
 (define-syntax my-or
   (syntax-rules ()
@@ -99,4 +131,20 @@
        (> 0 (set! e (+ e 1))))
 
 (assert-equal 3 e)
+
+
+; Test subpatterns
+
+(define-syntax p-swap
+  (syntax-rules ()
+    [(swap (x y))
+      (let ([temp x])
+        (set! x y)
+        (set! y temp))]))
+
+(define m 3)
+(define n 8)
+(p-swap (m n))
+(assert-equal 8 m)
+(assert-equal 3 n)
 
