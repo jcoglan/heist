@@ -41,6 +41,21 @@
 (assert-equal 4 i)
 
 
+; Test that ellipses match ZERO or more inputs
+
+(define-syntax one-or-more
+  (syntax-rules ()
+    [(one-or-more stmt1 stmt2 ...)
+      (begin
+        stmt1
+        stmt2
+        ...)]))
+
+(assert-equal 6 (one-or-more (+ 2 4)))
+(assert-equal 11 (one-or-more (+ 2 4) (+ 3 8)))
+(assert-equal 13 (one-or-more (+ 2 4) (+ 3 8) (+ 7 6)))
+
+
 ; Test scoping - example from R5RS
 
 (assert-equal 'outer

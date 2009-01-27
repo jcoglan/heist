@@ -128,7 +128,8 @@ module Heist
                 n.times { result << expand_template(template[i-1], bindings) }
                 @splices = {}
               else
-                result << expand_template(cell, bindings)
+                value = expand_template(cell, bindings)
+                result << value unless Splice === value
               end
             end
             result
@@ -137,7 +138,7 @@ module Heist
             scope = [bindings, @scope].find { |env| env.defined?(template) }
             value = scope ? scope[template] : rename(template)
             @splices[template.to_s] = value if Splice === value
-            Splice === value ? value.cells.shift : value
+            (Splice === value && !(value.cells.empty?)) ? value.cells.shift : value
           
           else
             template
