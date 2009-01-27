@@ -5,7 +5,8 @@ module Heist
       attr_reader :expression, :scope
       
       def initialize(expression, scope)
-        @expression, @scope = expression, scope
+        @expression = expression
+        @scope      = scope
       end
       
       def extract

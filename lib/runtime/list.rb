@@ -7,9 +7,11 @@ module Heist
       include Enumerable
       
       extend Forwardable
-      def_delegators(:@cells, :first, :last, :[], :each)
+      def_delegators(:@cells, :[], :<<, :insert,
+                              :each, :each_with_index,
+                              :first, :last, :size)
       
-      def initialize(cells)
+      def initialize(cells = [])
         @cells = cells
       end
       

@@ -14,6 +14,7 @@ lib/runtime/runtime.rb
 lib/runtime/list.rb
 lib/runtime/identifier.rb
 lib/runtime/function.rb
+lib/runtime/transformer.rb
 lib/runtime/frame.rb
 lib/runtime/scope.rb
 lib/runtime/binding.rb
@@ -29,3 +30,4 @@ test/let.scm
 test/lib.scm
 test/vars.scm
 test/numbers.scm
+test/macros.scm

@@ -14,8 +14,33 @@ end
 # are named by the first parameter and whose body is given
 # by the remaining parameters.
 metadef('lambda') do |scope, names, *body|
-  formals = names.map { |cell| cell.to_s }
-  Function.new(scope, formals, body)
+  Function.new(scope, names, body)
+end
+
+# (set!) reassigns the value of an existing bound variable,
+# in the innermost scope responsible for binding it.
+metadef('set!') do |scope, name, value|
+  scope.set(name, Heist.value_of(value, scope))
+end
+
+#----------------------------------------------------------------
+
+# Macros
+
+metadef('define-syntax') do |scope, name, transformer|
+  scope[name] = Heist.value_of(transformer, scope)
+end
+
+metadef('let-syntax') do |*args|
+  call('let', *args)
+end
+
+metadef('letrec-syntax') do |*args|
+  call('letrec', *args)
+end
+
+metadef('syntax-rules') do |scope, keywords, *rules|
+  Transformer.new(scope, keywords, rules)
 end
 
 # (set!) reassigns the value of an existing bound variable,
