@@ -1,6 +1,6 @@
 (define (abs x)
   (cond ((> x 0) x)
-        ((= x 0) 0)
+        ((= x 0) (define zero 0) zero)
         ((< x 0) (- x))))
 
 (assert-equal 4 (abs 4))

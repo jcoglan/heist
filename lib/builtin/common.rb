@@ -122,6 +122,7 @@ metadef('cond') do |scope, *pairs|
   pairs.each do |list|
     next if result
     next unless Heist.value_of(list.first, scope)
+    list[1...-1].each { |cell| Heist.value_of(cell, scope) }
     result = Binding.new(list.last, scope)
   end
   result
