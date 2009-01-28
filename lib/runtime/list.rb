@@ -3,32 +3,13 @@ require 'forwardable'
 module Heist
   class Runtime
     
-    class List
-      include Enumerable
-      
-      extend Forwardable
-      def_delegators(:@cells, :[], :<<, :insert,
-                              :each, :each_with_index,
-                              :first, :last, :size)
-      
-      def initialize(cells = [])
-        @cells = cells
-      end
-      
+    class List < Array
       def eval(scope)
         Frame.new(self, scope).evaluate
       end
       
-      def map(&block)
-        self.class.new(@cells.map(&block))
-      end
-      
       def rest
-        @cells[1..-1]
-      end
-      
-      def to_a
-        @cells.map { |cell| List === cell ? cell.to_a : cell }
+        self[1..-1]
       end
       
       def to_s

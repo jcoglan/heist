@@ -3,7 +3,7 @@
 module Heist
   class Runtime
     
-    class Transformer < Function
+    class Macro < MetaFunction
       ELLIPSIS = '...'
       
       def initialize(*args)
@@ -83,7 +83,7 @@ module Heist
               
               if splicing
                 splice = (bindings[token] ||= Splice.new)
-                splice.cells << input[i]
+                splice << input[i]
               elsif followed_by_ellipsis
                 bindings[token] = Splice.new(input[i..-1])
                 break
@@ -124,7 +124,7 @@ module Heist
             template.each_with_index do |cell, i|
               if cell.to_s == ELLIPSIS
                 # TODO throw error if we have mismatched sets of splices
-                n = @splices.map { |k,v| v.cells.size }.uniq.first
+                n = @splices.map { |k,v| v.size }.uniq.first
                 n.times { result << expand_template(template[i-1], bindings) }
                 @splices = {}
               else
@@ -138,7 +138,7 @@ module Heist
             scope = [bindings, @scope].find { |env| env.defined?(template) }
             value = scope ? scope[template] : rename(template)
             @splices[template.to_s] = value if Splice === value
-            (Splice === value && !(value.cells.empty?)) ? value.cells.shift : value
+            (Splice === value && !(value.empty?)) ? value.shift : value
           
           else
             template
@@ -148,13 +148,8 @@ module Heist
       def rename(id)
         @renames[id.to_s] ||= Identifier.new("__macrorename:#{id}")
       end
-    end
-    
-    class Splice
-      attr_reader :cells
-      def initialize(cells = [])
-        @cells = cells
-      end
+      
+      class Splice < Array; end
     end
     
   end

@@ -6,7 +6,7 @@ module Heist
     %w[ list
         identifier
         function
-        transformer
+        macro
         frame
         scope
         binding

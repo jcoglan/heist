@@ -40,7 +40,7 @@ metadef('letrec-syntax') do |*args|
 end
 
 metadef('syntax-rules') do |scope, keywords, *rules|
-  Transformer.new(scope, keywords, rules)
+  Macro.new(scope, keywords, rules)
 end
 
 # (set!) reassigns the value of an existing bound variable,
