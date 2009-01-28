@@ -42,3 +42,19 @@
 (define (newline)
   (display "\n"))
 
+; (benchmark)
+; Runs body a given number of times and prints
+; execution time.
+(define-syntax benchmark
+  (syntax-rules (times)
+    [(_ name n times body ...)
+      (letrec ([start (runtime)]
+               [loop (lambda (count)
+                        body ...
+                        (if (> count 1)
+                            (loop (- count 1))))])
+        (loop n)
+        (display (+ name ": "
+                    n " iterations: "
+                    (- (runtime) start))))]))
+
