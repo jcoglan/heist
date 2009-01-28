@@ -117,14 +117,26 @@
                           (swap a b)
                           (rotate b c ...))]))
 
-(define a 1)  (define b 2)
-(define c 3)  (define d 4)
-(define e 5)
+(define a 1)  (define d 4)
+(define b 2)  (define e 5)
+(define c 3)
 (rotate a b c d e)
 
-(assert-equal 2 a)  (assert-equal 3 b)
-(assert-equal 4 c)  (assert-equal 5 d)
-(assert-equal 1 e)
+(assert-equal 2 a)  (assert-equal 5 d)
+(assert-equal 3 b)  (assert-equal 1 e)
+(assert-equal 4 c)
+
+
+; Check repeated macro use doesn't eat the parse tree
+(letrec
+  ([loop (lambda (count)
+            (rotate a b c d e)
+            (if (> count 1) (loop (- count 1))))])
+  (loop 3))
+
+(assert-equal 5 a)  (assert-equal 3 d)
+(assert-equal 1 b)  (assert-equal 4 e)
+(assert-equal 2 c)
 
 
 ; Test input execution - example from R5RS
@@ -139,6 +151,7 @@
            temp
            (my-or e2 ...))))))
 
+(set! e 1)
 (my-or (> 0 (set! e (+ e 1)))   ; false
        (> 0 (set! e (+ e 1)))   ; false
        (> 9 6)                  ; true - should not evaluate further
