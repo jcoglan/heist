@@ -8,13 +8,29 @@ module Heist
       end
       
       def convert!
-        @data ||= elements.map { |e| e.eval }
+        return if @data
+        @data = []
+        elements.each_with_index do |cell, i|
+          value = cell.eval
+          value.exists_at!(self, i) if Runtime::List === value
+          @data << value
+        end
+      end
+      
+      def [](index)
+        @data[index]
+      end
+      
+      def []=(index, value)
+        @data[index] = value
       end
     end
     
     module List
       def eval
-        Runtime::List.new(cells.map { |c| c.eval })
+        list = Runtime::List.new
+        cells.each { |c| list << c.eval }
+        list
       end
       
       def cells

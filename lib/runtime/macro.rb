@@ -9,6 +9,7 @@ module Heist
       def initialize(*args)
         super
         @renames = {}
+        @expansions = 0
       end
       
       # TODO:   * throw an error if no rules match
@@ -17,7 +18,7 @@ module Heist
         return nil unless rule
         @splices = {}
         expanded = expand_template(rule.last, bindings)
-        Binding.new(expanded, scope)
+        Expansion.new(expanded)
       end
       
     private
@@ -117,6 +118,8 @@ module Heist
       # inadvertent captures of free identifiers.
       # 
       def expand_template(template, bindings)
+        @expansions += 1
+        puts @expansions
         case template
         
           when List then
@@ -147,6 +150,13 @@ module Heist
       
       def rename(id)
         @renames[id.to_s] ||= Identifier.new("__macrorename:#{id}")
+      end
+      
+      class Expansion
+        attr_reader :expression
+        def initialize(expression)
+          @expression = expression
+        end
       end
       
       class Splice < Array; end
