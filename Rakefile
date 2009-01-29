@@ -5,8 +5,8 @@ require 'hoe'
 require './lib/heist.rb'
 
 Hoe.new('heist', Heist::VERSION) do |p|
-  # p.rubyforge_name = 'heistx' # if different than lowercase project name
   p.developer('James Coglan', 'jcoglan@googlemail.com')
+  p.extra_deps = %w(oyster treetop)
 end
 
 task :run do
