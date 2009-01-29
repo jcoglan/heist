@@ -23,6 +23,5 @@
 (p-let (a b c d e) (1 2 3 4 5)
   (benchmark "(rotate speed)" 50 times
     (begin
-      (rotate a b c d e)
-      (+ 23 3))))
+      (rotate a b c d e))))
       
