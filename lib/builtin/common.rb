@@ -6,7 +6,7 @@
 # to the name given by the first.
 metadef('define') do |scope, names, *body|
   List === names ?
-      scope.define(names.first, names.rest, body) :
+      scope.define(names.first, names.rest, List.from(body)) :
       scope[names] = Heist.value_of(body.first, scope)
 end
 
@@ -14,7 +14,7 @@ end
 # are named by the first parameter and whose body is given
 # by the remaining parameters.
 metadef('lambda') do |scope, names, *body|
-  Function.new(scope, names, body)
+  Function.new(scope, names, List.from(body))
 end
 
 # (set!) reassigns the value of an existing bound variable,

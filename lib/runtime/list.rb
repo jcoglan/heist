@@ -6,6 +6,12 @@ module Heist
     class List < Array
       attr_reader :parent, :index
       
+      def self.from(array)
+        list = new
+        array.each { |item| list << item }
+        list
+      end
+      
       def exists_at!(parent, index)
         @parent, @index = parent, index
       end
