@@ -4,6 +4,8 @@ module Heist
   class Runtime
     
     class List < Array
+      attr_reader :parent, :index
+      
       def exists_at!(parent, index)
         @parent, @index = parent, index
       end

@@ -138,8 +138,9 @@ module Heist
             result
           
           when Identifier then
-            scope = [bindings, @scope].find { |env| env.defined?(template) }
-            value = scope ? scope[template] : rename(template)
+            value   = bindings[template] if bindings.defined?(template)
+            value ||= BoundIdentifier.new(template, @scope) if @scope.defined?(template)
+            value ||= rename(template)
             @splices[template.to_s] = value if Splice === value
             (Splice === value && !(value.empty?)) ? value.shift : value
           
@@ -149,13 +150,24 @@ module Heist
       end
       
       def rename(id)
-        @renames[id.to_s] ||= Identifier.new("__macrorename:#{id}")
+        @renames[id.to_s] ||= Identifier.new("::#{id}::")
       end
       
       class Expansion
         attr_reader :expression
         def initialize(expression)
           @expression = expression
+        end
+      end
+      
+      class BoundIdentifier < Identifier
+        def initialize(name, scope)
+          super(name)
+          @value = scope[name]
+        end
+        
+        def eval(scope)
+          @value
         end
       end
       
