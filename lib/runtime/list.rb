@@ -22,6 +22,11 @@ module Heist
         @parent[@index] = expression
       end
       
+      def []=(index, value)
+        super
+        value.exists_at!(self, index) if List === value
+      end
+      
       def rest
         self[1..-1]
       end
