@@ -12,7 +12,7 @@ module Heist
       puts "Evaluation strategy: #{ @runtime.lazy? ? 'LAZY' : 'EAGER' }\n\n"
       
       loop do
-        inset  = @buffer.scan(/\(/).size - @buffer.scan(/\)/).size
+        inset  = @buffer.scan(/[\(\[]/).size - @buffer.scan(/[\)\]]/).size
         prompt = @buffer == "" ? "> " : "  " + "   " * inset
         input  = Readline.readline(prompt)
         exit if input.nil?
