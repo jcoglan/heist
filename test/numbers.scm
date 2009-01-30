@@ -7,7 +7,7 @@
 (assert (number? 42))
 (assert (not (number? #t)))
 ;(assert (complex? 2+3i))
-(assert (not (real? 2+3i)))
+;(assert (not (real? 2+3i)))
 (assert (real? 3.1416))
 (assert (real? 22/7))
 (assert (real? 42))

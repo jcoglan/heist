@@ -112,7 +112,7 @@
 
 (define-syntax rotate
   (syntax-rules ()
-    [(rotate a) (void)]
+    [(rotate a) a]
     [(rotate a b c ...) (begin
                           (swap a b)
                           (rotate b c ...))]))

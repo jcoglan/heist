@@ -38,6 +38,11 @@ Class.new(Test::Unit::TestCase) do
     end
   end
   
+  def test_undefined_variables
+    assert_raise(Heist::UndefinedVariable) { @@env.eval("(set! undef-var 10)") }
+    assert_raise(Heist::UndefinedVariable) { @@env.eval("(no-fun 13)") }
+  end
+  
   def test_quotes
     assert_equal 7, @@env.eval("(+ 3 4)")
     assert_equal [:+, 3, 4], @@env.eval("'(+ 3 4)").to_a

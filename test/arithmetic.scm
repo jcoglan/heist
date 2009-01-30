@@ -26,5 +26,4 @@
   (sqrt-iter 1.0))
 
 (assert (< (abs (- (sqrt 9) 3)) 0.0001))
-(assert (not good-enough?))
 

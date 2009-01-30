@@ -23,6 +23,10 @@ module Heist
   LOAD_PATH = [LIB_PATH]
   FILE_EXT  = ".scm"
   
+  class HeistError < StandardError; end
+  class RuntimeError < HeistError; end
+  class UndefinedVariable < RuntimeError; end
+  
   def self.parse(source)
     @parser ||= SchemeParser.new
     @parser.parse(source)

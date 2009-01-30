@@ -82,8 +82,8 @@ module Heist
                             token.to_s != input[i].to_s
               
               if splicing
-                splice = (bindings[token] ||= Splice.new)
-                splice << input[i]
+                bindings[token] = Splice.new unless bindings.defined?(token)
+                bindings[token] << input[i]
               elsif followed_by_ellipsis
                 bindings[token] = Splice.new(input[i..-1])
                 break
