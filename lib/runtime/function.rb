@@ -19,7 +19,7 @@ module Heist
         end
         return @body.call(*params) if primitive?
         @body[0...-1].each { |part| Heist.value_of(part, closure) }
-        Binding.new(@body.last, closure)
+        @body.last.eval(closure)
       end
       
       def primitive?

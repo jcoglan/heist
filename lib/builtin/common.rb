@@ -134,7 +134,9 @@ define('else') { true }
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
 metadef('if') do |scope, cond, cons, alt|
+  puts "#{'  ' * scope.runtime.stack.size}#{scope.__id__} --> CONS: #{cons}, ALT: #{alt}"
   which = cond.eval(scope) ? cons : alt
+  puts "#{'  ' * scope.runtime.stack.size}#{scope.__id__} --> CONS: #{cons}, ALT: #{alt}"
   Binding.new(which, scope)
 end
 
