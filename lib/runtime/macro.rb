@@ -139,7 +139,7 @@ module Heist
           
           when Identifier then
             value   = bindings[template] if bindings.defined?(template)
-            value ||= BoundIdentifier.new(template, @scope) if @scope.defined?(template)
+            value ||= Binding.new(template, @scope) if @scope.defined?(template)
             value ||= rename(template)
             @splices[template.to_s] = value if Splice === value
             (Splice === value && !(value.empty?)) ? value.shift : value
@@ -157,17 +157,6 @@ module Heist
         attr_reader :expression
         def initialize(expression)
           @expression = expression
-        end
-      end
-      
-      class BoundIdentifier < Identifier
-        def initialize(name, scope)
-          super(name)
-          @value = scope[name]
-        end
-        
-        def eval(scope)
-          @value
         end
       end
       
