@@ -5,8 +5,10 @@ require $dir + "/../lib/heist"
 require "test/unit"
 
 Class.new(Test::Unit::TestCase) do
+  @@env = nil
+  
   def setup
-    return @@env if defined?(@@env)
+    return @@env if @@env
     @@env = Heist::Runtime.new
     puts "\nType of if() function: #{ @@env["if"].class }"
     puts "Application mode: #{ Heist::ORDERS[@@env.order] }\n\n"
