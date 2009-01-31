@@ -31,6 +31,10 @@ module Heist
           end
           # puts ". " * @stack.size + "(#{list.first})" if Identifier === list.first
           @current = first.call(scope, list.rest)
+          
+          return unless Macro::Expansion === @current
+          list.replace(@current.expression)
+          @current = Binding.new(@current.expression, scope)
         
         else
           @current = list

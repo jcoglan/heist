@@ -17,7 +17,7 @@ module Heist
         return nil unless rule
         @splices = {}
         expanded = expand_template(rule.last, bindings)
-        Binding.new(expanded, scope)
+        Expansion.new(expanded)
       end
       
     private
@@ -124,7 +124,7 @@ module Heist
             template.each_with_index do |cell, i|
               if cell.to_s == ELLIPSIS
                 # TODO throw error if we have mismatched sets of splices
-                n = @splices.map { |k,v| v.size }.uniq.first
+                n = @splices.map { |k,v| v.size }.uniq.first - 1
                 n.times { result << expand_template(template[i-1], bindings) }
                 @splices = {}
               else
@@ -135,8 +135,9 @@ module Heist
             result
           
           when Identifier then
-            scope = [bindings, @scope].find { |env| env.defined?(template) }
-            value = scope ? scope[template] : rename(template)
+            value   = bindings[template] if bindings.defined?(template)
+            value ||= Binding.new(template, @scope) if @scope.defined?(template)
+            value ||= rename(template)
             @splices[template.to_s] = value if Splice === value
             (Splice === value && !(value.empty?)) ? value.shift : value
           
@@ -146,10 +147,29 @@ module Heist
       end
       
       def rename(id)
-        @renames[id.to_s] ||= Identifier.new("__macrorename:#{id}")
+        @renames[id.to_s] ||= Identifier.new("::#{id}::")
       end
       
-      class Splice < Array; end
+      class Expansion
+        attr_reader :expression
+        def initialize(expression)
+          @expression = expression
+        end
+      end
+      
+      class Splice < Array
+        def initialize(*args)
+          super(*args)
+          @index = 0
+        end
+        
+        def shift
+          value = self[@index]
+          @index += 1
+          @index = 0 if @index >= size
+          value
+        end
+      end
     end
     
   end

@@ -12,6 +12,14 @@ module Heist
       def extract
         @value ||= Heist.value_of(@expression, @scope)
       end
+      
+      def eval(scope)
+        extract
+      end
+      
+      def to_s
+        @expression.to_s
+      end
     end
     
   end

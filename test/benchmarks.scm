@@ -12,7 +12,7 @@
     [(rotate x y z ...)
       (begin
         (swap x y)
-        (rotate z ...))]))
+        (rotate y z ...))]))
 
 (define-syntax p-let
   (syntax-rules ()
