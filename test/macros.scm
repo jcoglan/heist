@@ -18,6 +18,67 @@
 (assert-equal 0 i)
 
 
+; Test keywords
+
+(define-syntax assign
+  (syntax-rules (values to)
+    [(assign values (value ...) to (name ...))
+      (begin
+        (define name value)
+        ...)]))
+
+(assign values (9 7 6) to (foo bar baz))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
+(assert-equal 6 baz)
+
+(assign stuff (3 2) to (foo bar))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
+
+
+; Test scoping - example from R5RS
+
+(assert-equal 'outer
+  (let ((x 'outer))
+    (let-syntax ((m (syntax-rules () [(m) x])))
+      (let ((x 'inner))
+        (m)))))
+
+
+; Test literal matching
+
+(define-syntax iffy
+  (syntax-rules ()
+    [(iffy x #t y) x]
+    [(iffy x #f y) y]))
+
+(assert-equal 7 (iffy 7 #t 3))
+(assert-equal 3 (iffy 7 #f 3))
+
+
+; Test input execution - example from R5RS
+
+(define-syntax my-or
+  (syntax-rules ()
+    ((my-or) #f)
+    ((my-or e) e)
+    ((my-or e1 e2 ...)
+     (let ((temp e1))
+       (if temp
+           temp
+           (my-or e2 ...))))))
+
+(define e 1)
+(my-or (> 0 (set! e (+ e 1)))   ; false
+       (> 0 (set! e (+ e 1)))   ; false
+       (> 9 6)                  ; true - should not evaluate further
+       (> 0 (set! e (+ e 1)))
+       (> 0 (set! e (+ e 1))))
+
+(assert-equal 3 e)
+
+
 ; Test ellipses
 
 (define-syntax when
@@ -54,50 +115,6 @@
 (assert-equal 6 (one-or-more (+ 2 4)))
 (assert-equal 11 (one-or-more (+ 2 4) (+ 3 8)))
 (assert-equal 13 (one-or-more (+ 2 4) (+ 3 8) (+ 7 6)))
-
-
-; Test that ellipsis expressions can be reused
-
-(define-syntax weird-add
-  (syntax-rules ()
-    [(_ (name ...) (value ...))
-      (let ([name value] ...)
-        (+ name ...))]))
-
-(assert-equal 15 (weird-add (a b c d e) (1 2 3 4 5)))
-
-
-; Non-standard extension to R5RS, not quite R6RS
-; Allow ellipses before the end of a list as long
-; as, in the expression (A ... B), B is a less specific
-; pattern than A
-(define-syntax infix-ellip
-  (syntax-rules ()
-    [(_ (name value) ... fn)
-      (let ([name value] ...)
-        (fn name ...))]))
-
-(assert-equal 24 (infix-ellip (a 1) (b 2) (c 3) (d 4) *))
-
-
-; Test scoping - example from R5RS
-
-(assert-equal 'outer
-  (let ((x 'outer))
-    (let-syntax ((m (syntax-rules () [(m) x])))
-      (let ((x 'inner))
-        (m)))))
-
-
-; Test literal matching
-
-(define-syntax iffy
-  (syntax-rules ()
-    [(iffy x #t y) x]
-    [(iffy x #f y) y]))
-
-(assert-equal 7 (iffy 7 #t 3))
-(assert-equal 3 (iffy 7 #f 3))
 
 
 ; Test execution scope using (swap)
@@ -161,28 +178,6 @@
 (assert-equal 5 a)  (assert-equal 3 d)
 (assert-equal 1 b)  (assert-equal 4 e)
 (assert-equal 2 c)
-
-
-; Test input execution - example from R5RS
-
-(define-syntax my-or
-  (syntax-rules ()
-    ((my-or) #f)
-    ((my-or e) e)
-    ((my-or e1 e2 ...)
-     (let ((temp e1))
-       (if temp
-           temp
-           (my-or e2 ...))))))
-
-(set! e 1)
-(my-or (> 0 (set! e (+ e 1)))   ; false
-       (> 0 (set! e (+ e 1)))   ; false
-       (> 9 6)                  ; true - should not evaluate further
-       (> 0 (set! e (+ e 1)))
-       (> 0 (set! e (+ e 1))))
-
-(assert-equal 3 e)
 
 
 ; Test subpatterns
@@ -250,23 +245,15 @@
 (assert-equal 21 (sum-lists (1 2 3 4 5) (6)))
 
 
-; Test keywords
+; Test that ellipsis expressions can be reused
 
-(define-syntax assign
-  (syntax-rules (values to)
-    [(assign values (value ...) to (name ...))
-      (begin
-        (define name value)
-        ...)]))
+(define-syntax weird-add
+  (syntax-rules ()
+    [(_ (name ...) (value ...))
+      (let ([name value] ...)
+        (+ name ...))]))
 
-(assign values (9 7 6) to (foo bar baz))
-(assert-equal 9 foo)
-(assert-equal 7 bar)
-(assert-equal 6 baz)
-
-(assign stuff (3 2) to (foo bar))
-(assert-equal 9 foo)
-(assert-equal 7 bar)
+(assert-equal 15 (weird-add (a b c d e) (1 2 3 4 5)))
 
 
 ; R5RS version of (let), uses ellipsis after lists in patterns
@@ -290,4 +277,17 @@
   (set! let-with-macro #t))
 
 (assert let-with-macro)
+
+
+; Non-standard extension to R5RS, not quite R6RS
+; Allow ellipses before the end of a list as long
+; as, in the expression (A ... B), B is a less specific
+; pattern than A
+(define-syntax infix-ellip
+  (syntax-rules ()
+    [(_ (name value) ... fn)
+      (let ([name value] ...)
+        (fn name ...))]))
+
+(assert-equal 24 (infix-ellip (a 1) (b 2) (c 3) (d 4) *))
 
