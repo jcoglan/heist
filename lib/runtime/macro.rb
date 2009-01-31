@@ -13,12 +13,10 @@ module Heist
       
       # TODO:   * throw an error if no rules match
       def call(scope, cells)
-        puts "\n\n"
         rule, bindings = *rule_for(cells, scope)
         return nil unless rule
         @splices = {}
         expanded = expand_template(rule.last, bindings)
-        puts "EXPANSION: #{expanded}"
         Expansion.new(expanded)
       end
       
@@ -26,7 +24,6 @@ module Heist
       
       def rule_for(cells, scope)
         @body.each do |rule|
-          $stack = 0
           bindings = rule_bindings(rule.first[1..-1], cells)
           return [rule, bindings] if bindings
         end
@@ -60,17 +57,9 @@ module Heist
       # binding, in an expression that does not match any of the patterns.
       # 
       def rule_bindings(tokens, input, bindings = Scope.new, splicing = false)
-        return nil if input.size > tokens.size &&
-                      tokens.last.to_s != ELLIPSIS
-        $stack += 1
-        indent = '   ' * $stack
         idx = 0
-        
-        puts "#{indent}---------------- #{tokens}"
-#        puts "#{indent}         against #{input}"
         tokens.each_with_index do |token, i|
           
-          puts "#{indent}#{idx} of #{input.size}: #{input[idx]}"
           is_ellipsis = (token.to_s == ELLIPSIS)
           followed_by_ellipsis = (tokens[i+1].to_s == ELLIPSIS)
           
@@ -79,7 +68,6 @@ module Heist
             #      when they are implemented
             
             when List then
-              puts "#{indent}  --> LIST: #{token}"
               value = nil 
               while List === input[idx] &&
                     value = rule_bindings(token, input[idx], bindings,
@@ -91,7 +79,6 @@ module Heist
               idx += 1 if not followed_by_ellipsis
             
             when Identifier then
-              puts "#{indent}  --> ID: #{token}"
               return nil if @formals.include?(token.to_s) &&
                             token.to_s != input[idx].to_s
               
@@ -115,7 +102,7 @@ module Heist
               idx += 1
           end
         end
-        bindings
+        idx == input.size ? bindings : nil
       end
       
       # When a macro use is transcribed according to the template of the

@@ -67,6 +67,19 @@
 (assert-equal 15 (weird-add (a b c d e) (1 2 3 4 5)))
 
 
+; Non-standard extension to R5RS, not quite R6RS
+; Allow ellipses before the end of a list as long
+; as, in the expression (A ... B), B is a less specific
+; pattern than A
+(define-syntax infix-ellip
+  (syntax-rules ()
+    [(_ (name value) ... fn)
+      (let ([name value] ...)
+        (fn name ...))]))
+
+(assert-equal 24 (infix-ellip (a 1) (b 2) (c 3) (d 4) *))
+
+
 ; Test scoping - example from R5RS
 
 (assert-equal 'outer
