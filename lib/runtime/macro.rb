@@ -127,7 +127,7 @@ module Heist
             template.each_with_index do |cell, i|
               if cell.to_s == ELLIPSIS
                 # TODO throw error if we have mismatched sets of splices
-                n = @splices.map { |k,v| v.size }.uniq.first
+                n = @splices.map { |k,v| v.size }.uniq.first - 1
                 n.times { result << expand_template(template[i-1], bindings) }
                 @splices = {}
               else
@@ -160,7 +160,19 @@ module Heist
         end
       end
       
-      class Splice < Array; end
+      class Splice < Array
+        def initialize(*args)
+          super(*args)
+          @index = 0
+        end
+        
+        def shift
+          value = self[@index]
+          @index += 1
+          @index = 0 if @index >= size
+          value
+        end
+      end
     end
     
   end

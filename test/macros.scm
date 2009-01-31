@@ -56,6 +56,17 @@
 (assert-equal 13 (one-or-more (+ 2 4) (+ 3 8) (+ 7 6)))
 
 
+; Test that ellipsis expressions can be reused
+
+(define-syntax weird-add
+  (syntax-rules ()
+    [(_ (name ...) (value ...))
+      (let ([name value] ...)
+        (+ name ...))]))
+
+(assert-equal 15 (weird-add (a b c d e) (1 2 3 4 5)))
+
+
 ; Test scoping - example from R5RS
 
 (assert-equal 'outer
