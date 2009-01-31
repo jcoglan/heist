@@ -9,15 +9,12 @@ module Heist
       def initialize(*args)
         super
         @renames = {}
-        @calls = 0
       end
       
       # TODO:   * throw an error if no rules match
       def call(scope, cells)
-        @calls += 1
         rule, bindings = *rule_for(cells, scope)
         return nil unless rule
-        puts "#{rule.first}: #{@calls}"
         @splices = {}
         expanded = expand_template(rule.last, bindings)
         Expansion.new(expanded)

@@ -33,12 +33,7 @@ module Heist
           @current = first.call(scope, list.rest)
           
           return unless Macro::Expansion === @current
-          log = list.first.to_s == 'rotate'
-          puts "\n\nBEFORE: #{list.parent}" if log
-          puts "MACRO: #{list}, #{list.index}" if log
-          puts "REPLACEMENT: #{@current.expression}" if log
           list.replace(@current.expression)
-          puts "AFTER: #{list.parent}\n\n" if log
           @current = Binding.new(@current.expression, scope)
         
         else

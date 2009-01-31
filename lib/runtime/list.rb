@@ -4,8 +4,6 @@ module Heist
   class Runtime
     
     class List < Array
-      attr_reader :parent, :index
-      
       def self.from(array)
         list = new
         array.each { |item| list << item }
