@@ -241,6 +241,15 @@
 (assert indicator)
 
 
+(define-syntax sum-lists
+  (syntax-rules ()
+    [(_ (value1 ...) (value2 ...))
+      (+ value1 ... value2 ...)]))
+
+(assert-equal 21 (sum-lists (1 2) (3 4 5 6)))
+(assert-equal 21 (sum-lists (1 2 3 4 5) (6)))
+
+
 ; Test keywords
 
 (define-syntax assign
