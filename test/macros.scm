@@ -291,3 +291,13 @@
 
 (assert-equal 24 (infix-ellip (a 1) (b 2) (c 3) (d 4) *))
 
+
+; Test nested splicings
+
+(define-syntax sum-nest
+  (syntax-rules ()
+    [(_ ((value ...) ...))
+      (+ (+ (- value) ...) ...)]))
+
+(assert-equal -28 (sum-nest ((1 2 3 4) (5 6 7))))
+
