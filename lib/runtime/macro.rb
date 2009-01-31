@@ -13,10 +13,12 @@ module Heist
       
       # TODO:   * throw an error if no rules match
       def call(scope, cells)
+        puts "\n\n"
         rule, bindings = *rule_for(cells, scope)
         return nil unless rule
         @splices = {}
         expanded = expand_template(rule.last, bindings)
+        puts "EXPANSION: #{expanded}"
         Expansion.new(expanded)
       end
       
@@ -24,6 +26,7 @@ module Heist
       
       def rule_for(cells, scope)
         @body.each do |rule|
+          $stack = 0
           bindings = rule_bindings(rule.first[1..-1], cells)
           return [rule, bindings] if bindings
         end
@@ -59,8 +62,16 @@ module Heist
       def rule_bindings(tokens, input, bindings = Scope.new, splicing = false)
         return nil if input.size > tokens.size &&
                       tokens.last.to_s != ELLIPSIS
+        $stack += 1
+        indent = '   ' * $stack
+        idx = 0
         
+        puts "#{indent}---------------- #{tokens}"
+#        puts "#{indent}         against #{input}"
         tokens.each_with_index do |token, i|
+          
+          puts "#{indent}#{idx} of #{input.size}: #{input[idx]}"
+          is_ellipsis = (token.to_s == ELLIPSIS)
           followed_by_ellipsis = (tokens[i+1].to_s == ELLIPSIS)
           
           case token
@@ -68,32 +79,40 @@ module Heist
             #      when they are implemented
             
             when List then
-              return nil unless List === input[i]
-              while value = rule_bindings(token, input[i], bindings,
+              puts "#{indent}  --> LIST: #{token}"
+              value = nil 
+              while List === input[idx] &&
+                    value = rule_bindings(token, input[idx], bindings,
                                           followed_by_ellipsis || splicing) &&
                     followed_by_ellipsis
-                i += 1
-                break unless input[i]
+                idx += 1
               end
               return nil if value.nil?
+              idx += 1 if not followed_by_ellipsis
             
             when Identifier then
+              puts "#{indent}  --> ID: #{token}"
               return nil if @formals.include?(token.to_s) &&
-                            token.to_s != input[i].to_s
+                            token.to_s != input[idx].to_s
               
               if splicing
-                splice = (bindings[token] ||= Splice.new)
-                splice << input[i]
+                bindings[token] = Splice.new unless bindings.defined?(token)
+                bindings[token] << input[idx]
+                idx += 1
               elsif followed_by_ellipsis
-                bindings[token] = Splice.new(input[i..-1])
-                break
+                splice = input[idx..-1]
+                bindings[token] = Splice.new(input[idx..-1])
+                idx = input.size
               else
-                return nil unless input[i]
-                bindings[token] = input[i]
+                next if is_ellipsis
+                return nil unless input[idx]
+                bindings[token] = input[idx]
+                idx += 1
               end
             
             else
-              return nil unless token == input[i]
+              return nil unless token == input[idx]
+              idx += 1
           end
         end
         bindings
