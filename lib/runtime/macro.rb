@@ -13,10 +13,11 @@ module Heist
       
       # TODO:   * throw an error if no rules match
       def call(scope, cells)
-        rule, bindings = *rule_for(cells, scope)
+        rule, matches = *rule_for(cells, scope)
         return nil unless rule
-        @splices = {}
-        expanded = expand_template(rule.last, bindings)
+        puts "TEMPLATE: #{rule.last}"
+        expanded = expand_template(rule.last, matches)
+        puts "EXPANDED: #{expanded}"
         Expansion.new(expanded)
       end
       
@@ -24,8 +25,9 @@ module Heist
       
       def rule_for(cells, scope)
         @body.each do |rule|
-          bindings = rule_bindings(rule.first[1..-1], cells)
-          return [rule, bindings] if bindings
+          puts "\nRULE: #{rule.first} : #{cells}"
+          matches = rule_matches(rule.first[1..-1], cells)
+          return [rule, matches] if matches
         end
         nil
       end
@@ -56,53 +58,37 @@ module Heist
       # It is an error to use a macro keyword, within the scope of its
       # binding, in an expression that does not match any of the patterns.
       # 
-      def rule_bindings(tokens, input, bindings = Scope.new, splicing = false)
-        idx = 0
-        tokens.each_with_index do |token, i|
-          
-          is_ellipsis = (token.to_s == ELLIPSIS)
-          followed_by_ellipsis = (tokens[i+1].to_s == ELLIPSIS)
-          
-          case token
-            # TODO handle improper lists and vectors
-            #      when they are implemented
-            
-            when List then
-              value = nil 
-              while List === input[idx] &&
-                    value = rule_bindings(token, input[idx], bindings,
-                                          followed_by_ellipsis || splicing) &&
-                    followed_by_ellipsis
-                idx += 1
-              end
-              return nil if value.nil?
-              idx += 1 if not followed_by_ellipsis
-            
-            when Identifier then
-              return nil if @formals.include?(token.to_s) &&
-                            token.to_s != input[idx].to_s
+      def rule_matches(pattern, input, matches = Matches.new, depth = 0)
+        case pattern
+        
+          when List then
+            return nil unless List === input
+            idx = 0
+            pattern.each_with_index do |token, i|
+              next if token.to_s == ELLIPSIS
+              followed_by_ellipsis = (pattern[i+1].to_s == ELLIPSIS)
+              dx = followed_by_ellipsis ? 1 : 0
               
-              if splicing
-                bindings[token] = Splice.new unless bindings.defined?(token)
-                bindings[token] << input[idx]
-                idx += 1
-              elsif followed_by_ellipsis
-                splice = input[idx..-1]
-                bindings[token] = Splice.new(input[idx..-1])
-                idx = input.size
-              else
-                next if is_ellipsis
-                return nil unless input[idx]
-                bindings[token] = input[idx]
-                idx += 1
-              end
-            
-            else
-              return nil unless token == input[idx]
+              consume = lambda { rule_matches(token, input[idx], matches, depth + dx) }
+              return nil unless value = consume[]
+              next if value == :nothing
               idx += 1
-          end
+              
+              idx += 1 while idx < input.size &&
+                             followed_by_ellipsis &&
+                             consume[]
+            end
+            puts "CONSUMED: #{idx} of #{input.size}"
+            return nil unless idx == input.size
+        
+          when Identifier then
+            matches.put(depth, pattern, input)
+            return :nothing if input.nil?
+        
+          else
+            return pattern == input ? true : nil
         end
-        idx == input.size ? bindings : nil
+        matches
       end
       
       # When a macro use is transcribed according to the template of the
@@ -122,31 +108,32 @@ module Heist
       # inserted as a bound identifier then it is in effect renamed to prevent
       # inadvertent captures of free identifiers.
       # 
-      def expand_template(template, bindings)
+      def expand_template(template, matches, depth = 0)
         case template
         
           when List then
             result = List.new
             template.each_with_index do |cell, i|
-              if cell.to_s == ELLIPSIS
-                # TODO throw error if we have mismatched sets of splices
-                n = @splices.map { |k,v| v.size }.uniq.first - 1
-                n.times { result << expand_template(template[i-1], bindings) }
-                @splices = {}
-              else
-                value = expand_template(cell, bindings)
-                result << value unless Splice === value
+              next if cell.to_s == ELLIPSIS
+              followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
+              
+              dx = followed_by_ellipsis ? 1 : 0
+              n = followed_by_ellipsis ? matches.repeats(depth + dx) : 1
+              
+              n.times do
+                value = expand_template(cell, matches, depth + dx)
+                result << value unless value.nil?
               end
             end
             result
-          
+        
           when Identifier then
-            value   = bindings[template] if bindings.defined?(template)
-            value ||= Binding.new(template, @scope) if @scope.defined?(template)
-            value ||= rename(template)
-            @splices[template.to_s] = value if Splice === value
-            (Splice === value && !(value.empty?)) ? value.shift : value
-          
+            matches.defined?(depth, template) ?
+                matches.get(depth, template) :
+                @scope.defined?(template) ?
+                    Binding.new(template, @scope) :
+                    rename(template)
+        
           else
             template
         end
@@ -174,6 +161,35 @@ module Heist
           @index += 1
           @index = 0 if @index >= size
           value
+        end
+      end
+      
+      class Matches
+        def initialize
+          @depths = {}
+        end
+        
+        def put(depth, name, expression)
+          puts "PUT: #{depth}/#{name}"
+          @depths[depth] ||= {}
+          scope = @depths[depth]
+          scope[name.to_s] ||= Splice.new
+          scope[name.to_s] << expression
+        end
+        
+        def get(depth, name)
+          "GET #{depth}/#{name}"
+          @depths[depth][name.to_s].shift
+        end
+        
+        def defined?(depth, name)
+          "DEFINED? #{depth}/#{name}"
+          @depths[depth] && @depths[depth].has_key?(name.to_s)
+        end
+        
+        def repeats(depth)
+          # TODO complain if sets are mismatched
+          @depths[depth].map { |k,v| v.size }.uniq.first
         end
       end
     end
