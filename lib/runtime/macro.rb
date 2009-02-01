@@ -73,8 +73,8 @@ module Heist
               matches.ping(depth) if followed_by_ellipsis
               
               consume = lambda { rule_matches(token, input[idx], matches, depth + dx) }
-              return nil unless value = consume[]
-              next if value == :nothing
+              return nil unless value = consume[] or followed_by_ellipsis
+              next unless value
               idx += 1
               
               idx += 1 while idx < input.size &&
@@ -86,9 +86,8 @@ module Heist
         
           when Identifier then
             return (pattern.to_s == input.to_s) if @formals.include?(pattern.to_s)
-            
             matches.put(depth, pattern, input)
-            return :nothing if input.nil?
+            return nil if input.nil?
         
           else
             return pattern == input ? true : nil
@@ -126,7 +125,7 @@ module Heist
               
               if cell.to_s == ELLIPSIS
                 n = matches.size(depth + 1, @vars) - 1
-                n.times { result << expand_template(template[i-1], matches, depth + 1) } if n > 0
+                n.times { result << expand_template(template[i-1], matches, depth + 1) }
               else
                 @vars[depth + 1] = [] if followed_by_ellipsis
                 value = expand_template(cell, matches, depth + dx)
@@ -188,7 +187,7 @@ module Heist
           @depths[depth] ||= {}
           scope = @depths[depth]
           scope[name.to_s] ||= Splice.new
-          scope[name.to_s] << expression
+          scope[name.to_s] << expression unless expression.nil?
         end
         
         def get(depth, name)
