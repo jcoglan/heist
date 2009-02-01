@@ -9,6 +9,7 @@ module Heist
       def initialize(*args)
         super
         @renames = {}
+        @vars = {}
       end
       
       # TODO:   * throw an error if no rules match
@@ -69,6 +70,8 @@ module Heist
               followed_by_ellipsis = (pattern[i+1].to_s == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
+              matches.ping(depth) if followed_by_ellipsis
+              
               consume = lambda { rule_matches(token, input[idx], matches, depth + dx) }
               return nil unless value = consume[]
               next if value == :nothing
@@ -82,6 +85,8 @@ module Heist
             return nil unless idx == input.size
         
           when Identifier then
+            return (pattern.to_s == input.to_s) if @formals.include?(pattern.to_s)
+            
             matches.put(depth, pattern, input)
             return :nothing if input.nil?
         
@@ -114,13 +119,16 @@ module Heist
           when List then
             result = List.new
             template.each_with_index do |cell, i|
-              next if cell.to_s == ELLIPSIS
               followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
-              
               dx = followed_by_ellipsis ? 1 : 0
-              n = followed_by_ellipsis ? matches.repeats(depth + dx) : 1
               
-              n.times do
+              puts "HIT: #{depth + dx}" if followed_by_ellipsis
+              
+              if cell.to_s == ELLIPSIS
+                n = matches.size(depth + 1, @vars) - 1
+                n.times { result << expand_template(template[i-1], matches, depth + 1) } if n > 0
+              else
+                @vars[depth + 1] = [] if followed_by_ellipsis
                 value = expand_template(cell, matches, depth + dx)
                 result << value unless value.nil?
               end
@@ -128,11 +136,13 @@ module Heist
             result
         
           when Identifier then
-            matches.defined?(depth, template) ?
+            value = matches.defined?(depth, template) ?
                 matches.get(depth, template) :
                 @scope.defined?(template) ?
                     Binding.new(template, @scope) :
                     rename(template)
+            @vars[depth] << template if depth > 0
+            value
         
           else
             template
@@ -169,6 +179,10 @@ module Heist
           @depths = {}
         end
         
+        def ping(depth)
+          puts "PING: #{depth}"
+        end
+        
         def put(depth, name, expression)
           puts "PUT: #{depth}/#{name}"
           @depths[depth] ||= {}
@@ -178,18 +192,19 @@ module Heist
         end
         
         def get(depth, name)
-          "GET #{depth}/#{name}"
+          puts "GET #{depth}/#{name}"
           @depths[depth][name.to_s].shift
         end
         
         def defined?(depth, name)
-          "DEFINED? #{depth}/#{name}"
           @depths[depth] && @depths[depth].has_key?(name.to_s)
         end
         
-        def repeats(depth)
+        def size(depth, splices)
           # TODO complain if sets are mismatched
-          @depths[depth].map { |k,v| v.size }.uniq.first
+          names = splices[depth].map { |s| s.to_s }.uniq
+          @depths[depth].select { |k,v| names.include?(k.to_s) }.
+                         map { |pair| pair.last.size }.uniq.first
         end
       end
     end

@@ -27,14 +27,14 @@
         (define name value)
         ...)]))
 
-;(assign values (9 7 6) to (foo bar baz))
-;(assert-equal 9 foo)
-;(assert-equal 7 bar)
-;(assert-equal 6 baz)
+(assign values (9 7 6) to (foo bar baz))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
+(assert-equal 6 baz)
 
-;(assign stuff (3 2) to (foo bar))
-;(assert-equal 9 foo)
-;(assert-equal 7 bar)
+(assign stuff (3 2) to (foo bar))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
 
 
 ; Test scoping - example from R5RS
