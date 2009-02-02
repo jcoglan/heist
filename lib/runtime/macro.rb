@@ -9,7 +9,6 @@ module Heist
       def initialize(*args)
         super
         @renames = {}
-        @vars = {}
       end
       
       # TODO:   * throw an error if no rules match
@@ -66,11 +65,11 @@ module Heist
             return nil unless List === input
             idx = 0
             pattern.each_with_index do |token, i|
-              next if token.to_s == ELLIPSIS
               followed_by_ellipsis = (pattern[i+1].to_s == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
-              matches.ping(depth) if followed_by_ellipsis
+              matches.depth = depth + dx
+              next if token.to_s == ELLIPSIS
               
               consume = lambda { rule_matches(token, input[idx], matches, depth + dx) }
               return nil unless value = consume[] or followed_by_ellipsis
@@ -86,7 +85,7 @@ module Heist
         
           when Identifier then
             return (pattern.to_s == input.to_s) if @formals.include?(pattern.to_s)
-            matches.put(depth, pattern, input)
+            matches.put(pattern, input)
             return nil if input.nil?
         
           else
@@ -118,16 +117,19 @@ module Heist
           when List then
             result = List.new
             template.each_with_index do |cell, i|
+              is_ellipsis = (cell.to_s == ELLIPSIS)
               followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
-              puts "HIT: #{depth + dx}" if followed_by_ellipsis
+              matches.depth = depth + 1 if followed_by_ellipsis
               
               if cell.to_s == ELLIPSIS
-                n = matches.size(depth + 1, @vars) - 1
-                n.times { result << expand_template(template[i-1], matches, depth + 1) }
+                1.upto(matches.size - 1) do |j|
+                  matches.iterate!
+                  result << expand_template(template[i-1], matches, depth + 1)
+                end
+                matches.depth = depth
               else
-                @vars[depth + 1] = [] if followed_by_ellipsis
                 value = expand_template(cell, matches, depth + dx)
                 result << value unless value.nil?
               end
@@ -135,13 +137,11 @@ module Heist
             result
         
           when Identifier then
-            value = matches.defined?(depth, template) ?
-                matches.get(depth, template) :
+            matches.defined?(template) ?
+                matches.get(template) :
                 @scope.defined?(template) ?
                     Binding.new(template, @scope) :
                     rename(template)
-            @vars[depth] << template if depth > 0
-            value
         
           else
             template
@@ -165,44 +165,60 @@ module Heist
           @index = 0
         end
         
-        def shift
-          value = self[@index]
+        def read
+          self[@index]
+        end
+        
+        def shift!
           @index += 1
           @index = 0 if @index >= size
-          value
         end
       end
       
       class Matches
         def initialize
-          @depths = {}
+          @data  = {}
+          @depth = 0
+          @names = []
         end
         
-        def ping(depth)
-          puts "PING: #{depth}"
+        def depth=(depth)
+          puts "DEPTH: #{depth}"
+          @names = [] if depth != @depth
+          @depth = depth
         end
         
-        def put(depth, name, expression)
-          puts "PUT: #{depth}/#{name}"
-          @depths[depth] ||= {}
-          scope = @depths[depth]
+        def put(name, expression)
+          puts "PUT: #{name} : #{expression}"
+          @data[@depth] ||= {}
+          scope = @data[@depth]
           scope[name.to_s] ||= Splice.new
           scope[name.to_s] << expression unless expression.nil?
         end
         
-        def get(depth, name)
-          puts "GET #{depth}/#{name}"
-          @depths[depth][name.to_s].shift
+        def iterate!
+          puts "ITERATE!"
+          @data[@depth].each do |name, splice|
+            splice.shift! if @names.include?(name)
+          end
         end
         
-        def defined?(depth, name)
-          @depths[depth] && @depths[depth].has_key?(name.to_s)
+        def get(name)
+          puts "GET: #{name}"
+          @names << name.to_s
+          @data[@depth][name.to_s].read
         end
         
-        def size(depth, splices)
+        def defined?(name)
+          data = @data[@depth]
+          data && data.has_key?(name.to_s)
+        end
+        
+        def size
           # TODO complain if sets are mismatched
-          names = splices[depth].map { |s| s.to_s }.uniq
-          @depths[depth].select { |k,v| names.include?(k.to_s) }.
+          names = @names.uniq
+          puts "SIZE: #{@depth} : #{names * ', '}"
+          @data[@depth].select { |k,v| names.include?(k.to_s) }.
                          map { |pair| pair.last.size }.uniq.first
         end
       end
