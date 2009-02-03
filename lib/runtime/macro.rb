@@ -131,9 +131,9 @@ module Heist
                 matches.expand! { result << expand_template(repeater, matches, depth + 1) }
                 matches.depth = depth
               else
-                inspection ||= followed_by_ellipsis
-                value = expand_template(cell, matches, depth + dx, inspection)
-                result << value unless inspection
+                inspect = inspection || followed_by_ellipsis
+                value = expand_template(cell, matches, depth + dx, inspect)
+                result << value unless inspect
               end
             end
             result

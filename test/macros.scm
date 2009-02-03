@@ -245,6 +245,21 @@
 (assert-equal 21 (sum-lists (1 2 3 4 5) (6)))
 
 
+(define-syntax do-this
+  (syntax-rules (times)
+    [(_ n times body ...)
+      (letrec ([loop (lambda (count)
+                        body ...
+                        (if (> count 1)
+                            (loop (- count 1))))])
+        (loop n))]))
+
+(define myvar 0)
+(do-this 7 times
+  (set! myvar (+ myvar 1)))
+(assert-equal 7 myvar)
+
+
 ; Test that ellipsis expressions can be reused
 
 (define-syntax weird-add
