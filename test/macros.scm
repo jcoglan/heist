@@ -262,6 +262,7 @@
 
 (assert-equal '((5 5)) (double-up 5))
 (assert-equal '((3 3) (9 9) (2 2) (7 7)) (double-up 3 9 2 7))
+(assert-equal '() (double-up))
 
 
 ; R5RS version of (let), uses ellipsis after lists in patterns

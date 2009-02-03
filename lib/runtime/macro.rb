@@ -111,27 +111,25 @@ module Heist
       # inserted as a bound identifier then it is in effect renamed to prevent
       # inadvertent captures of free identifiers.
       # 
-      def expand_template(template, matches, depth = 0)
+      def expand_template(template, matches, depth = 0, inspection = false)
         case template
         
           when List then
             result = List.new
             template.each_with_index do |cell, i|
-              is_ellipsis = (cell.to_s == ELLIPSIS)
               followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
-              matches.depth = depth + 1 if followed_by_ellipsis
+              matches.inspecting(depth + 1) if followed_by_ellipsis
               
               if cell.to_s == ELLIPSIS
-                1.upto(matches.size - 1) do |j|
-                  matches.iterate!
-                  result << expand_template(template[i-1], matches, depth + 1)
-                end
+                repeater = template[i-1]
+                matches.expand! { result << expand_template(repeater, matches, depth + 1) }
                 matches.depth = depth
               else
-                value = expand_template(cell, matches, depth + dx)
-                result << value unless value.nil?
+                inspection ||= followed_by_ellipsis
+                value = expand_template(cell, matches, depth + dx, inspection)
+                result << value unless inspection
               end
             end
             result
@@ -139,9 +137,11 @@ module Heist
           when Identifier then
             matches.defined?(template) ?
                 matches.get(template) :
-                @scope.defined?(template) ?
-                    Binding.new(template, @scope) :
-                    rename(template)
+                
+            @scope.defined?(template) ?
+                Binding.new(template, @scope) :
+                
+                rename(template)
         
           else
             template
@@ -179,12 +179,11 @@ module Heist
         def initialize
           @data  = {}
           @depth = 0
-          @names = []
+          @names = [[]]
         end
         
         def depth=(depth)
           puts "DEPTH: #{depth}"
-          @names = [] if depth != @depth
           @depth = depth
         end
         
@@ -196,17 +195,17 @@ module Heist
           scope[name.to_s] << expression unless expression.nil?
         end
         
-        def iterate!
-          puts "ITERATE!"
-          @data[@depth].each do |name, splice|
-            splice.shift! if @names.include?(name)
-          end
+        def inspecting(depth)
+          puts "INSPECT: #{depth}"
+          @names[depth] = []
+          @inspecting = true
+          self.depth = depth
         end
         
         def get(name)
           puts "GET: #{name}"
-          @names << name.to_s
-          @data[@depth][name.to_s].read
+          @inspecting ? @names[@depth] << name.to_s :
+                        @data[@depth][name.to_s].read
         end
         
         def defined?(name)
@@ -214,12 +213,27 @@ module Heist
           data && data.has_key?(name.to_s)
         end
         
+        def expand!
+          puts "EXPAND (#{@depth})"
+          @inspecting = false
+          size.times { yield and iterate! }
+        end
+        
+      private
+        
         def size
           # TODO complain if sets are mismatched
-          names = @names.uniq
+          names = @names[@depth].uniq
           puts "SIZE: #{@depth} : #{names * ', '}"
           @data[@depth].select { |k,v| names.include?(k.to_s) }.
-                         map { |pair| pair.last.size }.uniq.first
+                        map { |pair| pair.last.size }.uniq.first
+        end
+        
+        def iterate!
+          puts "ITERATE!"
+          @data[@depth].each do |name, splice|
+            splice.shift! if @names[@depth].include?(name)
+          end
         end
       end
     end
