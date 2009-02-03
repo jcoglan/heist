@@ -160,15 +160,16 @@ module Heist
       end
       
       class Splice < Array
-        def initialize(*args)
-          super(*args)
+        def initialize
+          super()
           @index = 0
           @boundaries = []
         end
         
-        def mark!
-          puts "MARK (#{size})"
-          @boundaries << size
+        def mark!(depth)
+          puts "MARK : #{depth} (#{size})"
+          @boundaries[depth] ||= [0]
+          @boundaries[depth] << size
         end
         
         def read
@@ -190,8 +191,7 @@ module Heist
         
         def depth=(depth)
           puts "DEPTH: #{depth}"
-          data = @data[@depth]
-          @names[@depth].uniq.each { |name| data[name].mark! } if depth < @depth
+          mark!(depth) if depth < @depth
           @names[depth] = []
           @depth = depth
         end
@@ -229,6 +229,15 @@ module Heist
         end
         
       private
+        
+        def mark!(depth)
+          d = @depth
+          while @names[d]
+            data = @data[d]
+            @names[d].uniq.each { |name| data[name].mark!(depth) }
+            d += 1
+          end
+        end
         
         def size
           # TODO complain if sets are mismatched
