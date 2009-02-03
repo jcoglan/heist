@@ -303,11 +303,12 @@
 
 ; Test nested splicings
 
-(define-syntax sum-nest
+(define-syntax nest1
   (syntax-rules ()
-    [(_ ((value ...) ...))
-      (+ (+ (- value) ...) ...)]))
+    [(_ (value ...) ...)
+      '(((value) ...) ...)]))
 
 ; TODO fix this
-;(assert-equal -28 (sum-nest ((1 2 3 4) (5 6 7))))
+(assert-equal '(((1) (2)) ((3)) () ((4) (5) (6) (7)))
+              (nest1 (1 2) (3) () (4 5 6 7)))
 

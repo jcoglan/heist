@@ -163,6 +163,12 @@ module Heist
         def initialize(*args)
           super(*args)
           @index = 0
+          @boundaries = []
+        end
+        
+        def mark!
+          puts "MARK (#{size})"
+          @boundaries << size
         end
         
         def read
@@ -179,17 +185,21 @@ module Heist
         def initialize
           @data  = {}
           @depth = 0
-          @names = [[]]
+          @names = []
         end
         
         def depth=(depth)
           puts "DEPTH: #{depth}"
+          data = @data[@depth]
+          @names[@depth].uniq.each { |name| data[name].mark! } if depth < @depth
+          @names[depth] = []
           @depth = depth
         end
         
         def put(name, expression)
           puts "PUT: #{name} : #{expression}"
           @data[@depth] ||= {}
+          @names[@depth] << name.to_s
           scope = @data[@depth]
           scope[name.to_s] ||= Splice.new
           scope[name.to_s] << expression unless expression.nil?
@@ -197,7 +207,6 @@ module Heist
         
         def inspecting(depth)
           puts "INSPECT: #{depth}"
-          @names[depth] = []
           @inspecting = true
           self.depth = depth
         end
