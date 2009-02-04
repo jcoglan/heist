@@ -16,11 +16,9 @@ module Heist
         def <<(value)
           @stack.pop.call() while not @stack.empty?
           tail(@depth) << value
-          puts @data.inspect
         end
         
         def mark!(depth)
-          puts "MARK : #{depth}"
           @stack << lambda { tail(depth) << [] }
         end
         

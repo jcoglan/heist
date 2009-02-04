@@ -33,6 +33,7 @@ test/file_loading.scm
 test/let.scm
 test/lib.scm
 test/macros.scm
+test/plt-macros.txt
 test/numbers.scm
 test/vars.scm
 

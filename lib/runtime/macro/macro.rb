@@ -19,9 +19,7 @@ module Heist
       def call(scope, cells)
         rule, matches = *rule_for(cells, scope)
         return nil unless rule
-        puts "TEMPLATE: #{rule.last}"
         expanded = expand_template(rule.last, matches)
-        puts "EXPANDED: #{expanded}"
         Expansion.new(expanded)
       end
       
@@ -29,7 +27,6 @@ module Heist
       
       def rule_for(cells, scope)
         @body.each do |rule|
-          puts "\nRULE: #{rule.first} : #{cells}"
           matches = rule_matches(rule.first[1..-1], cells)
           return [rule, matches] if matches
         end
@@ -84,7 +81,6 @@ module Heist
                              followed_by_ellipsis &&
                              consume[]
             end
-            puts "CONSUMED: #{idx} of #{input.size}"
             return nil unless idx == input.size
         
           when Identifier then
@@ -128,7 +124,6 @@ module Heist
                                                not inspection
               
               if cell.to_s == ELLIPSIS and not inspection
-                puts "--------------------------------------#{depth} : #{matches.instance_eval { @depth }}"
                 repeater = template[i-1]
                 matches.expand! { result << expand_template(repeater, matches, depth + 1) }
                 matches.depth = depth
