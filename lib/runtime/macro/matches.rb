@@ -18,11 +18,9 @@ module Heist
         
         def put(name, expression)
           puts "PUT: #{name} : #{expression}"
-          @data[@depth] ||= {}
           @names[@depth] << name.to_s
-          scope = @data[@depth]
-          scope[name.to_s] ||= Splice.new
-          scope[name.to_s] << expression unless expression.nil?
+          @data[name.to_s] ||= Splice.new(@depth)
+          @data[name.to_s] << expression unless expression.nil?
         end
         
         def inspecting(depth)
@@ -34,12 +32,11 @@ module Heist
         def get(name)
           puts "GET: #{name}"
           @inspecting ? @names[@depth] << name.to_s :
-                        @data[@depth][name.to_s].read
+                        @data[name.to_s].read
         end
         
         def defined?(name)
-          data = @data[@depth]
-          data && data.has_key?(name.to_s)
+          @data.has_key?(name.to_s)
         end
         
         def expand!
@@ -53,8 +50,7 @@ module Heist
         def mark!(depth)
           d = @depth
           while @names[d]
-            data = @data[d]
-            @names[d].uniq.each { |name| data[name].mark!(depth) }
+            @names[d].uniq.each { |name| @data[name].mark!(depth) }
             d += 1
           end
         end
@@ -62,14 +58,15 @@ module Heist
         def size
           # TODO complain if sets are mismatched
           names = @names[@depth].uniq
-          puts "SIZE: #{@depth} : #{names * ', '}"
-          @data[@depth].select { |k,v| names.include?(k.to_s) }.
-                        map { |pair| pair.last.size }.uniq.first
+          sizes = @data.select { |k,v| names.include?(k.to_s) }.
+                        map { |pair| pair.last.size(@depth) }
+          puts "SIZE: #{@depth} : #{names * ', '} -> #{sizes.inspect}"
+          sizes.uniq.first
         end
         
         def iterate!
           puts "ITERATE!"
-          @data[@depth].each do |name, splice|
+          @data.each do |name, splice|
             splice.shift! if @names[@depth].include?(name)
           end
         end

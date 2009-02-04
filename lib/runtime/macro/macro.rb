@@ -7,7 +7,7 @@ module Heist
       ELLIPSIS = '...'
       
       %w[expansion splice matches].each do |klass|
-        require File.dirname(__FILE__) + '/macro/' + klass
+        require RUNTIME_PATH + 'macro/' + klass
       end
       
       def initialize(*args)

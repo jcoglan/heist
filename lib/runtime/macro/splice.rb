@@ -3,8 +3,11 @@ module Heist
     class Macro
       
       class Splice < Array
-        def initialize
+        attr_reader :depth
+        
+        def initialize(depth)
           super()
+          @depth = depth
           @index = 0
           @boundaries = []
         end
@@ -13,6 +16,11 @@ module Heist
           puts "MARK : #{depth} (#{size})"
           @boundaries[depth] ||= [0]
           @boundaries[depth] << size
+        end
+        
+        def size(depth = nil)
+          puts "EDGES: #{depth} -> #{@boundaries.inspect}" if depth
+          super()
         end
         
         def read
