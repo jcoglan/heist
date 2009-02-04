@@ -124,14 +124,16 @@ module Heist
               followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
-              matches.inspecting(depth + 1) if followed_by_ellipsis
+              matches.inspecting(depth + 1) if followed_by_ellipsis and
+                                               not inspection
               
-              if cell.to_s == ELLIPSIS
+              if cell.to_s == ELLIPSIS and not inspection
+                puts "--------------------------------------#{depth} : #{matches.instance_eval { @depth }}"
                 repeater = template[i-1]
                 matches.expand! { result << expand_template(repeater, matches, depth + 1) }
                 matches.depth = depth
               else
-                inspect = inspection || followed_by_ellipsis
+                inspect = inspection || (followed_by_ellipsis && depth + 1)
                 value = expand_template(cell, matches, depth + dx, inspect)
                 result << value unless inspect
               end

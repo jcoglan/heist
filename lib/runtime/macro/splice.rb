@@ -9,7 +9,7 @@ module Heist
           @depth = depth
           @data  = []
           (0...@depth).inject(@data) { |list, d| list << []; list.last }
-          @index = 0
+          @indexes = (0..@depth).map { 0 }
           @stack = []
         end
         
@@ -24,18 +24,17 @@ module Heist
           @stack << lambda { tail(depth) << [] }
         end
         
-        def size(depth = nil)
-          data.size
+        def size(depth)
+          current(depth).size
         end
         
         def read
-          value = data[@index]
-          value
+          current(@depth)[@indexes[@depth]]
         end
         
-        def shift!
-          @index += 1
-          @index = 0 if @index >= size
+        def shift!(depth)
+          @indexes[depth] += 1
+          @indexes[depth] = 0 if @indexes[depth] >= current(depth).size
         end
         
       private
@@ -44,8 +43,8 @@ module Heist
           (0...depth).inject(@data) { |list, d| list.last }
         end
         
-        def data
-          @depth == 0 ? @data : @data.first
+        def current(depth)
+          @indexes[0...depth].inject(@data) { |list, i| list[i] }
         end
       end
       

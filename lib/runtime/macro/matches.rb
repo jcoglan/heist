@@ -12,7 +12,7 @@ module Heist
         def depth=(depth)
           puts "DEPTH: #{depth}"
           mark!(depth) if depth < @depth
-          @names[depth] = []
+          @names[depth] = [] if depth >= @depth
           @depth = depth
         end
         
@@ -67,7 +67,7 @@ module Heist
         def iterate!
           puts "ITERATE!"
           @data.each do |name, splice|
-            splice.shift! if @names[@depth].include?(name)
+            splice.shift!(@depth) if @names[@depth].include?(name)
           end
         end
       end

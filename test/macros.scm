@@ -320,10 +320,10 @@
 
 (define-syntax nest1
   (syntax-rules ()
-    [(_ (value ...) ...)
-      '(((value) ...) ...)]))
+    [(_ (value ...) ... name ...)
+      '((name (value) ...) ...)]))
 
 ; TODO fix this
-(assert-equal '(((1) (2)) ((3)) () ((4) (5) (6) (7)))
-              (nest1 (1 2) (3) () (4 5 6 7)))
+(assert-equal '((foo (1) (2)) (bar (3)) (baz) (whizz (4) (5) (6) (7)))
+              (nest1 (1 2) (3) () (4 5 6 7) foo bar baz whizz))
 
