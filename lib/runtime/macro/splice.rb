@@ -2,34 +2,52 @@ module Heist
   class Runtime
     class Macro
       
-      class Splice < Array
+      class Splice
+        TAIL = []
+        
         attr_reader :depth
         
         def initialize(depth)
-          super()
           @depth = depth
+          @data  = []
+          (0...@depth).inject(@data) { |list, d| list << []; list.last }
           @index = 0
-          @boundaries = []
+          @queue = []
+        end
+        
+        def <<(value)
+          @queue.shift.call() while not @queue.empty?
+          tail(@depth) << value
+          puts @data.inspect
         end
         
         def mark!(depth)
-          puts "MARK : #{depth} (#{size})"
-          @boundaries[depth] ||= [0]
-          @boundaries[depth] << size
+          puts "MARK : #{depth}"
+          @queue << lambda { tail(depth) << [] }
         end
         
         def size(depth = nil)
-          puts "EDGES: #{depth} -> #{@boundaries.inspect}" if depth
-          super()
+          data.size
         end
         
         def read
-          self[@index]
+          value = data[@index]
+          value
         end
         
         def shift!
           @index += 1
           @index = 0 if @index >= size
+        end
+        
+      private
+        
+        def tail(depth)
+          (0...depth).inject(@data) { |list, d| list.last }
+        end
+        
+        def data
+          @depth == 0 ? @data : @data.first
         end
       end
       
