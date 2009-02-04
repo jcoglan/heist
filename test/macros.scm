@@ -336,6 +336,17 @@
     (triple-deep (((foo bar) (it)) ((wont) (matter really anyway)))
                  ((5 6) (2)) ((4) (8 7 2))))
 
+(define-syntax triple-deep2
+  (syntax-rules ()
+    [(_ (((name ...) ...) ...) ((value ...) ...) ...)
+      '(((((value (name)) ...) ((value (name)) ...)) ...) ...)]))
+
+(assert-equal '(((((5 (foo)) (6 (bar))) ((5 (foo)) (6 (bar)))))
+               ((((4 (wont))) ((4 (wont))))
+               (((8 (matter)) (7 (really)) (2 (anyway))) ((8 (matter)) (7 (really)) (2 (anyway))))))
+    (triple-deep2 (((foo bar)) ((wont) (matter really anyway)))
+                 ((5 6)) ((4) (8 7 2))))
+
 
 ; Really nasty nested repetition. PLT won't run this in its entirity
 ; due to overuse of infix ellipses, but comparison output for
