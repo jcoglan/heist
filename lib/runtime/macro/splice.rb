@@ -12,18 +12,18 @@ module Heist
           @data  = []
           (0...@depth).inject(@data) { |list, d| list << []; list.last }
           @index = 0
-          @queue = []
+          @stack = []
         end
         
         def <<(value)
-          @queue.shift.call() while not @queue.empty?
+          @stack.pop.call() while not @stack.empty?
           tail(@depth) << value
           puts @data.inspect
         end
         
         def mark!(depth)
           puts "MARK : #{depth}"
-          @queue << lambda { tail(depth) << [] }
+          @stack << lambda { tail(depth) << [] }
         end
         
         def size(depth = nil)
