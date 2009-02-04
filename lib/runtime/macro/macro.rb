@@ -6,6 +6,10 @@ module Heist
     class Macro < MetaFunction
       ELLIPSIS = '...'
       
+      %w[expansion splice matches].each do |klass|
+        require RUNTIME_PATH + 'macro/' + klass
+      end
+      
       def initialize(*args)
         super
         @renames = {}
@@ -13,10 +17,9 @@ module Heist
       
       # TODO:   * throw an error if no rules match
       def call(scope, cells)
-        rule, bindings = *rule_for(cells, scope)
+        rule, matches = *rule_for(cells, scope)
         return nil unless rule
-        @splices = {}
-        expanded = expand_template(rule.last, bindings)
+        expanded = expand_template(rule.last, matches)
         Expansion.new(expanded)
       end
       
@@ -24,8 +27,8 @@ module Heist
       
       def rule_for(cells, scope)
         @body.each do |rule|
-          bindings = rule_bindings(rule.first[1..-1], cells)
-          return [rule, bindings] if bindings
+          matches = rule_matches(rule.first[1..-1], cells)
+          return [rule, matches] if matches
         end
         nil
       end
@@ -56,47 +59,39 @@ module Heist
       # It is an error to use a macro keyword, within the scope of its
       # binding, in an expression that does not match any of the patterns.
       # 
-      def rule_bindings(tokens, input, bindings = Scope.new, splicing = false)
-        return nil if input.size > tokens.size &&
-                      tokens.last.to_s != ELLIPSIS
+      def rule_matches(pattern, input, matches = Matches.new, depth = 0)
+        case pattern
         
-        tokens.each_with_index do |token, i|
-          followed_by_ellipsis = (tokens[i+1].to_s == ELLIPSIS)
-          
-          case token
-            # TODO handle improper lists and vectors
-            #      when they are implemented
-            
-            when List then
-              return nil unless List === input[i]
-              while value = rule_bindings(token, input[i], bindings,
-                                          followed_by_ellipsis || splicing) &&
-                    followed_by_ellipsis
-                i += 1
-                break unless input[i]
-              end
-              return nil if value.nil?
-            
-            when Identifier then
-              return nil if @formals.include?(token.to_s) &&
-                            token.to_s != input[i].to_s
+          when List then
+            return nil unless List === input
+            idx = 0
+            pattern.each_with_index do |token, i|
+              followed_by_ellipsis = (pattern[i+1].to_s == ELLIPSIS)
+              dx = followed_by_ellipsis ? 1 : 0
               
-              if splicing
-                bindings[token] = Splice.new unless bindings.defined?(token)
-                bindings[token] << input[i]
-              elsif followed_by_ellipsis
-                bindings[token] = Splice.new(input[i..-1])
-                break
-              else
-                return nil unless input[i]
-                bindings[token] = input[i]
-              end
-            
-            else
-              return nil unless token == input[i]
-          end
+              matches.depth = depth + dx
+              next if token.to_s == ELLIPSIS
+              
+              consume = lambda { rule_matches(token, input[idx], matches, depth + dx) }
+              return nil unless value = consume[] or followed_by_ellipsis
+              next unless value
+              idx += 1
+              
+              idx += 1 while idx < input.size &&
+                             followed_by_ellipsis &&
+                             consume[]
+            end
+            return nil unless idx == input.size
+        
+          when Identifier then
+            return (pattern.to_s == input.to_s) if @formals.include?(pattern.to_s)
+            matches.put(pattern, input)
+            return nil if input.nil?
+        
+          else
+            return pattern == input ? true : nil
         end
-        bindings
+        matches
       end
       
       # When a macro use is transcribed according to the template of the
@@ -116,31 +111,39 @@ module Heist
       # inserted as a bound identifier then it is in effect renamed to prevent
       # inadvertent captures of free identifiers.
       # 
-      def expand_template(template, bindings)
+      def expand_template(template, matches, depth = 0, inspection = false)
         case template
         
           when List then
             result = List.new
             template.each_with_index do |cell, i|
-              if cell.to_s == ELLIPSIS
-                # TODO throw error if we have mismatched sets of splices
-                n = @splices.map { |k,v| v.size }.uniq.first - 1
-                n.times { result << expand_template(template[i-1], bindings) }
-                @splices = {}
+              followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
+              dx = followed_by_ellipsis ? 1 : 0
+              
+              matches.inspecting(depth + 1) if followed_by_ellipsis and
+                                               not inspection
+              
+              if cell.to_s == ELLIPSIS and not inspection
+                repeater = template[i-1]
+                matches.expand! { result << expand_template(repeater, matches, depth + 1) }
+                matches.depth = depth
               else
-                value = expand_template(cell, bindings)
-                result << value unless Splice === value
+                inspect = inspection || (followed_by_ellipsis && depth + 1)
+                value = expand_template(cell, matches, depth + dx, inspect)
+                result << value unless inspect
               end
             end
             result
-          
+        
           when Identifier then
-            value   = bindings[template] if bindings.defined?(template)
-            value ||= Binding.new(template, @scope) if @scope.defined?(template)
-            value ||= rename(template)
-            @splices[template.to_s] = value if Splice === value
-            (Splice === value && !(value.empty?)) ? value.shift : value
-          
+            matches.defined?(template) ?
+                matches.get(template) :
+                
+            @scope.defined?(template) ?
+                Binding.new(template, @scope) :
+                
+                rename(template)
+        
           else
             template
         end
@@ -148,27 +151,6 @@ module Heist
       
       def rename(id)
         @renames[id.to_s] ||= Identifier.new("::#{id}::")
-      end
-      
-      class Expansion
-        attr_reader :expression
-        def initialize(expression)
-          @expression = expression
-        end
-      end
-      
-      class Splice < Array
-        def initialize(*args)
-          super(*args)
-          @index = 0
-        end
-        
-        def shift
-          value = self[@index]
-          @index += 1
-          @index = 0 if @index >= size
-          value
-        end
       end
     end
     

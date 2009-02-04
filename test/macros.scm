@@ -18,6 +18,67 @@
 (assert-equal 0 i)
 
 
+; Test keywords
+
+(define-syntax assign
+  (syntax-rules (values to)
+    [(assign values (value ...) to (name ...))
+      (begin
+        (define name value)
+        ...)]))
+
+(assign values (9 7 6) to (foo bar baz))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
+(assert-equal 6 baz)
+
+(assign stuff (3 2) to (foo bar))
+(assert-equal 9 foo)
+(assert-equal 7 bar)
+
+
+; Test scoping - example from R5RS
+
+(assert-equal 'outer
+  (let ((x 'outer))
+    (let-syntax ((m (syntax-rules () [(m) x])))
+      (let ((x 'inner))
+        (m)))))
+
+
+; Test literal matching
+
+(define-syntax iffy
+  (syntax-rules ()
+    [(iffy x #t y) x]
+    [(iffy x #f y) y]))
+
+(assert-equal 7 (iffy 7 #t 3))
+(assert-equal 3 (iffy 7 #f 3))
+
+
+; Test input execution - example from R5RS
+
+(define-syntax my-or
+  (syntax-rules ()
+    ((my-or) #f)
+    ((my-or e) e)
+    ((my-or e1 e2 ...)
+     (let ((temp e1))
+       (if temp
+           temp
+           (my-or e2 ...))))))
+
+(define e 1)
+(my-or (> 0 (set! e (+ e 1)))   ; false
+       (> 0 (set! e (+ e 1)))   ; false
+       (> 9 6)                  ; true - should not evaluate further
+       (> 0 (set! e (+ e 1)))
+       (> 0 (set! e (+ e 1))))
+
+(assert-equal 3 e)
+
+
 ; Test ellipses
 
 (define-syntax when
@@ -54,37 +115,6 @@
 (assert-equal 6 (one-or-more (+ 2 4)))
 (assert-equal 11 (one-or-more (+ 2 4) (+ 3 8)))
 (assert-equal 13 (one-or-more (+ 2 4) (+ 3 8) (+ 7 6)))
-
-
-; Test that ellipsis expressions can be reused
-
-(define-syntax weird-add
-  (syntax-rules ()
-    [(_ (name ...) (value ...))
-      (let ([name value] ...)
-        (+ name ...))]))
-
-(assert-equal 15 (weird-add (a b c d e) (1 2 3 4 5)))
-
-
-; Test scoping - example from R5RS
-
-(assert-equal 'outer
-  (let ((x 'outer))
-    (let-syntax ((m (syntax-rules () [(m) x])))
-      (let ((x 'inner))
-        (m)))))
-
-
-; Test literal matching
-
-(define-syntax iffy
-  (syntax-rules ()
-    [(iffy x #t y) x]
-    [(iffy x #f y) y]))
-
-(assert-equal 7 (iffy 7 #t 3))
-(assert-equal 3 (iffy 7 #f 3))
 
 
 ; Test execution scope using (swap)
@@ -150,28 +180,6 @@
 (assert-equal 2 c)
 
 
-; Test input execution - example from R5RS
-
-(define-syntax my-or
-  (syntax-rules ()
-    ((my-or) #f)
-    ((my-or e) e)
-    ((my-or e1 e2 ...)
-     (let ((temp e1))
-       (if temp
-           temp
-           (my-or e2 ...))))))
-
-(set! e 1)
-(my-or (> 0 (set! e (+ e 1)))   ; false
-       (> 0 (set! e (+ e 1)))   ; false
-       (> 9 6)                  ; true - should not evaluate further
-       (> 0 (set! e (+ e 1)))
-       (> 0 (set! e (+ e 1))))
-
-(assert-equal 3 e)
-
-
 ; Test subpatterns
 
 (define-syntax p-swap
@@ -228,23 +236,48 @@
 (assert indicator)
 
 
-; Test keywords
+(define-syntax sum-lists
+  (syntax-rules ()
+    [(_ (value1 ...) (value2 ...))
+      (+ value1 ... value2 ...)]))
 
-(define-syntax assign
-  (syntax-rules (values to)
-    [(assign values (value ...) to (name ...))
-      (begin
-        (define name value)
-        ...)]))
+(assert-equal 21 (sum-lists (1 2) (3 4 5 6)))
+(assert-equal 21 (sum-lists (1 2 3 4 5) (6)))
 
-(assign values (9 7 6) to (foo bar baz))
-(assert-equal 9 foo)
-(assert-equal 7 bar)
-(assert-equal 6 baz)
 
-(assign stuff (3 2) to (foo bar))
-(assert-equal 9 foo)
-(assert-equal 7 bar)
+(define-syntax do-this
+  (syntax-rules (times)
+    [(_ n times body ...)
+      (letrec ([loop (lambda (count)
+                        body ...
+                        (if (> count 1)
+                            (loop (- count 1))))])
+        (loop n))]))
+
+(define myvar 0)
+(do-this 7 times
+  (set! myvar (+ myvar 1)))
+(assert-equal 7 myvar)
+
+
+; Test that ellipsis expressions can be reused
+
+(define-syntax weird-add
+  (syntax-rules ()
+    [(_ (name ...) (value ...))
+      (let ([name value] ...)
+        (+ name ...))]))
+
+(assert-equal 15 (weird-add (a b c d e) (1 2 3 4 5)))
+
+(define-syntax double-up
+  (syntax-rules ()
+    [(double-up value ...)
+      '((value value) ...)]))
+
+(assert-equal '((5 5)) (double-up 5))
+(assert-equal '((3 3) (9 9) (2 2) (7 7)) (double-up 3 9 2 7))
+(assert-equal '() (double-up))
 
 
 ; R5RS version of (let), uses ellipsis after lists in patterns
@@ -268,4 +301,64 @@
   (set! let-with-macro #t))
 
 (assert let-with-macro)
+
+
+; Non-standard extension to R5RS, not quite R6RS
+; Allow ellipses before the end of a list as long
+; as, in the expression (A ... B), B is a less specific
+; pattern than A
+(define-syntax infix-ellip
+  (syntax-rules ()
+    [(_ (name value) ... fn)
+      (let ([name value] ...)
+        (fn name ...))]))
+
+(assert-equal 24 (infix-ellip (a 1) (b 2) (c 3) (d 4) *))
+
+
+; Test nested splicings
+
+(define-syntax nest1
+  (syntax-rules ()
+    [(_ (value ...) ... name ...)
+      '((name (value) ...) ...)]))
+
+(assert-equal '((foo (1) (2)) (bar (3)) (baz) (whizz (4) (5) (6) (7)))
+              (nest1 (1 2) (3) () (4 5 6 7) foo bar baz whizz))
+
+
+(define-syntax triple-deep
+  (syntax-rules ()
+    [(_ (((name ...) ...) ...) ((value ...) ...) ...)
+      '((((value (name)) ...) ...) ...)]))
+
+(assert-equal '((((5 (foo)) (6 (bar))) ((2 (it)))) (((4 (wont))) ((8 (matter)) (7 (really)) (2 (anyway)))))
+    (triple-deep (((foo bar) (it)) ((wont) (matter really anyway)))
+                 ((5 6) (2)) ((4) (8 7 2))))
+
+
+; Really nasty nested repetition. PLT won't run this in its entirity
+; due to overuse of infix ellipses, but comparison output for
+; subsets of this macro can be seen in plt-macros.txt
+
+(define-syntax convoluted
+  (syntax-rules (with)
+    [(_ (with (value ...) ...) ... thing ((name ...) ...) obj ...)
+      '((obj ((value ...) (value value) ...) ... (obj obj)) ...
+        (((name name) ... obj obj (obj (name ...))) ...))]))
+
+(assert-equal '((foo ((a u) (a a) (u u)) ((j e n k l) (j j) (e e) (n n) (k k) (l l))
+                     (()) ((q c y n) (q q) (c c) (y y) (n n)) (foo foo))
+                (bar (bar bar))
+                (baz ((b) (b b)) ((d f) (d d) (f f)) (baz baz))
+                (what ((k l e) (k k) (l l) (e e)) ((s) (s s)) ((u n) (u u) (n n))
+                      ((f i k w) (f f) (i i) (k k) (w w)) ((p) (p p)) (what what))
+                      (((8 8) (3 3) (2 2) (9 9) foo foo (foo (8 3 2 9)))
+                       ((2 2) (3 3) bar bar (bar (2 3)))
+                       ((1 1) (0 0) (4 4) baz baz (baz (1 0 4)))
+                       ((8 8) (3 3) (2 2) (1 1) (7 7) what what (what (8 3 2 1 7)))))
+    (convoluted (with (a u) (j e n k l) () (q c y n)) (with)
+                (with (b) (d f)) (with (k l e) (s) (u n) (f i k w) (p))
+                thing ((8 3 2 9) (2 3) (1 0 4) (8 3 2 1 7))
+                foo bar baz what))
 
