@@ -3,8 +3,6 @@ module Heist
     class Macro
       
       class Splice
-        TAIL = []
-        
         attr_reader :depth
         
         def initialize(depth)
