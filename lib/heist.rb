@@ -33,12 +33,9 @@ module Heist
   end
   
   def self.value_of(expression, scope)
-    value = expression.respond_to?(:eval) ?
+    expression.respond_to?(:eval) ?
         expression.eval(scope) :
         expression
-    frame = scope.runtime.stack.last
-    frame.fill!(value) if frame
-    value
   end
   
 end

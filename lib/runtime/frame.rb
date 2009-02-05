@@ -4,14 +4,10 @@ module Heist
     class Frame
       def initialize(list, scope)
         @current = Binding.new(list, scope)
-        @stack = scope.runtime.stack
-        @holes, @index = [], 0
       end
       
       def evaluate
-        @stack << self
         expand! while Binding === @current
-        @stack.pop
         @current
       end
       
@@ -29,29 +25,29 @@ module Heist
     private
       
       def expand!
-        list, scope = @current.expression, @current.scope
-        case list
+        expression, scope = @current.expression, @current.scope
+        case expression
         
-        when Identifier then
-          @current = @current.extract
+          when Identifier then
+            @current = scope[expression]
         
-        when List then
-          @func = Heist.value_of(list.first, scope)
-          @holes, @index = list.rest, 0
-          
-          unless Function === @func
-            rest = @holes.map { |cell| Heist.value_of(cell, scope) }
-            return @current = List.new([@func] + rest)
-          end
-          
-          @current = @func.call(scope, @holes)
-          
-          return unless Macro::Expansion === @current
-          list.replace(@current.expression)
-          @current = Binding.new(@current.expression, scope)
+          when List then
+            @holes, @index = expression.dup, 0
+            function = Heist.value_of(expression.first, scope)
+            
+            unless Function === function
+              rest = @holes.rest.map { |cell| Heist.value_of(cell, scope) }
+              return @current = List.new([function] + rest)
+            end
+            
+            @current = function.call(scope, @holes.rest)
+            return unless Macro::Expansion === @current
+            
+            expression.replace(@current.expression)
+            @current = Binding.new(@current.expression, scope)
         
-        else
-          @current = list
+          else
+            @current = expression
         end
       end
     end

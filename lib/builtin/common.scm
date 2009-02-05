@@ -37,6 +37,15 @@
       x
       (- x)))
 
+; (fact x)
+; Returns factorial of x
+(define (fact x)
+  (define (iter y acc)
+    (if (= y 0)
+        acc
+        (iter (- y 1) (* y acc))))
+  (iter x 1))
+
 ; (newline)
 ; prints a new-line character
 (define (newline)

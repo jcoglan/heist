@@ -18,7 +18,7 @@ module Heist
       end
       
       def eval(scope)
-        Frame.new(self, scope).evaluate
+        scope.runtime.stack << Frame.new(self, scope)
       end
       
       def replace(expression)

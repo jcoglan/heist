@@ -13,7 +13,7 @@ module Heist
       end
       
       def eval(scope)
-        scope[@name]
+        scope.runtime.stack << Frame.new(self, scope)
       end
     end
     
