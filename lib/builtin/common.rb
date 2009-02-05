@@ -51,6 +51,15 @@ end
 
 #----------------------------------------------------------------
 
+# Continuations
+
+metadef('call/cc') do |scope, callback|
+  $cont = scope.current_continuation
+  0
+end
+
+#----------------------------------------------------------------
+
 # Quoting functions
 
 # (quote) casts identifiers to symbols. If given a list, it

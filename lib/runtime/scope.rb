@@ -79,6 +79,10 @@ module Heist
         @path || @parent.current_file rescue nil
       end
       
+      def current_continuation
+        runtime.stack[0...-1].map { |frame| frame.dup }
+      end
+      
     private
       
       def to_name(name)

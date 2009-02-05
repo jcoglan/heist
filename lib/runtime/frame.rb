@@ -5,6 +5,7 @@ module Heist
       def initialize(list, scope)
         @current = Binding.new(list, scope)
         @stack = scope.runtime.stack
+        @holes, @index = [], 0
       end
       
       def evaluate
@@ -12,6 +13,17 @@ module Heist
         expand! while Binding === @current
         @stack.pop
         @current
+      end
+      
+      def fill!(value)
+        @holes[@index] = value
+        @index += 1
+      end
+      
+      def dup
+        copy, holes = super, @holes
+        copy.instance_eval { @holes = holes.dup }
+        copy
       end
       
     private
@@ -24,13 +36,15 @@ module Heist
           @current = @current.extract
         
         when List then
-          first = Heist.value_of(list.first, scope)
-          unless Function === first
-            rest = list.rest.map { |cell| Heist.value_of(cell, scope) }
-            return @current = List.new([first] + rest)
+          @func = Heist.value_of(list.first, scope)
+          @holes, @index = list.rest, 0
+          
+          unless Function === @func
+            rest = @holes.map { |cell| Heist.value_of(cell, scope) }
+            return @current = List.new([@func] + rest)
           end
-          # puts ". " * @stack.size + "(#{list.first})" if Identifier === list.first
-          @current = first.call(scope, list.rest)
+          
+          @current = @func.call(scope, @holes)
           
           return unless Macro::Expansion === @current
           list.replace(@current.expression)
