@@ -28,19 +28,24 @@ to them if at all possible.
 
 == Features
 
-I'm building this Scheme up as I learn the language. Currently implemented
-features include the following:
+I'm building this Scheme up as I learn the language. Heist nominally targets R5RS,
+though I'm also referring to SICP and PLT Scheme for guidance and extending as I see
+fit. The current aim is to have a complete R5RS syntax/semantics implemented, with
+library functions added as and when I need them.
 
-* Function/value assignment with <tt>(define)</tt>
-* Lambda expressions using <tt>(lambda)</tt>
-* Lexical scoping and closures
+* Data primitives: only literals and proper lists so far
+* <tt>(define)</tt> for declaring variables, including function shorthand
+* First-class <tt>(lambda)</tt> expressions, lexical scoping, closures
+* Free variable assignment using <tt>(set!)</tt>
+* Scoped assignment: <tt>(let)</tt>, <tt>(let*)</tt> and <tt>(letrec)</tt>
+* Control structures: <tt>(begin)</tt>, <tt>(cond)</tt>, <tt>(if)</tt>
+* R5RS macros, expanded and inlined at runtime
 * Tail call optimisation
-* Read-eval-print loop
-* Optional normal-order (lazy) evaluation, useful for doing lambda calculus
-* Numbers and arithmetic (no proper rationals or complexes yet)
-* Booleans, <tt>(cond)</tt>, <tt>(if)</tt>, <tt>(not)</tt>
-* Comparison operators, <tt>(and)</tt>, <tt>(or)</tt>
-* Loading of library files using <tt>(load)</tt>
+* <tt>(quote)</tt> for list literals, no quasiquoting yet
+* Numbers: integers, reals, rationals (sort of), arithmetic and other math functions
+* Booleans: literals, <tt>(and)</tt>, <tt>(or)</tt>, conditional logic and comparators
+* Utilities: <tt>(display)</tt>, <tt>(eval)</tt>, <tt>(runtime)</tt>
+* Load external files and libraries using <tt>(load)</tt>
 
 
 == License
