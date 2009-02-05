@@ -2,15 +2,13 @@ module Heist
   class Runtime
     
     class Scope
+      attr_reader :runtime
+      
       def initialize(parent = {})
         @symbols = {}
-        return @parent = parent unless Runtime === parent
-        @runtime = parent
-        @parent = {}
-      end
-      
-      def runtime
-        @runtime || @parent.runtime
+        is_runtime = (Runtime === parent)
+        @parent = is_runtime ? {} : parent
+        @runtime = is_runtime ? parent : parent.runtime
       end
       
       def [](name)
@@ -80,7 +78,7 @@ module Heist
       end
       
       def current_continuation
-        runtime.stack[0...-1].map { |frame| frame.dup }
+        @runtime.stack.copy(false)
       end
       
     private
