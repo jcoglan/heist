@@ -51,6 +51,10 @@
 (define (newline)
   (display "\n"))
 
+; (call/cc)
+; Alias for (call-with-current-continuation)
+(define call/cc call-with-current-continuation)
+
 ; (benchmark)
 ; Runs body a given number of times and prints
 ; execution time.

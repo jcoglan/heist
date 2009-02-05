@@ -9,6 +9,7 @@ module Heist
         macro/macro
         stack
         frame
+        continuation
         scope
         binding
     ].each do |file|

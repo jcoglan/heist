@@ -9,7 +9,18 @@ module Heist
       
       def <<(frame)
         super
-        value = frame.evaluate
+        return evaluate unless size == 1
+        begin
+          evaluate
+        rescue Continuation::Unwind => unwind
+          unwind.call
+        end
+      end
+      
+    private
+      
+      def evaluate
+        value = last.evaluate
         pop
         last.fill!(value) unless empty?
         value

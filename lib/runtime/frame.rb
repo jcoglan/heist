@@ -2,6 +2,8 @@ module Heist
   class Runtime
     
     class Frame
+      attr_reader :holes
+      
       def initialize(list, scope)
         @current = Binding.new(list, scope)
       end
@@ -12,6 +14,7 @@ module Heist
       end
       
       def fill!(value)
+        raise value if Continuation::Unwind === value
         @holes[@index] = value
         @index += 1
       end

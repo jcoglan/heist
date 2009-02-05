@@ -53,9 +53,9 @@ end
 
 # Continuations
 
-metadef('call/cc') do |scope, callback|
-  $cont = scope.current_continuation
-  0
+metadef('call-with-current-continuation') do |scope, callback|
+  callback = Heist.value_of(callback, scope)
+  Continuation::Unwind.new(scope, callback)
 end
 
 #----------------------------------------------------------------
