@@ -1,9 +1,16 @@
 module Heist
   class Runtime
     
-    class Continuation < MetaFunction
+    class Continuation < Function
       def initialize(stack)
         @stack = stack
+      end
+      
+      def call(scope, cells)
+        filler = Heist.value_of(cells.first, scope)
+        stack = @stack.copy
+        value = stack.empty!(filler)
+        Unwind.new(scope, self) { |scope, cells| value }
       end
       
       def to_s
@@ -11,11 +18,10 @@ module Heist
       end
       
       class Unwind < Exception
-        def initialize(scope, callback)
+        def initialize(scope, continuation, callback = nil, &block)
           @scope = scope
-          stack = scope.runtime.stack.copy(false)
-          @continuation = Continuation.new(stack)
-          @callback = callback
+          @continuation = continuation
+          @callback = callback || block
         end
         
         def call

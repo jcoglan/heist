@@ -4,17 +4,20 @@ module Heist
     class Frame
       attr_reader :holes
       
-      def initialize(list, scope)
-        @current = Binding.new(list, scope)
+      def initialize(expression, scope = nil)
+        @current = (Binding === expression) ?
+                   expression :
+                   Binding.new(expression, scope)
+        reset_holes!
       end
       
-      def evaluate
-        expand! while Binding === @current
+      def process!
+        follow! while Binding === @current
         @current
       end
       
-      def fill!(value)
-        raise value if Continuation::Unwind === value
+      def fill!(value = nil)
+        return @index += 1 if value.nil?
         @holes[@index] = value
         @index += 1
       end
@@ -27,7 +30,7 @@ module Heist
       
     private
       
-      def expand!
+      def follow!
         expression, scope = @current.expression, @current.scope
         case expression
         
@@ -35,8 +38,7 @@ module Heist
             @current = scope[expression]
         
           when List then
-            @holes, @index = expression.dup, 0
-            function = Heist.value_of(expression.first, scope)
+            function = Heist.value_of(@holes.first, scope)
             
             unless Function === function
               rest = @holes.rest.map { |cell| Heist.value_of(cell, scope) }
@@ -44,14 +46,21 @@ module Heist
             end
             
             @current = function.call(scope, @holes.rest)
-            return unless Macro::Expansion === @current
-            
-            expression.replace(@current.expression)
-            @current = Binding.new(@current.expression, scope)
+            if Macro::Expansion === @current
+              expression.replace(@current.expression)
+              @current = Binding.new(@current.expression, scope)
+            end
+            reset_holes!
         
           else
             @current = expression
         end
+      end
+      
+      def reset_holes!
+        return unless Binding === @current and
+                      List === @current.expression
+        @holes, @index = @current.expression.dup, 0
       end
     end
     
