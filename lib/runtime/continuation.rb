@@ -10,7 +10,7 @@ module Heist
         filler = Heist.value_of(cells.first, scope)
         stack = @stack.copy
         value = stack.empty!(filler)
-        Unwind.new(scope, self) { |scope, cells| value }
+        Unwind.new(value)
       end
       
       def to_s
@@ -18,14 +18,9 @@ module Heist
       end
       
       class Unwind < Exception
-        def initialize(scope, continuation, callback = nil, &block)
-          @scope = scope
-          @continuation = continuation
-          @callback = callback || block
-        end
-        
-        def call
-          @callback.call(@scope, [@continuation])
+        attr_reader :value
+        def initialize(value)
+          @value = value
         end
       end
     end

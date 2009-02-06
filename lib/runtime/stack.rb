@@ -38,7 +38,7 @@ module Heist
       
       def unwind!(reviver)
         pop while not empty?
-        self << Frame.new(reviver.call)
+        self << Frame.new(reviver.value)
       end
     end
     

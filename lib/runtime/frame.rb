@@ -17,9 +17,9 @@ module Heist
       end
       
       def fill!(value = nil)
-        return @index += 1 if value.nil?
-        @holes[@index] = value
-        @index += 1
+        @holes[@index] = value unless value.nil?
+        @index += 1 while !@holes[@index].respond_to?(:eval) and
+                          @index < @holes.size
       end
       
       def dup

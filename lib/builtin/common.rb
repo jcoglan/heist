@@ -57,7 +57,7 @@ metadef('call-with-current-continuation') do |scope, callback|
   stack = scope.runtime.stack.copy(false)
   continuation = Continuation.new(stack)
   callback = Heist.value_of(callback, scope)
-  Continuation::Unwind.new(scope, continuation, callback)
+  callback.call(scope, [continuation])
 end
 
 #----------------------------------------------------------------
