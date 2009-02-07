@@ -91,3 +91,16 @@
 (r2 5)
 (assert-equal 66 value)
 
+; test that primitive values can be thrown into (if), (and)
+(set! value (if (call/cc
+                  (lambda (k)
+                    (set! r k)
+                    #t))
+                "bees"
+                "honey"))
+
+(r #t)
+(assert-equal "bees" value)
+(r #f)
+(assert-equal "honey" value)
+

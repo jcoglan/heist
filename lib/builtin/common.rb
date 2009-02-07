@@ -145,7 +145,7 @@ define('else') { true }
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
 metadef('if') do |scope, cond, cons, alt|
-  which = cond.eval(scope) ? cons : alt
+  which = Heist.value_of(cond, scope) ? cons : alt
   Binding.new(which, scope)
 end
 
@@ -159,7 +159,7 @@ metadef('and') do |scope, *args|
   result = true
   args.each do |arg|
     next if !result
-    result = arg.eval(scope)
+    result = Heist.value_of(arg, scope)
   end
   result
 end
@@ -170,7 +170,7 @@ metadef('or') do |scope, *args|
   result = false
   args.each do |arg|
     next if result
-    result = arg.eval(scope)
+    result = Heist.value_of(arg, scope)
   end
   result
 end
