@@ -13,6 +13,10 @@ module Heist
         @name = name.to_s
         @metadata = {}
       end
+      
+      def eval(scope)
+        scope[@name]
+      end
     end
     
   end

@@ -121,8 +121,7 @@ end
 
 # (begin) simply executes a series of lists in the current scope.
 metadef('begin') do |scope, *body|
-  body[0...-1].each { |part| Heist.value_of(part, scope) }
-  Binding.new(body.last, scope)
+  body.map { |part| Heist.value_of(part, scope) }.last
 end
 
 # (cond) acts like the 'switch' statement in C-style languages.
@@ -133,8 +132,7 @@ metadef('cond') do |scope, *pairs|
   pairs.each do |list|
     next if result
     next unless Heist.value_of(list.first, scope)
-    list[1...-1].each { |cell| Heist.value_of(cell, scope) }
-    result = Binding.new(list.last, scope)
+    result = list[1..-1].map { |cell| Heist.value_of(cell, scope) }.last
   end
   result
 end
@@ -146,7 +144,7 @@ define('else') { true }
 # true, otherwise it evaluates the alternative
 metadef('if') do |scope, cond, cons, alt|
   which = Heist.value_of(cond, scope) ? cons : alt
-  Binding.new(which, scope)
+  Heist.value_of(which, scope)
 end
 
 #----------------------------------------------------------------

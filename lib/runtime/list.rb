@@ -15,9 +15,20 @@ module Heist
         super
       end
       
-      def replace(expression)
-        return unless @parent
-        @parent[@index] = expression
+      def eval(scope)
+        func = Heist.value_of(first, scope)
+        
+        unless Function === func
+          others = rest.map { |cell| Heist.value_of(cell, scope) }
+          return List.new([func] + others)
+        end
+        
+        result = func.call(scope, rest)
+        return result unless Macro::Expansion === result
+        
+        replace(result.expression)
+        result = Heist.value_of(result.expression, scope)
+        result
       end
       
       def []=(index, value)

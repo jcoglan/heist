@@ -8,8 +8,6 @@ module Heist
         identifier
         function
         macro/macro
-        stack
-        frame
         continuation
         scope
         binding
@@ -25,7 +23,6 @@ module Heist
     
     def initialize(options = {})
       @scope = Scope.new(self)
-      @stack = Stack.new
       
       @order = options[:order] || EAGER
       

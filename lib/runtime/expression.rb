@@ -8,8 +8,9 @@ module Heist
         @parent, @index = parent, index
       end
       
-      def eval(scope)
-        scope.runtime.stack << Frame.new(self, scope)
+      def replace(expression)
+        return unless @parent
+        @parent[@index] = expression
       end
     end
     
