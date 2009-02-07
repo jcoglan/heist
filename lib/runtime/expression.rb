@@ -12,6 +12,10 @@ module Heist
         return unless @parent
         @parent[@index] = expression
       end
+      
+      def eval(scope)
+        scope.runtime.stack << Frame.new(self, scope)
+      end
     end
     
   end

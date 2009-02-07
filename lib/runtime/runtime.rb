@@ -9,6 +9,8 @@ module Heist
         function
         macro/macro
         continuation
+        stack
+        frame
         scope
         binding
     ].each do |file|
@@ -23,6 +25,7 @@ module Heist
     
     def initialize(options = {})
       @scope = Scope.new(self)
+      @stack = Stack.new
       
       @order = options[:order] || EAGER
       

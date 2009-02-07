@@ -20,6 +20,8 @@ lib/runtime/macro/matches.rb
 lib/runtime/macro/splice.rb
 lib/runtime/macro/expansion.rb
 lib/runtime/continuation.rb
+lib/runtime/stack.rb
+lib/runtime/frame.rb
 lib/runtime/scope.rb
 lib/runtime/binding.rb
 test/test_heist.rb
