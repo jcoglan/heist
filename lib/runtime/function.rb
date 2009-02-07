@@ -29,6 +29,10 @@ module Heist
       def lazy?
         @scope.runtime.lazy? && !primitive?
       end
+      
+      def to_s
+        "#<procedure>"
+      end
     end
     
     class MetaFunction < Function

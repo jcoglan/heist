@@ -67,3 +67,27 @@
 (r #t) (r #t) (r #t)
 (assert-equal 5 count-calls)
 
+; multiple call/cc in the same expression
+; http://sanjaypande.blogspot.com/2004/06/understanding-scheme-continuations.html
+
+(define r1 #f)
+(define r2 #f)
+
+(define (somefunc x y)
+  (+ (* 2 (expt x 2)) (* 3 y) 1))
+
+(set! value
+  (somefunc (call/cc
+               (lambda (c1)
+                 (set! r1 c1)
+                 (c1 1)))
+            (call/cc
+               (lambda (c2)
+                 (set! r2 c2)
+                 (c2 1)))))
+(assert-equal 6 value)
+(r1 5)
+(assert-equal 54 value)
+(r2 5)
+(assert-equal 66 value)
+

@@ -23,6 +23,10 @@ module Heist
         Expansion.new(expanded)
       end
       
+      def to_s
+        "#<macro>"
+      end
+      
     private
       
       def rule_for(cells, scope)

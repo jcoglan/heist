@@ -2,15 +2,14 @@ module Heist
   class Runtime
     
     class Stack < Array
-      attr_reader :continuation_index
-      
       def initialize(index = nil)
         @continuation_index = index
       end
       
       def copy(keep_last = true)
         range = keep_last ? 0..-1 : 0...-1
-        copy = self.class.new(empty? ? nil : last.index)
+        index = keep_last ? @continuation_index : last.index
+        copy = self.class.new(index)
         self[range].each do |frame|
           copy[copy.size] = frame.dup
         end
@@ -27,12 +26,17 @@ module Heist
         end
       end
       
-      def empty!(index, filler)
+      def fill!(value)
+        last.fill!(@continuation_index, value) unless empty?
+      end
+      
+      def revive!
         return nil if empty?
-        last.fill!(index, filler)
         value = nil
         value = process! while not empty?
         value
+      rescue Continuation::Unwind => reviver
+        unwind!(reviver)
       end
       
     private
@@ -47,7 +51,7 @@ module Heist
       
       def unwind!(reviver)
         pop while not empty?
-        reviver.value
+        reviver.call
       end
     end
     
