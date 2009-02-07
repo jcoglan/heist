@@ -33,7 +33,7 @@ module Heist
   end
   
   def self.value_of(expression, scope)
-    expression.respond_to?(:eval) ?
+    Runtime::Expression === expression ?
         expression.eval(scope) :
         expression
   end

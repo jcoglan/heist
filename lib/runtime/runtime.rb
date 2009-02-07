@@ -3,7 +3,8 @@ require 'forwardable'
 module Heist
   class Runtime
     
-    %w[ list
+    %w[ expression
+        list
         identifier
         function
         macro/macro

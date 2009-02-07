@@ -9,7 +9,7 @@ module Heist
       def call(scope, cells)
         filler = Heist.value_of(cells.first, scope)
         stack = @stack.copy
-        value = stack.empty!(filler)
+        value = stack.empty!(@stack.continuation_index, filler)
         Unwind.new(value)
       end
       

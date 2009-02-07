@@ -11,6 +11,7 @@ lib/parser/scheme.tt
 lib/parser/scheme.rb
 lib/parser/nodes.rb
 lib/runtime/runtime.rb
+lib/runtime/expression.rb
 lib/runtime/list.rb
 lib/runtime/identifier.rb
 lib/runtime/function.rb

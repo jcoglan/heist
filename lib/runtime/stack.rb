@@ -2,9 +2,19 @@ module Heist
   class Runtime
     
     class Stack < Array
-      def copy(last = true)
-        range = last ? 0..-1 : 0...-1
-        self.class.new(self[range].map { |frame| frame.dup })
+      attr_reader :continuation_index
+      
+      def initialize(index = nil)
+        @continuation_index = index
+      end
+      
+      def copy(keep_last = true)
+        range = keep_last ? 0..-1 : 0...-1
+        copy = self.class.new(last.index)
+        self[range].each do |frame|
+          copy[copy.size] = frame.dup
+        end
+        copy
       end
       
       def <<(frame)
@@ -17,10 +27,9 @@ module Heist
         end
       end
       
-      def empty!(filler)
+      def empty!(index, filler)
         return nil if empty?
-        last.fill!
-        last.fill!(filler)
+        last.fill!(index, filler)
         value = nil
         value = process! while not empty?
         value
@@ -30,15 +39,15 @@ module Heist
       
       def process!
         value = last.process!
-        pop
+        index = pop.index
         raise value if Continuation::Unwind === value
-        last.fill!(value) unless empty?
+        last.fill!(index, value) unless empty?
         value
       end
       
       def unwind!(reviver)
         pop while not empty?
-        self << Frame.new(reviver.value)
+        reviver.value
       end
     end
     

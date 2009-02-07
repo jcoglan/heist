@@ -2,9 +2,10 @@ module Heist
   class Runtime
     
     class Frame
-      attr_reader :holes
+      attr_reader :holes, :index
       
       def initialize(expression, scope = nil)
+        @index = expression.index
         @current = (Binding === expression) ?
                    expression :
                    Binding.new(expression, scope)
@@ -16,10 +17,10 @@ module Heist
         @current
       end
       
-      def fill!(value = nil)
-        @holes[@index] = value unless value.nil?
-        @index += 1 while !@holes[@index].respond_to?(:eval) and
-                          @index < @holes.size
+      def fill!(index, value)
+        # TODO some macro expressions are not being
+        # given indexes so macros may not work with call/cc
+        @holes[index] = value unless index.nil?
       end
       
       def dup
@@ -60,7 +61,7 @@ module Heist
       def reset_holes!
         return unless Binding === @current and
                       List === @current.expression
-        @holes, @index = @current.expression.dup, 0
+        @holes = @current.expression.dup
       end
     end
     
