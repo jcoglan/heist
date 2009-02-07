@@ -10,7 +10,7 @@ module Heist
       
       def copy(keep_last = true)
         range = keep_last ? 0..-1 : 0...-1
-        copy = self.class.new(last.index)
+        copy = self.class.new(empty? ? nil : last.index)
         self[range].each do |frame|
           copy[copy.size] = frame.dup
         end
