@@ -4,6 +4,7 @@ module Heist
     class Continuation < Function
       def initialize(stack)
         @stack = stack
+        puts "\n\nSAVED STACK\n" + stack.map { |f| f.expression.to_s } * "\n" + "\n------------------\n\n"
       end
       
       def call(scope, cells)

@@ -14,16 +14,19 @@ module Heist
       end
       
       def process!
+        puts "PROCESS: #{@expression} :: #{@values * ', '}"
         case @expression
         
           when List then
             if MetaFunction === @values.first or @values.size == @expression.size
               @complete = true
               func = @values.first
-              return List.new(@values) unless Function === func
-              rest = (MetaFunction === func) ? @expression.rest : @values[1..-1]
               
-              result = @values.first.call(@scope, rest)
+              merge!
+              
+              return List.new(@data) unless Function === func
+              
+              result = @data.first.call(@scope, @data[1..-1])
               return result unless Macro::Expansion === result
               reset!(result.expression, true)
               return process!
@@ -49,10 +52,22 @@ module Heist
       end
       
       def fill!(value)
+        puts "FILL! #{value}"
         @values << value
       end
       
     private
+      
+      def merge!
+        return @data = @values unless MetaFunction === @values.first
+        @data = @expression.dup
+        holes = @values.first.holes
+        @values.each_with_index do |value, i|
+          index = holes[i] || i
+          @data[index] = value
+        end
+        puts "MERGED: #{@data}"
+      end
       
       def reset!(expression, replace = false)
         @expression.replace(expression) if replace

@@ -41,8 +41,8 @@ module Heist
         self[name] = Function.new(self, *args, &block)
       end
       
-      def metadef(name, &block)
-        self[name] = MetaFunction.new(self, &block)
+      def metadef(name, holes = [], &block)
+        self[name] = MetaFunction.new(self, holes,&block)
       end
       
       # TODO: this isn't great, figure out a way for functions
