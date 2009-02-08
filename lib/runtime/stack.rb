@@ -23,8 +23,8 @@ module Heist
         copy
       end
       
-      def fill!(value)
-        last.fill!(value) unless empty?
+      def fill!(value, subexpr = nil)
+        last.fill!(value, subexpr) unless empty?
       end
       
       def revive!
@@ -40,7 +40,7 @@ module Heist
       
       def process!
         @value = last.process!
-        pop and fill!(@value) if last.complete? or unwind?
+        fill!(@value, pop.expression) if last.complete? or unwind?
       end
       
       def unwind?

@@ -14,7 +14,7 @@ module Heist
       end
       
       def process!
-        puts "PROCESS: #{@expression} :: #{@values * ', '}"
+        puts "PROCESS: #{@expression}"
         case @expression
         
           when List then
@@ -50,9 +50,23 @@ module Heist
         copy
       end
       
-      def fill!(value)
-        puts "FILL! #{value}"
+      def fill!(value, subexpr = nil)
+        subexpr ||= @expression[@values.size]
+        puts "FILL! #{@expression} :: #{subexpr} -> #{value}"
         @values << value
+        @subexprs << subexpr
+      end
+      
+      def to_s
+        parts = []
+        @expression.each_with_index do |cell, i|
+          parts << (i < @values.size ?
+              @values[i] :
+          i == @values.size ?
+              '[]' :
+              cell.to_s)
+        end
+        '(' + parts * ' ' + ')'
       end
       
     private
@@ -60,18 +74,17 @@ module Heist
       def merge!
         return @data = @values unless MetaFunction === @values.first
         @data = @expression.dup
-        holes = @values.first.holes
-        @values.each_with_index do |value, i|
-          index = holes[i] || i
-          @data[index] = value
+        @expression.each_with_index do |expr, i|
+          index = @subexprs.index(expr)
+          @data[i] = @values[index] if index
         end
-        puts "MERGED: #{@data}"
       end
       
       def reset!(expression, replace = false)
         @expression.replace(expression) if replace
         @expression = expression
         @values     = []
+        @subexprs   = []
         @complete   = false
       end
     end

@@ -7,7 +7,7 @@ module Heist
       def initialize(scope, formals = [], body = nil, &block)
         @scope   = scope
         @body    = body || block
-        @formals = formals
+        @formals = formals.map { |id| id.to_s }
       end
       
       def call(scope, cells)
@@ -35,10 +35,6 @@ module Heist
     end
     
     class MetaFunction < Function
-      def holes
-        @formals
-      end
-      
       def call(scope, cells)
         @body.call(scope, *cells)
       end

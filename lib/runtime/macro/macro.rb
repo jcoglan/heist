@@ -12,7 +12,6 @@ module Heist
       
       def initialize(*args)
         super
-        @formals = @formals.map { |id| id.to_s }
         @renames = {}
       end
       
@@ -26,10 +25,6 @@ module Heist
       
       def to_s
         "#<macro>"
-      end
-      
-      def holes
-        []
       end
       
     private

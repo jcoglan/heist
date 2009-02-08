@@ -45,7 +45,7 @@ end
 
 # (set!) reassigns the value of an existing bound variable,
 # in the innermost scope responsible for binding it.
-metadef('set!', [0,2]) do |scope, name, value|
+metadef('set!') do |scope, name, value|
   scope.set(name, Heist.value_of(value, scope))
 end
 

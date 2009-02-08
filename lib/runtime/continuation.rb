@@ -4,6 +4,7 @@ module Heist
     class Continuation < Function
       def initialize(stack)
         @stack = stack
+        @to_s = @stack.first.to_s
         puts "\n\nSAVED STACK\n" + stack.map { |f| f.expression.to_s } * "\n" + "\n------------------\n\n"
       end
       
@@ -15,7 +16,7 @@ module Heist
       end
       
       def to_s
-        "#<continuation #{@stack.first.expression}>"
+        "#<continuation #{@to_s}>"
       end
       
       class Unwind < Exception
