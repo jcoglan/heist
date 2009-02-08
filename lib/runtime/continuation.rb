@@ -4,7 +4,6 @@ module Heist
     class Continuation < Function
       def initialize(stack)
         @stack = stack
-        @stack.fill!("#<hole>")
       end
       
       def call(scope, cells)
@@ -15,7 +14,7 @@ module Heist
       end
       
       def to_s
-        "#<continuation #{@stack.first.holes.to_s}>"
+        "#<continuation #{@stack.first.expression}>"
       end
       
       class Unwind < Exception

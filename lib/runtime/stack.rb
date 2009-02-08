@@ -7,11 +7,49 @@ module Heist
       def <<(frame)
         super
         while not frame.complete?
-          @value = frame.process!
-          break if Continuation::Unwind === @value
+          process!
+          break if unwind?
         end
-        pop if frame.complete?
+        rewind! if unwind?
         @value
+      end
+      
+      def copy(keep_last = true)
+        copy = self.class.new
+        range = keep_last ? 0..-1 : 0...-1
+        self[range].each do |frame|
+          copy[copy.size] = frame.dup
+        end
+        copy
+      end
+      
+      def fill!(value)
+        last.fill!(value) unless empty?
+      end
+      
+      def revive!
+        while not empty?
+          process!
+          break if unwind?
+        end
+        rewind! if unwind?
+        @value
+      end
+      
+    private
+      
+      def process!
+        @value = last.process!
+        pop and fill!(@value) if last.complete? or unwind?
+      end
+      
+      def unwind?
+        Continuation::Unwind === @value
+      end
+      
+      def rewind!
+        return unless empty?
+        @value = @value.call
       end
     end
     

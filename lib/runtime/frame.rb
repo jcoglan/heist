@@ -31,8 +31,6 @@ module Heist
             
             stack = @scope.runtime.stack
             stack << Frame.new(@expression[@values.size], @scope)
-            @values << stack.value
-            return @values.last
         
           when Identifier then
             @complete = true
@@ -42,6 +40,16 @@ module Heist
             @complete = true
             Heist.value_of(@expression, @scope)
         end
+      end
+      
+      def dup
+        copy, values = super, @values.dup
+        copy.instance_eval { @values = values }
+        copy
+      end
+      
+      def fill!(value)
+        @values << value
       end
       
     private
