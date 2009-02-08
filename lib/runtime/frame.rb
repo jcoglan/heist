@@ -28,8 +28,7 @@ module Heist
               
               result = @data.first.call(@scope, @data[1..-1])
               return result unless Macro::Expansion === result
-              reset!(result.expression, true)
-              return process!
+              return reset!(result.expression, true)
             end
             
             stack = @scope.runtime.stack
