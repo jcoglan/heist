@@ -14,7 +14,6 @@ module Heist
       end
       
       def process!
-        puts "PROCESS: #{@expression}"
         case @expression
         
           when List then
@@ -23,7 +22,6 @@ module Heist
               func = @values.first
               
               merge!
-              
               return List.new(@data) unless Function === func
               
               result = @data.first.call(@scope, @data[1..-1])
@@ -50,11 +48,18 @@ module Heist
         copy
       end
       
-      def fill!(value, subexpr = nil)
+      def fill!(subexpr, value)
         subexpr ||= @expression[@values.size]
-        puts "FILL! #{@expression} :: #{subexpr} -> #{value}"
         @values << value
         @subexprs << subexpr
+      end
+      
+      def replaces(expression)
+        @target = expression
+      end
+      
+      def target
+        @target || @expression
       end
       
       def to_s
@@ -86,6 +91,40 @@ module Heist
         @values     = []
         @subexprs   = []
         @complete   = false
+      end
+    end
+    
+    class Body < Frame
+      def initialize(expressions, scope)
+        @expressions = expressions
+        @scope       = scope
+        @values      = []
+        @index       = 0
+      end
+      
+      def complete?
+        @index == @expressions.size
+      end
+      
+      def process!
+        expression = @expressions[@index]
+        @index += 1   # increment before evaluating the expression
+                      # so that when a continuation is saved we
+                      # resume from the following statement
+        
+        return Frame.new(expression, @scope) if @index == @expressions.size
+        
+        stack = @scope.runtime.stack
+        stack << Frame.new(expression, @scope)
+        stack.value
+      end
+      
+      def fill!(value, subexpr = nil)
+        @values << value
+      end
+      
+      def to_s
+        @expressions.map { |e| e.to_s } * ' '
       end
     end
     

@@ -8,9 +8,10 @@ module Heist
         super
         while not frame.complete?
           process!
-          break if unwind?
+          break if @unwind
         end
-        rewind! if unwind?
+        revive!(size - 1) if @tail
+        rewind! if @unwind
         @value
       end
       
@@ -23,33 +24,35 @@ module Heist
         copy
       end
       
-      def fill!(value, subexpr = nil)
-        last.fill!(value, subexpr) unless empty?
+      def fill!(subexpr, value)
+        return self[size] = value if Frame === value
+        last.fill!(subexpr, value) unless empty?
       end
       
-      def revive!
-        while not empty?
-          process!
-          break if unwind?
-        end
-        rewind! if unwind?
+      def revive!(limit = 0)
+        process! while size > limit
+        rewind! if @unwind
         @value
       end
       
     private
       
       def process!
-        @value = last.process!
-        fill!(@value, pop.expression) if last.complete? or unwind?
-      end
-      
-      def unwind?
-        Continuation::Unwind === @value
+        self.value = last.process! unless @unwind
+        return unless last.complete? or @unwind
+        @value.replaces(last.target) if @tail
+        fill!(pop.target, @value)
       end
       
       def rewind!
         return unless empty?
-        @value = @value.call
+        self.value = @value.call
+      end
+      
+      def value=(value)
+        @value  = value
+        @unwind = (Continuation::Unwind === @value)
+        @tail   = (Frame === @value)
       end
     end
     

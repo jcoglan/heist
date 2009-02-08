@@ -18,7 +18,7 @@ module Heist
               Heist.value_of(arg, scope)
         end
         return @body.call(*params) if primitive?
-        @body.map { |part| Heist.value_of(part, closure) }.last
+        Body.new(@body, closure)
       end
       
       def primitive?

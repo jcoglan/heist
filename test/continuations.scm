@@ -98,9 +98,26 @@
                     #t))
                 "bees"
                 "honey"))
-
 (r #t)
 (assert-equal "bees" value)
 (r #f)
 (assert-equal "honey" value)
+
+; test saving the continuation inside a function
+(define before 0)
+(define after 0)
+(define (foo)
+  (set! before (+ before 1))
+  (set! y (call/cc
+            (lambda (k)
+              (set! r k)
+              2)))
+  (set! after (+ after 1))
+  (+ 3 y))
+(set! value (* 5 (foo)))
+(assert-equal 25 value)
+(r 7)
+(assert-equal 50 value)
+(assert-equal 1 before)
+(assert-equal 2 after)
 

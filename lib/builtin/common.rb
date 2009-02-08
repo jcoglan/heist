@@ -54,8 +54,7 @@ end
 # Continuations
 
 metadef('call-with-current-continuation') do |scope, callback|
-  stack = scope.runtime.stack.copy(false)
-  continuation = Continuation.new(stack)
+  continuation = Continuation.new(scope.runtime.stack)
   callback = Heist.value_of(callback, scope)
   callback.call(scope, [continuation])
 end
@@ -121,7 +120,7 @@ end
 
 # (begin) simply executes a series of lists in the current scope.
 metadef('begin') do |scope, *body|
-  body.map { |part| Heist.value_of(part, scope) }.last
+  Body.new(body, scope)
 end
 
 # (cond) acts like the 'switch' statement in C-style languages.
@@ -132,7 +131,7 @@ metadef('cond') do |scope, *pairs|
   pairs.each do |list|
     next if result
     next unless Heist.value_of(list.first, scope)
-    result = list[1..-1].map { |cell| Heist.value_of(cell, scope) }.last
+    result = Body.new(list[1..-1], scope)
   end
   result
 end
@@ -144,7 +143,7 @@ define('else') { true }
 # true, otherwise it evaluates the alternative
 metadef('if') do |scope, cond, cons, alt|
   which = Heist.value_of(cond, scope) ? cons : alt
-  Heist.value_of(which, scope)
+  Frame.new(which, scope)
 end
 
 #----------------------------------------------------------------

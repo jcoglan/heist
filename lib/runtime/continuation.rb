@@ -3,15 +3,15 @@ module Heist
     
     class Continuation < Function
       def initialize(stack)
-        @stack = stack
+        @stack  = stack.copy(false)
+        @target = stack.last.target
         @to_s = @stack.first.to_s
-        puts "\n\nSAVED STACK\n" + stack.map { |f| f.expression.to_s } * "\n" + "\n------------------\n\n"
       end
       
       def call(scope, cells)
         filler = Heist.value_of(cells.first, scope)
         stack = @stack.copy
-        stack.fill!(filler)
+        stack.fill!(@target, filler)
         Unwind.new(scope.runtime, stack)
       end
       
