@@ -43,17 +43,14 @@ module Heist
         
         return @parent.set!(name, value) unless bound
         self[name] = value
-        nil
       end
       
       def define(name, *args, &block)
         self[name] = Function.new(self, *args, &block)
-        nil
       end
       
       def metadef(name, &block)
         self[name] = MetaFunction.new(self, &block)
-        nil
       end
       
       # TODO: this isn't great, figure out a way for functions

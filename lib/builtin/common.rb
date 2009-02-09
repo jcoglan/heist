@@ -8,6 +8,7 @@ metadef('define') do |scope, names, *body|
   List === names ?
       scope.define(names.first, names.rest, List.from(body)) :
       scope[names] = Heist.value_of(body.first, scope)
+  nil
 end
 
 # (lambda) returns an anonymous function whose arguments
@@ -21,6 +22,7 @@ end
 # in the innermost scope responsible for binding it.
 metadef('set!') do |scope, name, value|
   scope.set!(name, Heist.value_of(value, scope))
+  nil
 end
 
 #----------------------------------------------------------------
