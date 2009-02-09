@@ -16,7 +16,10 @@ module Heist
       def [](name)
         name = to_name(name)
         bound = @symbols.has_key?(to_name(name))
-        raise UndefinedVariable unless bound or Scope === @parent
+        
+        raise UndefinedVariable.new(
+          "Variable '#{name}' is not defined") unless bound or Scope === @parent
+            
         value = bound ? @symbols[name] : @parent[name]
         value = value.extract if Binding === value
         value
@@ -31,20 +34,26 @@ module Heist
             (Scope === @parent && @parent.defined?(name))
       end
       
-      def set(name, value)
+      def set!(name, value)
         name = to_name(name)
         bound = @symbols.has_key?(name)
-        raise UndefinedVariable unless bound or Scope === @parent
-        return self[name] = value if bound
-        @parent.set(name, value)
+        
+        raise UndefinedVariable.new(
+          "Cannot set undefined variable '#{name}'") unless bound or Scope === @parent
+        
+        return @parent.set!(name, value) unless bound
+        self[name] = value
+        nil
       end
       
       def define(name, *args, &block)
         self[name] = Function.new(self, *args, &block)
+        nil
       end
       
       def metadef(name, &block)
         self[name] = MetaFunction.new(self, &block)
+        nil
       end
       
       # TODO: this isn't great, figure out a way for functions

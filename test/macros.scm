@@ -70,11 +70,14 @@
            (my-or e2 ...))))))
 
 (define e 1)
-(my-or (> 0 (set! e (+ e 1)))   ; false
-       (> 0 (set! e (+ e 1)))   ; false
-       (> 9 6)                  ; true - should not evaluate further
-       (> 0 (set! e (+ e 1)))
-       (> 0 (set! e (+ e 1))))
+(define (inc)
+  (set! e (+ e 1))
+  e)
+(my-or (> 0 (inc))   ; false
+       (> 0 (inc))   ; false
+       (> 9 6)       ; true - should not evaluate further
+       (> 0 (inc))
+       (> 0 (inc)))
 
 (assert-equal 3 e)
 

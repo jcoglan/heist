@@ -20,7 +20,7 @@ end
 # (set!) reassigns the value of an existing bound variable,
 # in the innermost scope responsible for binding it.
 metadef('set!') do |scope, name, value|
-  scope.set(name, Heist.value_of(value, scope))
+  scope.set!(name, Heist.value_of(value, scope))
 end
 
 #----------------------------------------------------------------
@@ -41,12 +41,6 @@ end
 
 metadef('syntax-rules') do |scope, keywords, *rules|
   Macro.new(scope, keywords, rules)
-end
-
-# (set!) reassigns the value of an existing bound variable,
-# in the innermost scope responsible for binding it.
-metadef('set!') do |scope, name, value|
-  scope.set(name, Heist.value_of(value, scope))
 end
 
 #----------------------------------------------------------------
