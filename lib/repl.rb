@@ -34,12 +34,13 @@ module Heist
     
   private
   
-    INDENT  = 2
-    SPECIAL = %w[define lambda]
+    INDENT  = 3
+    SPECIAL = %w[define lambda define-syntax syntax-rules]
     
     def reset!
       @buffer = []
-      @indents = []
+      @open   = []
+      @indent = 0
     end
     
     def push(line)
@@ -49,27 +50,32 @@ module Heist
       new_depth = depth
       
       return if new_depth == old_depth
-      return @indents.slice!(new_depth..-1) if new_depth < old_depth
+      return @open.slice!(new_depth..-1) if new_depth < old_depth
       
-      calls  = line.scan(/[\(\[]([^\(\)\[\]\s]+|.)/).flatten
-      name   = calls[new_depth - old_depth - 1]
-      index  = line.rindex(name)
-      name   = name.gsub(/[\(\)\[\]\s]/, '')
-      offset = index + name.length
-      @indents[new_depth - 1] = (offset == line.length) ?
-                                index + INDENT :
-                                indent_for(name, index)
+      code = line.dup
+      while code == code.gsub!(/\([^\(\)\[\]]*\)|\[[^\(\)\[\]]*\]/, ''); end
+      calls = code.scan(/[\(\[](?:[^\(\)\[\]\s]+|.?)/).flatten
+      
+      offsets  = calls.inject([]) do |list, call|
+        index  = list.empty? ? 0 : list.last.last - @indent
+        index  = @indent + line.index(call, index)
+        rindex = index + call.length
+        list << [call[1..-1], rindex == line.length, index, rindex]
+        list
+      end
+      
+      @open = @open + offsets
     end
     
-    def indent_for(name, index)
-      return index if name.empty?
-      return index + INDENT if SPECIAL.include?(name)
-      index + name.length + 1
+    def indent
+      open = @open.last
+      @indent = (SPECIAL.include?(open[0]) or open[1]) ?
+                open[2] + INDENT :
+                open[3] + (open[0].empty? ? 0 : 1)
     end
     
     def prompt
-      @buffer.empty? ? "> " :
-      "  " + @indents.map { |x| " " * (x || 0) }.join('')
+      @buffer.empty? ? "> " : "  " + " " * indent
     end
     
     def depth
