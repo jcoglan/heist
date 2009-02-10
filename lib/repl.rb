@@ -34,8 +34,10 @@ module Heist
     
   private
   
-    INDENT  = 3
-    SPECIAL = %w[define lambda define-syntax syntax-rules]
+    INDENT  = 2
+    SPECIAL = %w[define lambda let let* letrec
+                 define-syntax syntax-rules
+                 let-syntax letrec-syntax]
     
     def reset!
       @buffer = []
@@ -54,13 +56,14 @@ module Heist
       
       code = line.dup
       while code == code.gsub!(/\([^\(\)\[\]]*\)|\[[^\(\)\[\]]*\]/, ''); end
-      calls = code.scan(/[\(\[](?:[^\(\)\[\]\s]+|.?)/).flatten
+      calls = code.scan(/[\(\[](?:[^\(\)\[\]\s]*\s*)/).flatten
       
       offsets  = calls.inject([]) do |list, call|
         index  = list.empty? ? 0 : list.last.last - @indent
-        index  = @indent + line.index(call, index)
+        index  = @indent + (line.index(call, index) || 0)
         rindex = index + call.length
-        list << [call[1..-1], rindex == line.length, index, rindex]
+        eol    = (rindex == line.length + @indent)
+        list << [call[1..-1], eol, index, rindex]
         list
       end
       
@@ -69,9 +72,9 @@ module Heist
     
     def indent
       open = @open.last
-      @indent = (SPECIAL.include?(open[0]) or open[1]) ?
+      @indent = (SPECIAL.include?(open[0].strip) or open[1]) ?
                 open[2] + INDENT :
-                open[3] + (open[0].empty? ? 0 : 1)
+                open[3]
     end
     
     def prompt
