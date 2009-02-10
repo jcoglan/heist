@@ -26,6 +26,7 @@ module Heist
       
       def fill!(subexpr, value)
         return self[size] = value if Frame === value
+        return @value = value if empty?
         last.fill!(subexpr, value) unless empty?
       end
       
