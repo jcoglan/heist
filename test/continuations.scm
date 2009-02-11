@@ -121,3 +121,24 @@
 (assert-equal 1 before)
 (assert-equal 2 after)
 
+; test integration with macros
+(define-syntax cc-macro
+  (syntax-rules ()
+    [(_ (name ...) (value ...) body ...)
+      (let ((name value) ...)
+        body ...)]))
+
+(define (call-macro)
+  (define not-tail #t)
+  (cc-macro (foo bar) (7 4)
+    (* bar (+ (call/cc
+                (lambda (k)
+                  (set! r k)
+                  foo))
+              foo))))
+(set! value (/ (call-macro)
+               2))
+(assert-equal 28 value)
+(r 3)
+(assert-equal 20 value)
+
