@@ -4,6 +4,7 @@ README.txt
 Rakefile
 bin/heist
 lib/heist.rb
+lib/bin_spec.rb
 lib/repl.rb
 lib/builtin/common.rb
 lib/builtin/common.scm
@@ -21,9 +22,11 @@ lib/runtime/macro/splice.rb
 lib/runtime/macro/expansion.rb
 lib/runtime/continuation.rb
 lib/runtime/stack.rb
+lib/runtime/stackless.rb
 lib/runtime/frame.rb
 lib/runtime/scope.rb
 lib/runtime/binding.rb
+lib/stdlib/birds.scm
 test/test_heist.rb
 test/arithmetic.scm
 test/benchmarks.scm

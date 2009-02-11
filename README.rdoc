@@ -33,6 +33,8 @@ though I'm also referring to SICP and PLT Scheme for guidance and extending as I
 fit. The current aim is to have a complete R5RS syntax/semantics implemented, with
 library functions added as and when I need them.
 
+Features implemented so far
+
 * Data primitives: only literals and proper lists so far
 * <tt>(define)</tt> for declaring variables, including function shorthand
 * First-class <tt>(lambda)</tt> expressions, lexical scoping, closures
@@ -40,6 +42,7 @@ library functions added as and when I need them.
 * Scoped assignment: <tt>(let)</tt>, <tt>(let*)</tt> and <tt>(letrec)</tt>
 * Control structures: <tt>(begin)</tt>, <tt>(cond)</tt>, <tt>(if)</tt>
 * R5RS macros, expanded and inlined at runtime
+* First class continuations and <tt>(call/cc)</tt>
 * Tail call optimisation
 * <tt>(quote)</tt> for list literals, no quasiquoting yet
 * Numbers: integers, reals, rationals (sort of), arithmetic and other math functions
