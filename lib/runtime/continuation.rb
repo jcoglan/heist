@@ -12,23 +12,11 @@ module Heist
         filler = Heist.value_of(cells.first, scope)
         stack = @stack.copy
         stack.fill!(@target, filler)
-        Unwind.new(scope.runtime, stack)
+        stack
       end
       
       def to_s
         "#<continuation #{@to_s}>"
-      end
-      
-      class Unwind < Exception
-        def initialize(runtime, stack)
-          @runtime = runtime
-          @stack   = stack
-        end
-        
-        def call
-          @runtime.stack = @stack
-          @stack.revive!
-        end
       end
     end
     

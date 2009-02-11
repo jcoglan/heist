@@ -6,13 +6,7 @@ module Heist
       
       def <<(frame)
         super
-        while not frame.complete?
-          process!
-          break if @unwind
-        end
-        revive!(size - 1) if @tail
-        rewind! if @unwind
-        @value
+        clear!(size - 1)
       end
       
       def copy(keep_last = true)
@@ -27,33 +21,34 @@ module Heist
       def fill!(subexpr, value)
         return self[size] = value if Frame === value
         return @value = value if empty?
-        last.fill!(subexpr, value) unless empty?
+        last.fill!(subexpr, value)
       end
       
-      def revive!(limit = 0)
+      def clear!(limit = 0)
         process! while size > limit
-        rewind! if @unwind
         @value
       end
       
     private
       
       def process!
-        self.value = last.process! unless @unwind
-        return unless last.complete? or @unwind
+        self.value = last.process!
+        return if @unwind or not last.complete?
         @value.replaces(last.target) if @tail
         fill!(pop.target, @value)
       end
       
-      def rewind!
-        return unless empty?
-        self.value = @value.call
-      end
-      
       def value=(value)
         @value  = value
-        @unwind = (Continuation::Unwind === @value)
+        @unwind = (Stack === @value)
         @tail   = (Frame === @value)
+        restack!(value) if @unwind
+      end
+      
+      def restack!(stack)
+        pop while not empty?
+        stack.each_with_index { |frame, i| self[i] = frame }
+        @value = stack.value
       end
     end
     
