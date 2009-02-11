@@ -2,7 +2,7 @@ module Heist
   class Runtime
     
     class Frame
-      attr_reader :expression
+      attr_reader :expression, :scope
       
       def initialize(expression, scope)
         reset!(expression)
@@ -96,23 +96,23 @@ module Heist
     
     class Body < Frame
       def initialize(expressions, scope)
-        @expressions = expressions
+        @expression  = expressions
         @scope       = scope
         @values      = []
         @index       = 0
       end
       
       def complete?
-        @index == @expressions.size
+        @index == @expression.size
       end
       
       def process!
-        expression = @expressions[@index]
+        expression = @expression[@index]
         @index += 1   # increment before evaluating the expression
                       # so that when a continuation is saved we
                       # resume from the following statement
         
-        return Frame.new(expression, @scope) if @index == @expressions.size
+        return Frame.new(expression, @scope) if @index == @expression.size
         
         stack = @scope.runtime.stack
         stack << Frame.new(expression, @scope)
@@ -124,7 +124,7 @@ module Heist
       end
       
       def to_s
-        @expressions.map { |e| e.to_s } * ' '
+        @expression.map { |e| e.to_s } * ' '
       end
     end
     

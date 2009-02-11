@@ -9,7 +9,8 @@ module Heist
     
     def run
       puts "Heist Scheme interpreter, v. #{ VERSION }"
-      puts "Evaluation strategy: #{ @runtime.lazy? ? 'LAZY' : 'EAGER' }\n\n"
+      puts "Evaluation strategy: #{ @runtime.lazy? ? 'LAZY' : 'EAGER' }"
+      puts "Continuations enabled: #{ @runtime.stackless? ? 'no' : 'yes' }\n\n"
       
       loop do
         inset  = @buffer.scan(/[\(\[]/).size - @buffer.scan(/[\)\]]/).size
@@ -23,7 +24,7 @@ module Heist
         next if tree.nil?
         
         @buffer = ""
-        puts "=>  #{ @runtime.eval(tree) rescue '[error]' }\n\n"
+        puts "=>  #{ @runtime.eval(tree) }\n\n"
       end
     end
     

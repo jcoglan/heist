@@ -9,7 +9,8 @@ Class.new(Test::Unit::TestCase) do
   
   def setup
     return @@env if @@env
-    @@env = Heist::Runtime.new
+    @@env = Heist::Runtime.new(:continuations => true,
+                               :order => Heist::EAGER)
     puts "\nType of if() function: #{ @@env["if"].class }"
     puts "Application mode: #{ Heist::ORDERS[@@env.order] }\n\n"
     
@@ -31,12 +32,16 @@ Class.new(Test::Unit::TestCase) do
         conditionals
         file_loading
         macros
-        continuations
         
   ].each do |test|
     define_method('test_' + test) do
       @@env.run($dir + '/' + test)
     end
+  end
+  
+  def test_continuations
+    return if @@env.stackless?
+    @@env.run($dir + '/continuations')
   end
   
   def test_undefined_variables
