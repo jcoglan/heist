@@ -12,7 +12,7 @@ module Heist
         @data = []
         elements.each_with_index do |cell, i|
           value = cell.eval
-          value.exists_at!(self, i) if Runtime::List === value
+          value.exists_at!(self, i) if Runtime::Expression === value
           @data << value
         end
       end

@@ -2,33 +2,22 @@ module Heist
   class Runtime
     
     class List < Array
+      include Expression
+      
       def self.from(array)
         list = new
         array.each { |item| list << item }
         list
       end
       
-      def exists_at!(parent, index)
-        @parent, @index = parent, index
-      end
-      
       def <<(element)
-        element.exists_at!(self, self.size) if List === element
+        element.exists_at!(self, self.size) if Expression === element
         super
-      end
-      
-      def eval(scope)
-        Frame.new(self, scope).evaluate
-      end
-      
-      def replace(expression)
-        return unless @parent
-        @parent[@index] = expression
       end
       
       def []=(index, value)
         super
-        value.exists_at!(self, index) if List === value
+        value.exists_at!(self, index) if Expression === value
       end
       
       def rest

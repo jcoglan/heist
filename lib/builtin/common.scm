@@ -37,10 +37,23 @@
       x
       (- x)))
 
+; (fact x)
+; Returns factorial of x
+(define (fact x)
+  (define (iter y acc)
+    (if (= y 0)
+        acc
+        (iter (- y 1) (* y acc))))
+  (iter x 1))
+
 ; (newline)
 ; prints a new-line character
 (define (newline)
   (display "\n"))
+
+; (call/cc)
+; Alias for (call-with-current-continuation)
+(define call/cc call-with-current-continuation)
 
 ; (benchmark)
 ; Runs body a given number of times and prints

@@ -2,15 +2,13 @@ module Heist
   class Runtime
     
     class Scope
+      attr_reader :runtime
+      
       def initialize(parent = {})
         @symbols = {}
-        return @parent = parent unless Runtime === parent
-        @runtime = parent
-        @parent = {}
-      end
-      
-      def runtime
-        @runtime || @parent.runtime
+        is_runtime = (Runtime === parent)
+        @parent = is_runtime ? {} : parent
+        @runtime = is_runtime ? parent : parent.runtime
       end
       
       def [](name)
@@ -49,8 +47,8 @@ module Heist
         self[name] = Function.new(self, *args, &block)
       end
       
-      def metadef(name, &block)
-        self[name] = MetaFunction.new(self, &block)
+      def metadef(name, holes = [], &block)
+        self[name] = MetaFunction.new(self, holes,&block)
       end
       
       # TODO: this isn't great, figure out a way for functions
@@ -83,6 +81,10 @@ module Heist
       
       def current_file
         @path || @parent.current_file rescue nil
+      end
+      
+      def current_continuation
+        @runtime.stack.copy(false)
       end
       
     private

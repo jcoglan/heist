@@ -11,6 +11,7 @@ lib/parser/scheme.tt
 lib/parser/scheme.rb
 lib/parser/nodes.rb
 lib/runtime/runtime.rb
+lib/runtime/expression.rb
 lib/runtime/list.rb
 lib/runtime/identifier.rb
 lib/runtime/function.rb
@@ -18,6 +19,8 @@ lib/runtime/macro/macro.rb
 lib/runtime/macro/matches.rb
 lib/runtime/macro/splice.rb
 lib/runtime/macro/expansion.rb
+lib/runtime/continuation.rb
+lib/runtime/stack.rb
 lib/runtime/frame.rb
 lib/runtime/scope.rb
 lib/runtime/binding.rb
@@ -27,6 +30,7 @@ test/benchmarks.scm
 test/booleans.scm
 test/closures.scm
 test/conditionals.scm
+test/continuations.scm
 test/define_functions.scm
 test/define_values.scm
 test/file_loading.scm

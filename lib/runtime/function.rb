@@ -7,7 +7,7 @@ module Heist
       def initialize(scope, formals = [], body = nil, &block)
         @scope   = scope
         @body    = body || block
-        @formals = formals.map { |f| f.to_s }
+        @formals = formals.map { |id| id.to_s }
       end
       
       def call(scope, cells)
@@ -18,8 +18,7 @@ module Heist
               Heist.value_of(arg, scope)
         end
         return @body.call(*params) if primitive?
-        @body[0...-1].each { |part| Heist.value_of(part, closure) }
-        Binding.new(@body.last, closure)
+        Body.new(@body, closure)
       end
       
       def primitive?
@@ -28,6 +27,10 @@ module Heist
       
       def lazy?
         @scope.runtime.lazy? && !primitive?
+      end
+      
+      def to_s
+        "#<procedure>"
       end
     end
     

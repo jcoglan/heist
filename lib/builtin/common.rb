@@ -47,6 +47,16 @@ end
 
 #----------------------------------------------------------------
 
+# Continuations
+
+metadef('call-with-current-continuation') do |scope, callback|
+  continuation = Continuation.new(scope.runtime.stack)
+  callback = Heist.value_of(callback, scope)
+  callback.call(scope, [continuation])
+end
+
+#----------------------------------------------------------------
+
 # Quoting functions
 
 # (quote) casts identifiers to symbols. If given a list, it
@@ -106,8 +116,7 @@ end
 
 # (begin) simply executes a series of lists in the current scope.
 metadef('begin') do |scope, *body|
-  body[0...-1].each { |part| Heist.value_of(part, scope) }
-  Binding.new(body.last, scope)
+  Body.new(body, scope)
 end
 
 # (cond) acts like the 'switch' statement in C-style languages.
@@ -118,8 +127,7 @@ metadef('cond') do |scope, *pairs|
   pairs.each do |list|
     next if result
     next unless Heist.value_of(list.first, scope)
-    list[1...-1].each { |cell| Heist.value_of(cell, scope) }
-    result = Binding.new(list.last, scope)
+    result = Body.new(list[1..-1], scope)
   end
   result
 end
@@ -130,8 +138,8 @@ define('else') { true }
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
 metadef('if') do |scope, cond, cons, alt|
-  which = cond.eval(scope) ? cons : alt
-  Binding.new(which, scope)
+  which = Heist.value_of(cond, scope) ? cons : alt
+  Frame.new(which, scope)
 end
 
 #----------------------------------------------------------------
@@ -144,7 +152,7 @@ metadef('and') do |scope, *args|
   result = true
   args.each do |arg|
     next if !result
-    result = arg.eval(scope)
+    result = Heist.value_of(arg, scope)
   end
   result
 end
@@ -155,7 +163,7 @@ metadef('or') do |scope, *args|
   result = false
   args.each do |arg|
     next if result
-    result = arg.eval(scope)
+    result = Heist.value_of(arg, scope)
   end
   result
 end

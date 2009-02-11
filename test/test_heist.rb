@@ -1,7 +1,10 @@
 $VERBOSE = nil
 $dir = File.dirname(__FILE__)
 
+$args = ARGV.map { |opt| "-#{opt}" }
+
 require $dir + "/../lib/heist"
+require $dir + "/../lib/bin_spec"
 require "test/unit"
 
 Class.new(Test::Unit::TestCase) do
@@ -9,7 +12,7 @@ Class.new(Test::Unit::TestCase) do
   
   def setup
     return @@env if @@env
-    @@env = Heist::Runtime.new
+    @@env = Heist::Runtime.new(Heist::BIN_SPEC.parse($args))
     puts "\nType of if() function: #{ @@env["if"].class }"
     puts "Application mode: #{ Heist::ORDERS[@@env.order] }\n\n"
     
@@ -36,6 +39,11 @@ Class.new(Test::Unit::TestCase) do
     define_method('test_' + test) do
       @@env.run($dir + '/' + test)
     end
+  end
+  
+  def test_continuations
+    return if @@env.stackless?
+    @@env.run($dir + '/continuations')
   end
   
   def test_undefined_variables

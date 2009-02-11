@@ -9,10 +9,4 @@ Hoe.new('heist', Heist::VERSION) do |p|
   p.extra_deps = %w(oyster treetop)
 end
 
-task :run do
-  puts "\nRunning 'test/test.scm':\n\n"
-  Heist.run('test/test.scm')
-  puts "\n"
-end
-
 # vim: syntax=Ruby

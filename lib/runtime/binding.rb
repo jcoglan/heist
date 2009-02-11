@@ -2,6 +2,8 @@ module Heist
   class Runtime
     
     class Binding
+      include Expression
+      
       attr_reader :expression, :scope
       
       def initialize(expression, scope)
