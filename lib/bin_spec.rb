@@ -13,8 +13,8 @@ Heist::BIN_SPEC = Oyster.spec do
   flag :interactive, :desc =>
         'Start an interactive Scheme session'
   
-  string :order, :default => 'eager', :desc =>
-        'Evaluation order, either "eager" or "lazy"'
+  flag :lazy, :default => false, :desc =>
+        'Use lazy evaluation order'
   
   flag :continuations, :default => false, :desc =>
         'Enable first-class continuations and (call/cc)'

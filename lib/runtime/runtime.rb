@@ -19,7 +19,7 @@ module Heist
     attr_accessor :stack
     
     def initialize(options = {})
-      @order         = options[:order] || EAGER
+      @order         = options[:lazy] ? LAZY : EAGER
       @continuations = !!options[:continuations]
       
       @scope = Scope.new(self)

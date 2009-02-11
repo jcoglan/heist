@@ -1,13 +1,11 @@
 #!/usr/bin/env ruby
 require File.dirname(__FILE__) + '/../lib/heist'
-require File.dirname(__FILE__) + '/spec'
+require File.dirname(__FILE__) + '/../lib/bin_spec'
 
 begin
 options = Heist::BIN_SPEC.parse
 rescue Oyster::HelpRendered; exit
 end
-
-options[:order] = Heist.const_get(options[:order].upcase)
 
 if options[:interactive]
   Heist::REPL.new(options).run
