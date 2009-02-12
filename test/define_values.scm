@@ -20,3 +20,6 @@
 (assert-equal 4 size)
 (assert-equal 3.14159 pi)
 
+(assert-raise UndefinedVariable (set! undef-var 10))
+(assert-raise UndefinedVariable (no-fun 13))
+

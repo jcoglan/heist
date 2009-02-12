@@ -22,6 +22,10 @@ Class.new(Test::Unit::TestCase) do
     @@env.define('assert-equal') do |expected, actual|
       assert_equal(expected, actual)
     end
+    @@env.metadef('assert-raise') do |scope, name, expression|
+      exception = Heist.const_get(name.to_s)
+      assert_raise(exception) { @@env.eval(expression) }
+    end
   end
   
   %w[   booleans
@@ -44,11 +48,6 @@ Class.new(Test::Unit::TestCase) do
   def test_continuations
     return if @@env.stackless?
     @@env.run($dir + '/continuations')
-  end
-  
-  def test_undefined_variables
-    assert_raise(Heist::UndefinedVariable) { @@env.eval("(set! undef-var 10)") }
-    assert_raise(Heist::UndefinedVariable) { @@env.eval("(no-fun 13)") }
   end
   
   def test_quotes
