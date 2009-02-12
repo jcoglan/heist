@@ -376,3 +376,5 @@
                 thing ((8 3 2 9) (2 3) (1 0 4) (8 3 2 1 7))
                 foo bar baz what))
 
+(assert-raise MacroTemplateMismatch (convoluted (with (a)) (with (b)) thing () foo))
+

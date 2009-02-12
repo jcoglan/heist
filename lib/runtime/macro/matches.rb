@@ -16,9 +16,10 @@ module Heist
         end
         
         def put(name, expression)
-          @names[@depth] << name.to_s
-          @data[name.to_s] ||= Splice.new(@depth)
-          @data[name.to_s] << expression unless expression.nil?
+          name = name.to_s
+          @names[@depth] << name
+          @data[name] ||= Splice.new(name, @depth)
+          @data[name] << expression unless expression.nil?
         end
         
         def inspecting(depth)
@@ -52,11 +53,15 @@ module Heist
         
         def size
           # TODO complain if sets are mismatched
-          names = @names[@depth].uniq
-          sizes = @data.select { |k,v| names.include?(k.to_s) }.
-                        map { |pair| pair.last.size(@depth) }
-          puts "SIZE: #{@depth} : #{names * ', '} -> #{sizes.inspect}"
-          sizes.uniq.first
+          names   = @names[@depth].uniq
+          splices = @data.select { |k,v| names.include?(k.to_s) }
+          sizes   = splices.map { |pair| pair.last.size(@depth) }.uniq
+          
+          return sizes.first if sizes.size == 1
+          
+          expressions = splices.map { |pair| '"' + pair.last.to_s(@depth) + '"' } * ', '
+          raise MacroTemplateMismatch.new(
+            "Macro could not be expanded: expressions #{expressions} are of different sizes")
         end
         
         def iterate!

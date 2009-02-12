@@ -3,10 +3,10 @@ module Heist
     class Macro
       
       class Splice
-        attr_reader :depth
+        attr_reader :name, :depth
         
-        def initialize(depth)
-          @depth = depth
+        def initialize(name, depth)
+          @name, @depth = name, depth
           @data  = []
           (0...@depth).inject(@data) { |list, d| list << []; list.last }
           @indexes = (0..@depth).map { 0 }
@@ -33,6 +33,10 @@ module Heist
         def shift!(depth)
           @indexes[depth] += 1
           @indexes[depth] = 0 if @indexes[depth] >= current(depth).size
+        end
+        
+        def to_s(depth = 0)
+          "#{@name}#{' ...' * (@depth - depth)}"
         end
         
       private
