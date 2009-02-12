@@ -15,12 +15,16 @@ module Heist
         @renames = {}
       end
       
-      # TODO:   * throw an error if no rules match
       def call(scope, cells)
         rule, matches = *rule_for(cells, scope)
-        return nil unless rule
-        expanded = expand_template(rule.last, matches)
-        Expansion.new(expanded)
+        
+        return Expansion.new(expand_template(rule.last, matches)) if rule
+        
+        # TODO include macro name in error message,
+        # and be more specific about which pattern failed
+        input = cells.map { |c| c.to_s } * ' '
+        raise SyntaxError.new(
+          "Bad syntax: no macro expansion found for (_ #{input})")
       end
       
       def to_s

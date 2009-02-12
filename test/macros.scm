@@ -32,7 +32,7 @@
 (assert-equal 7 bar)
 (assert-equal 6 baz)
 
-(assign stuff (3 2) to (foo bar))
+(assert-raise SyntaxError (assign stuff (3 2) to (foo bar)))
 (assert-equal 9 foo)
 (assert-equal 7 bar)
 
@@ -377,4 +377,5 @@
                 foo bar baz what))
 
 (assert-raise MacroTemplateMismatch (convoluted (with (a)) (with (b)) thing () foo))
+(assert-raise SyntaxError (convoluted nothing))
 

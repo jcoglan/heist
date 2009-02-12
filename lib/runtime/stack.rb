@@ -27,13 +27,16 @@ module Heist
       def clear!(limit = 0)
         process! while size > limit
         @value
+      rescue Exception => ex
+        restack!
+        raise ex
       end
       
     private
       
       def process!
         self.value = last.process!
-        return if @unwind or not last.complete?
+        return if empty? or @unwind or not last.complete?
         @value.replaces(last.target) if @tail
         fill!(pop.target, @value)
       end
@@ -45,10 +48,10 @@ module Heist
         restack!(value) if @unwind
       end
       
-      def restack!(stack)
+      def restack!(stack = [])
         pop while not empty?
         stack.each_with_index { |frame, i| self[i] = frame }
-        @value = stack.value
+        @value = stack.value if Stack === stack
       end
     end
     
