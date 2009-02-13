@@ -13,7 +13,7 @@ module Heist
     end
     
     extend Forwardable
-    def_delegators(:@scope, :[], :eval, :run, :define, :metadef, :call)
+    def_delegators(:@scope, :[], :eval, :define, :metadef, :call)
     
     attr_reader :order
     attr_accessor :stack
@@ -25,10 +25,18 @@ module Heist
       @scope = Scope.new(self)
       @stack = create_stack
       
-      instance_eval(File.read("#{ BUILTIN_PATH }common.rb"))
-      run("#{ BUILTIN_PATH }common.scm")
+      syntax_type = lazy? ? 'rb' : 'scm'
+      
+      run("#{ BUILTIN_PATH }primitives.rb")
+      run("#{ BUILTIN_PATH }syntax.#{syntax_type}")
+      run("#{ BUILTIN_PATH }library.scm")
       
       @start_time = Time.now.to_f
+    end
+    
+    def run(path)
+      return instance_eval(File.read(path)) if File.extname(path) == '.rb'
+      @scope.run(path)
     end
     
     def elapsed_time
