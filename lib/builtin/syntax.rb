@@ -8,7 +8,27 @@ end
 
 #----------------------------------------------------------------
 
-# Functions that create new scopes
+# Control structures
+
+# (cond) acts like the 'switch' statement in C-style languages.
+# Once a matching precondition is found, its consequent is
+# tail-called and no further preconditions are evaluated.
+metadef('cond') do |scope, *pairs|
+  result = nil
+  pairs.each do |list|
+    next if result
+    next unless Heist.value_of(list.first, scope)
+    result = Body.new(list[1..-1], scope)
+  end
+  result
+end
+
+# 'else' should really only be used inside (cond) blocks.
+define('else') { true }
+
+#----------------------------------------------------------------
+
+# Binding constructs
 
 # (let), (let*) and (letrec) each create a new scope and bind
 # values to some symbols before executing a series of lists.
@@ -46,3 +66,4 @@ metadef('letrec') do |scope, assignments, *body|
   end
   call('begin', closure, *body)
 end
+

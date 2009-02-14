@@ -1,4 +1,4 @@
-# Functions that create other functions
+# Functions that create new functions
 
 # (define) binds values to names in the current scope.
 # If the first parameter is a list it creates a function,
@@ -77,22 +77,6 @@ end
 metadef('begin') do |scope, *body|
   Body.new(body, scope)
 end
-
-# (cond) acts like the 'switch' statement in C-style languages.
-# Once a matching precondition is found, its consequent is
-# tail-called and no further preconditions are evaluated.
-metadef('cond') do |scope, *pairs|
-  result = nil
-  pairs.each do |list|
-    next if result
-    next unless Heist.value_of(list.first, scope)
-    result = Body.new(list[1..-1], scope)
-  end
-  result
-end
-
-# 'else' should really only be used inside (cond) blocks.
-define('else') { true }
 
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
