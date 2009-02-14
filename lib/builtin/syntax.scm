@@ -3,12 +3,15 @@
 ; (cond) acts like the 'switch' statement in C-style languages.
 ; Once a matching precondition is found, its consequent is
 ; tail-called and no further preconditions are evaluated.
-; TODO support the '=>' keyword
 (define-syntax cond (syntax-rules (else =>)
-  [(cond (else expression))
-    expression]
-  [(cond (test expression ...))
-    (if test (begin expression ...))]
+  [(cond) #f]
+  [(cond (else expr1 expr2 ...))
+    (begin expr1 expr2 ...)]
+  [(cond (test => function) clause ...)
+    (let ([temp test])
+      (if temp
+          (function temp)
+          (cond clause ...)))]
   [(cond (test expression ...) clause ...)
     (if test
         (begin expression ...)

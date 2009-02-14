@@ -17,8 +17,11 @@ metadef('cond') do |scope, *pairs|
   result = nil
   pairs.each do |list|
     next if result
-    next unless Heist.value_of(list.first, scope)
-    result = Body.new(list[1..-1], scope)
+    test = Heist.value_of(list.first, scope)
+    next unless test
+    result = list[1].to_s == '=>' ?
+             Heist.value_of(list[2], scope).call(scope, [test]) :
+             Body.new(list[1..-1], scope)
   end
   result
 end

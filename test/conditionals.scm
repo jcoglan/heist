@@ -42,3 +42,5 @@
 (assert-equal #t (and (> x 5) (<= x 10)))
 (assert-equal #t (or (>= x 5) (< x 3)))
 
+(assert-equal 720 (cond ((- 9 3) => fact)))
+
