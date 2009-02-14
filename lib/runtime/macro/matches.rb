@@ -52,11 +52,11 @@ module Heist
         end
         
         def size
-          # TODO complain if sets are mismatched
           names   = @names[@depth].uniq
           splices = @data.select { |k,v| names.include?(k.to_s) }
           sizes   = splices.map { |pair| pair.last.size(@depth) }.uniq
           
+          return 0 if sizes.empty?
           return sizes.first if sizes.size == 1
           
           expressions = splices.map { |pair| '"' + pair.last.to_s(@depth) + '"' } * ', '

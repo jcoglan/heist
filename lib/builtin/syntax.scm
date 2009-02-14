@@ -28,10 +28,14 @@
 ; (let) evaluates values in the enclosing scope, so lambdas will
 ; not be able to refer to other values assigned using the (let).
 (define-syntax let (syntax-rules ()
-  [(let ([name expression] ...) body ...)
-    ((lambda (name ...)
+  [(let ([variable init] ...) body ...)
+    ((lambda (variable ...)
         body ...)
-     expression ...)]))
+     init ...)]
+  [(let name ([variable init] ...) body ...)
+    (letrec ([name (lambda (variable ...)
+                  body ...)])
+      (name init ...))]))
 
 ; (let*) creates a new scope for each variable and evaluates
 ; each expression in its enclosing scope. Basically a shorthand
@@ -47,9 +51,9 @@
 ; (letrec) evaluates values in the inner scope, so lambdas are
 ; able to refer to other values assigned using the (letrec).
 (define-syntax letrec (syntax-rules ()
-  [(letrec ([name expression] ...) body ...)
+  [(letrec ([variable init] ...) body ...)
     ((lambda ()
-      (define name expression) ...
+      (define variable init) ...
       body ...))]))
 
 (define let-syntax let)

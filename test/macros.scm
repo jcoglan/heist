@@ -3,13 +3,11 @@
 (define-syntax while
   (syntax-rules ()
     [(while condition expression)
-      (letrec ((loop (lambda ()
-                        (if condition
-                            (begin
-                              expression
-                              (loop))
-                            #f))))
-        (loop))]))
+      (let loop ()
+        (if condition
+            (begin
+              expression
+              (loop))))]))
 
 (define i 5)
 (while (> i 0)
