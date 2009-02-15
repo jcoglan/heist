@@ -34,7 +34,7 @@
      init ...)]
   [(let name ([variable init] ...) body ...)
     (letrec ([name (lambda (variable ...)
-                  body ...)])
+                     body ...)])
       (name init ...))]))
 
 ; (let*) creates a new scope for each variable and evaluates
@@ -70,10 +70,10 @@
 ; loop is halted and the value of the expression following
 ; the test is returned.
 (define-syntax do (syntax-rules ()
-  [(do ((variable init step ...) ...)   ; Allow 0 or 1 step
+  [(do ([variable init step ...] ...)   ; Allow 0 or 1 step
        (test expression ...)
        command ...)
-    (let loop ((variable init) ...)
+    (let loop ([variable init] ...)
       (if test
           (begin expression ...)
           (begin
