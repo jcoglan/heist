@@ -10,11 +10,7 @@ module Heist
       def convert!
         return if @data
         @data = []
-        elements.each_with_index do |cell, i|
-          value = cell.eval
-          value.exists_at!(self, i) if Runtime::Expression === value
-          @data << value
-        end
+        elements.each_with_index { |cell, i| self[i] = cell.eval }
       end
       
       def [](index)
@@ -22,6 +18,7 @@ module Heist
       end
       
       def []=(index, value)
+        value.exists_at!(self, index) if Runtime::Expression === value
         @data[index] = value
       end
     end

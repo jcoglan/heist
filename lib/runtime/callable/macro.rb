@@ -12,11 +12,11 @@ module Heist
       
       def initialize(*args)
         super
-        @renames = {}
       end
       
       def call(scope, cells)
-        rule, matches = *rule_for(cells, scope)
+        @calling_scope = scope
+        rule, matches = *rule_for(cells)
         
         return Expansion.new(expand_template(rule.last, matches)) if rule
         
@@ -33,7 +33,7 @@ module Heist
       
     private
       
-      def rule_for(cells, scope)
+      def rule_for(cells)
         @body.each do |rule|
           matches = rule_matches(rule.first[1..-1], cells)
           return [rule, matches] if matches
@@ -158,7 +158,9 @@ module Heist
       end
       
       def rename(id)
-        @renames[id.to_s] ||= Identifier.new("::#{id}::")
+        i = 1
+        i += 1 while @calling_scope.defined?("#{id}#{i}")
+        Identifier.new("#{id}#{i}")
       end
     end
     
