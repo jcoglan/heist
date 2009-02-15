@@ -59,3 +59,28 @@
 (define let-syntax let)
 (define letrec-syntax letrec)
 
+;----------------------------------------------------------------
+
+; Iteration
+
+; (do) is similar to the 'while' construct in procedural
+; languages. It assigns initial values to a set of variables,
+; then performs the list of given commands in a loop. If
+; before any iteration the test is found to be false, the
+; loop is halted and the value of the expression following
+; the test is returned.
+(define-syntax do (syntax-rules ()
+  [(do ((variable init step ...) ...)   ; Allow 0 or 1 step
+       (test expression ...)
+       command ...)
+    (let loop ((variable init) ...)
+      (if test
+          (begin expression ...)
+          (begin
+            command ...
+            (loop (do "step" variable step ...) ...))))]
+  [(do "step" variable)
+    variable]
+  [(do "step" variable step)
+    step]))
+

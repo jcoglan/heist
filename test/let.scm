@@ -27,3 +27,9 @@
 
 (assert-equal 13 (letrec-test))
 
+
+(assert-equal 1024 (do ([x 1]
+                        [i 0 (+ i 1)])
+                       [(= i 10) x]
+                     (set! x (* x 2))))
+

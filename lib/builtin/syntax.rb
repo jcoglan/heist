@@ -78,3 +78,28 @@ metadef('letrec-syntax') do |*args|
   call('letrec', *args)
 end
 
+#----------------------------------------------------------------
+
+# Iteration
+
+# (do) is similar to the 'while' construct in procedural
+# languages. It assigns initial values to a set of variables,
+# then performs the list of given commands in a loop. If
+# before any iteration the test is found to be false, the
+# loop is halted and the value of the expression following
+# the test is returned.
+metadef('do') do |scope, assignments, test, *commands|
+  closure = Scope.new(scope)
+  assignments.each do |assign|
+    closure[assign.first] = Heist.value_of(assign[1], scope)
+  end
+  while not Heist.value_of(test.first, closure)
+    commands.each { |expr| Heist.value_of(expr, closure) }
+    assignments.each do |assign|
+      step = assign[2] || assign[0]
+      closure[assign.first] = Heist.value_of(step, closure)
+    end
+  end
+  call('begin', closure, *test[1..-1])
+end
+
