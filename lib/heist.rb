@@ -35,7 +35,7 @@ module Heist
     @parser.parse(source)
   end
   
-  def self.value_of(expression, scope)
+  def self.evaluate(expression, scope)
     Runtime::Expression === expression ?
         expression.eval(scope) :
         expression

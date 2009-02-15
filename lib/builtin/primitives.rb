@@ -7,7 +7,7 @@
 metadef('define') do |scope, names, *body|
   List === names ?
       scope.define(names.first, names.rest, body) :
-      scope[names] = Heist.value_of(body.first, scope)
+      scope[names] = Heist.evaluate(body.first, scope)
   nil
 end
 
@@ -21,7 +21,7 @@ end
 # (set!) reassigns the value of an existing bound variable,
 # in the innermost scope responsible for binding it.
 metadef('set!') do |scope, name, value|
-  scope.set!(name, Heist.value_of(value, scope))
+  scope.set!(name, Heist.evaluate(value, scope))
   nil
 end
 
@@ -30,7 +30,7 @@ end
 # Macros
 
 metadef('define-syntax') do |scope, name, transformer|
-  scope[name] = Heist.value_of(transformer, scope)
+  scope[name] = Heist.evaluate(transformer, scope)
 end
 
 metadef('let-syntax') do |*args|
@@ -51,7 +51,7 @@ end
 
 metadef('call-with-current-continuation') do |scope, callback|
   continuation = Continuation.new(scope.runtime.stack)
-  callback = Heist.value_of(callback, scope)
+  callback = Heist.evaluate(callback, scope)
   callback.call(scope, [continuation])
 end
 
@@ -81,7 +81,7 @@ end
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
 metadef('if') do |scope, cond, cons, alt|
-  which = Heist.value_of(cond, scope) ? cons : alt
+  which = Heist.evaluate(cond, scope) ? cons : alt
   Frame.new(which, scope)
 end
 
@@ -95,7 +95,7 @@ metadef('and') do |scope, *args|
   result = true
   args.each do |arg|
     next if !result
-    result = Heist.value_of(arg, scope)
+    result = Heist.evaluate(arg, scope)
   end
   result
 end
@@ -106,7 +106,7 @@ metadef('or') do |scope, *args|
   result = false
   args.each do |arg|
     next if result
-    result = Heist.value_of(arg, scope)
+    result = Heist.evaluate(arg, scope)
   end
   result
 end
@@ -122,7 +122,7 @@ metadef('runtime') do |scope|
 end
 
 metadef('eval') do |scope, string|
-  scope.eval(Heist.value_of(string, scope))
+  scope.eval(Heist.evaluate(string, scope))
 end
 
 define('display') do |expression|

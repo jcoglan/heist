@@ -38,7 +38,7 @@ module Heist
         
           else
             @complete = true
-            Heist.value_of(@expression, @scope)
+            Heist.evaluate(@expression, @scope)
         end
       end
       

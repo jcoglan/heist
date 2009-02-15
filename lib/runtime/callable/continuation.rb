@@ -9,7 +9,7 @@ module Heist
       end
       
       def call(scope, cells)
-        filler = Heist.value_of(cells.first, scope)
+        filler = Heist.evaluate(cells.first, scope)
         stack = @stack.copy
         stack.fill!(@target, filler)
         stack

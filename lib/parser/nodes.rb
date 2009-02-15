@@ -4,7 +4,7 @@ module Heist
     class Program < Treetop::Runtime::SyntaxNode
       def eval(scope)
         convert!
-        @data.map { |part| Heist.value_of(part, scope) }.last
+        @data.map { |part| Heist.evaluate(part, scope) }.last
       end
       
       def convert!

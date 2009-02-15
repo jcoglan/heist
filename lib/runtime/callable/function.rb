@@ -15,7 +15,7 @@ module Heist
         cells.each_with_index do |arg, i|
           params[i] = closure[@formals[i]] = lazy? ?
               Binding.new(arg, scope) :
-              Heist.value_of(arg, scope)
+              Heist.evaluate(arg, scope)
         end
         return @body.call(*params) if primitive?
         Body.new(@body, closure)

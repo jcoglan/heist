@@ -15,16 +15,16 @@ module Heist
                             @current.scope
         
         if Body === @current
-          expression[0...-1].each { |expr| Heist.value_of(expr, scope) }
+          expression[0...-1].each { |expr| Heist.evaluate(expr, scope) }
           return Frame.new(expression.last, scope)
         end
         
         case expression
         
           when List then
-            first = Heist.value_of(expression.first, scope)
+            first = Heist.evaluate(expression.first, scope)
             unless Function === first
-              rest = expression.rest.map { |cell| Heist.value_of(cell, scope) }
+              rest = expression.rest.map { |cell| Heist.evaluate(cell, scope) }
               return List.new([first] + rest)
             end
             

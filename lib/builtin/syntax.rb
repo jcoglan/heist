@@ -7,10 +7,10 @@ metadef('cond') do |scope, *pairs|
   result = nil
   pairs.each do |list|
     next if result
-    test = Heist.value_of(list.first, scope)
+    test = Heist.evaluate(list.first, scope)
     next unless test
     result = list[1].to_s == '=>' ?
-             Heist.value_of(list[2], scope).call(scope, [test]) :
+             Heist.evaluate(list[2], scope).call(scope, [test]) :
              Body.new(list[1..-1], scope)
   end
   result
@@ -41,7 +41,7 @@ metadef('let') do |scope, assignments, *body|
   else
     closure = Scope.new(scope)
     assignments.each do |assign|
-      closure[assign.first] = Heist.value_of(assign.last, scope)
+      closure[assign.first] = Heist.evaluate(assign.last, scope)
     end
     call('begin', closure, *body)
   end
@@ -54,7 +54,7 @@ end
 metadef('let*') do |scope, assignments, *body|
   closure = assignments.inject(scope) do |outer, assign|
     inner = Scope.new(outer)
-    inner[assign.first] = Heist.value_of(assign.last, outer)
+    inner[assign.first] = Heist.evaluate(assign.last, outer)
     inner
   end
   call('begin', closure, *body)
@@ -65,7 +65,7 @@ end
 metadef('letrec') do |scope, assignments, *body|
   closure = Scope.new(scope)
   assignments.each do |assign|
-    closure[assign.first] = Heist.value_of(assign.last, closure)
+    closure[assign.first] = Heist.evaluate(assign.last, closure)
   end
   call('begin', closure, *body)
 end
@@ -91,13 +91,13 @@ end
 metadef('do') do |scope, assignments, test, *commands|
   closure = Scope.new(scope)
   assignments.each do |assign|
-    closure[assign.first] = Heist.value_of(assign[1], scope)
+    closure[assign.first] = Heist.evaluate(assign[1], scope)
   end
-  while not Heist.value_of(test.first, closure)
-    commands.each { |expr| Heist.value_of(expr, closure) }
+  while not Heist.evaluate(test.first, closure)
+    commands.each { |expr| Heist.evaluate(expr, closure) }
     assignments.each do |assign|
       step = assign[2] || assign[0]
-      closure[assign.first] = Heist.value_of(step, closure)
+      closure[assign.first] = Heist.evaluate(step, closure)
     end
   end
   call('begin', closure, *test[1..-1])
