@@ -84,3 +84,29 @@
   [(do "step" variable step)
     step]))
 
+;----------------------------------------------------------------
+
+; Boolean combinators
+
+; (and) returns the first falsey value returned by the list
+; of expressions, or returns the value of the last expression
+; if all values are truthy.
+(define-syntax and (syntax-rules ()
+  [(and test) test]
+  [(and test1 test2 ...)
+    (let ([temp test1])
+      (if (not temp)
+          temp
+          (and test2 ...)))]))
+
+; (or) returns the first truthy value returned by the list
+; of expressions, or returns the value of the last expression
+; if all values are falsey.
+(define-syntax or (syntax-rules ()
+  [(or test) test]
+  [(or test1 test2 ...)
+    (let ([temp test1])
+      (if temp
+          temp
+          (or test2 ...)))]))
+

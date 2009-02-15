@@ -87,32 +87,6 @@ end
 
 #----------------------------------------------------------------
 
-# Boolean combinators
-
-# (and) evaluates its arguments until one of them returns
-# false. Returns true iff all arguments eval to true.
-metadef('and') do |scope, *args|
-  result = true
-  args.each do |arg|
-    next if !result
-    result = Heist.evaluate(arg, scope)
-  end
-  result
-end
-
-# (or) evaluates its arguments until one of them returns
-# true. Returns false iff all arguments eval to false.
-metadef('or') do |scope, *args|
-  result = false
-  args.each do |arg|
-    next if result
-    result = Heist.evaluate(arg, scope)
-  end
-  result
-end
-
-#----------------------------------------------------------------
-
 # Runtime utilities
 
 define('exit') { exit }

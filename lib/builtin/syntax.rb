@@ -103,3 +103,31 @@ metadef('do') do |scope, assignments, test, *commands|
   call('begin', closure, *test[1..-1])
 end
 
+#----------------------------------------------------------------
+
+# Boolean combinators
+
+# (and) returns the first falsey value returned by the list
+# of expressions, or returns the value of the last expression
+# if all values are truthy.
+metadef('and') do |scope, *args|
+  result = true
+  args.each do |arg|
+    next if not result
+    result = Heist.evaluate(arg, scope)
+  end
+  result
+end
+
+# (or) returns the first truthy value returned by the list
+# of expressions, or returns the value of the last expression
+# if all values are falsey.
+metadef('or') do |scope, *args|
+  result = false
+  args.each do |arg|
+    next if result
+    result = Heist.evaluate(arg, scope)
+  end
+  result
+end
+
