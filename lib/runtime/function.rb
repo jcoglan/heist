@@ -6,7 +6,7 @@ module Heist
       
       def initialize(scope, formals = [], body = nil, &block)
         @scope   = scope
-        @body    = body || block
+        @body    = body ? List.from(body) : block
         @formals = formals.map { |id| id.to_s }
       end
       

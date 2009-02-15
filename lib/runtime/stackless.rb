@@ -31,8 +31,6 @@ module Heist
             value = first.call(scope, expression.rest)
             return value unless Macro::Expansion === value
             
-            puts value.expression.to_s
-            
             expression.replace(value.expression)
             return Frame.new(value.expression, scope)
         

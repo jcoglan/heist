@@ -1,13 +1,3 @@
-metadef('let-syntax') do |*args|
-  call('let', *args)
-end
-
-metadef('letrec-syntax') do |*args|
-  call('letrec', *args)
-end
-
-#----------------------------------------------------------------
-
 # Control structures
 
 # (cond) acts like the 'switch' statement in C-style languages.
@@ -40,11 +30,21 @@ define('else') { true }
 # (let) evaluates values in the enclosing scope, so lambdas will
 # not be able to refer to other values assigned using the (let).
 metadef('let') do |scope, assignments, *body|
-  closure = Scope.new(scope)
-  assignments.each do |assign|
-    closure[assign.first] = Heist.value_of(assign.last, scope)
+  if Identifier === assignments
+    name = assignments
+    assignments = body.first
+    formals = assignments.map { |pair| pair.first }
+    values  = assignments.map { |pair| pair.last }
+    closure = Scope.new(scope)
+    closure[name] = Function.new(closure, formals, body[1..-1])
+    closure[name].call(scope, values)
+  else
+    closure = Scope.new(scope)
+    assignments.each do |assign|
+      closure[assign.first] = Heist.value_of(assign.last, scope)
+    end
+    call('begin', closure, *body)
   end
-  call('begin', closure, *body)
 end
 
 # (let*) creates a new scope for each variable and evaluates
@@ -68,5 +68,13 @@ metadef('letrec') do |scope, assignments, *body|
     closure[assign.first] = Heist.value_of(assign.last, closure)
   end
   call('begin', closure, *body)
+end
+
+metadef('let-syntax') do |*args|
+  call('let', *args)
+end
+
+metadef('letrec-syntax') do |*args|
+  call('letrec', *args)
 end
 
