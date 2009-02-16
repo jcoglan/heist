@@ -8,7 +8,6 @@ syntax('define') do |scope, names, *body|
   List === names ?
       scope.define(names.first, names.rest, body) :
       scope[names] = Heist.evaluate(body.first, scope)
-  nil
 end
 
 # (lambda) returns an anonymous function whose arguments
@@ -22,7 +21,6 @@ end
 # in the innermost scope responsible for binding it.
 syntax('set!') do |scope, name, value|
   scope.set!(name, Heist.evaluate(value, scope))
-  nil
 end
 
 #----------------------------------------------------------------
