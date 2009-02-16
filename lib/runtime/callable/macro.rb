@@ -3,7 +3,7 @@
 module Heist
   class Runtime
     
-    class Macro < MetaFunction
+    class Macro < Syntax
       ELLIPSIS = '...'
       
       %w[expansion splice matches].each do |klass|

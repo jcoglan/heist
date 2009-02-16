@@ -4,7 +4,7 @@
 # If the first parameter is a list it creates a function,
 # otherwise it eval's the second parameter and binds it
 # to the name given by the first.
-metadef('define') do |scope, names, *body|
+syntax('define') do |scope, names, *body|
   List === names ?
       scope.define(names.first, names.rest, body) :
       scope[names] = Heist.evaluate(body.first, scope)
@@ -14,13 +14,13 @@ end
 # (lambda) returns an anonymous function whose arguments
 # are named by the first parameter and whose body is given
 # by the remaining parameters.
-metadef('lambda') do |scope, names, *body|
+syntax('lambda') do |scope, names, *body|
   Function.new(scope, names, body)
 end
 
 # (set!) reassigns the value of an existing bound variable,
 # in the innermost scope responsible for binding it.
-metadef('set!') do |scope, name, value|
+syntax('set!') do |scope, name, value|
   scope.set!(name, Heist.evaluate(value, scope))
   nil
 end
@@ -29,19 +29,19 @@ end
 
 # Macros
 
-metadef('define-syntax') do |scope, name, transformer|
+syntax('define-syntax') do |scope, name, transformer|
   scope[name] = Heist.evaluate(transformer, scope)
 end
 
-metadef('let-syntax') do |*args|
+syntax('let-syntax') do |*args|
   call('let', *args)
 end
 
-metadef('letrec-syntax') do |*args|
+syntax('letrec-syntax') do |*args|
   call('letrec', *args)
 end
 
-metadef('syntax-rules') do |scope, keywords, *rules|
+syntax('syntax-rules') do |scope, keywords, *rules|
   Macro.new(scope, keywords, rules)
 end
 
@@ -49,7 +49,7 @@ end
 
 # Continuations
 
-metadef('call-with-current-continuation') do |scope, callback|
+syntax('call-with-current-continuation') do |scope, callback|
   continuation = Continuation.new(scope.runtime.stack)
   callback = Heist.evaluate(callback, scope)
   callback.call(scope, [continuation])
@@ -61,7 +61,7 @@ end
 
 # (quote) casts identifiers to symbols. If given a list, it
 # quotes all items in the list recursively.
-metadef('quote') do |scope, arg|
+syntax('quote') do |scope, arg|
   case arg
   when List then arg.map { |cell| call('quote', scope, cell) }
   when Identifier then arg.to_s.to_sym
@@ -74,13 +74,13 @@ end
 # Control structures
 
 # (begin) simply executes a series of lists in the current scope.
-metadef('begin') do |scope, *body|
+syntax('begin') do |scope, *body|
   Body.new(body, scope)
 end
 
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
-metadef('if') do |scope, cond, cons, alt|
+syntax('if') do |scope, cond, cons, alt|
   which = Heist.evaluate(cond, scope) ? cons : alt
   Frame.new(which, scope)
 end
@@ -91,11 +91,11 @@ end
 
 define('exit') { exit }
 
-metadef('runtime') do |scope|
+syntax('runtime') do |scope|
   scope.runtime.elapsed_time
 end
 
-metadef('eval') do |scope, string|
+syntax('eval') do |scope, string|
   scope.eval(Heist.evaluate(string, scope))
 end
 
@@ -103,7 +103,7 @@ define('display') do |expression|
   puts expression
 end
 
-metadef('load') do |scope, file|
+syntax('load') do |scope, file|
   scope.load(file)
 end
 

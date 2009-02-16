@@ -17,7 +17,7 @@ module Heist
         case @expression
         
           when List then
-            if MetaFunction === @values.first or @values.size == @expression.size
+            if Syntax === @values.first or @values.size == @expression.size
               @complete = true
               func = @values.first
               
@@ -77,7 +77,7 @@ module Heist
     private
       
       def merge!
-        return @data = @values unless MetaFunction === @values.first
+        return @data = @values unless Syntax === @values.first
         @data = @expression.dup
         @expression.each_with_index do |expr, i|
           index = @subexprs.index(expr)

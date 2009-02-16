@@ -22,7 +22,7 @@ Class.new(Test::Unit::TestCase) do
     @@env.define('assert-equal') do |expected, actual|
       assert_equal(expected, actual)
     end
-    @@env.metadef('assert-raise') do |scope, name, expression|
+    @@env.syntax('assert-raise') do |scope, name, expression|
       exception = Heist.const_get(name.to_s)
       assert_raise(exception) { @@env.eval(expression) }
     end

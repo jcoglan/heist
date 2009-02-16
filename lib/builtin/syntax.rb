@@ -3,7 +3,7 @@
 # (cond) acts like the 'switch' statement in C-style languages.
 # Once a matching precondition is found, its consequent is
 # tail-called and no further preconditions are evaluated.
-metadef('cond') do |scope, *pairs|
+syntax('cond') do |scope, *pairs|
   result = nil
   pairs.each do |list|
     next if result
@@ -29,7 +29,7 @@ define('else') { true }
 
 # (let) evaluates values in the enclosing scope, so lambdas will
 # not be able to refer to other values assigned using the (let).
-metadef('let') do |scope, assignments, *body|
+syntax('let') do |scope, assignments, *body|
   if Identifier === assignments
     name = assignments
     assignments = body.first
@@ -51,7 +51,7 @@ end
 # each expression in its enclosing scope. Basically a shorthand
 # for several nested (let)s. Variables may refer to those that
 # preceed them but not vice versa.
-metadef('let*') do |scope, assignments, *body|
+syntax('let*') do |scope, assignments, *body|
   closure = assignments.inject(scope) do |outer, assign|
     inner = Scope.new(outer)
     inner[assign.first] = Heist.evaluate(assign.last, outer)
@@ -62,7 +62,7 @@ end
 
 # (letrec) evaluates values in the inner scope, so lambdas are
 # able to refer to other values assigned using the (letrec).
-metadef('letrec') do |scope, assignments, *body|
+syntax('letrec') do |scope, assignments, *body|
   closure = Scope.new(scope)
   assignments.each do |assign|
     closure[assign.first] = Heist.evaluate(assign.last, closure)
@@ -70,11 +70,11 @@ metadef('letrec') do |scope, assignments, *body|
   call('begin', closure, *body)
 end
 
-metadef('let-syntax') do |*args|
+syntax('let-syntax') do |*args|
   call('let', *args)
 end
 
-metadef('letrec-syntax') do |*args|
+syntax('letrec-syntax') do |*args|
   call('letrec', *args)
 end
 
@@ -88,7 +88,7 @@ end
 # before any iteration the test is found to be false, the
 # loop is halted and the value of the expression following
 # the test is returned.
-metadef('do') do |scope, assignments, test, *commands|
+syntax('do') do |scope, assignments, test, *commands|
   closure = Scope.new(scope)
   assignments.each do |assign|
     closure[assign.first] = Heist.evaluate(assign[1], scope)
@@ -110,7 +110,7 @@ end
 # (and) returns the first falsey value returned by the list
 # of expressions, or returns the value of the last expression
 # if all values are truthy.
-metadef('and') do |scope, *args|
+syntax('and') do |scope, *args|
   result = true
   args.each do |arg|
     next if not result
@@ -122,7 +122,7 @@ end
 # (or) returns the first truthy value returned by the list
 # of expressions, or returns the value of the last expression
 # if all values are falsey.
-metadef('or') do |scope, *args|
+syntax('or') do |scope, *args|
   result = false
   args.each do |arg|
     next if result

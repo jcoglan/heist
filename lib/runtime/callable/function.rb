@@ -34,7 +34,7 @@ module Heist
       end
     end
     
-    class MetaFunction < Function
+    class Syntax < Function
       def call(scope, cells)
         @body.call(scope, *cells)
       end
