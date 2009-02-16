@@ -2,12 +2,16 @@ module Heist
   class Runtime
     
     class Function
-      attr_reader :body
+      attr_reader :body, :name
       
       def initialize(scope, formals = [], body = nil, &block)
         @scope   = scope
         @body    = body ? List.from(body) : block
         @formals = formals.map { |id| id.to_s }
+      end
+      
+      def name=(name)
+        @name ||= name.to_s
       end
       
       def call(scope, cells)
@@ -30,13 +34,17 @@ module Heist
       end
       
       def to_s
-        "#<procedure>"
+        "#<procedure:#{ @name }>"
       end
     end
     
     class Syntax < Function
       def call(scope, cells)
         @body.call(scope, *cells)
+      end
+      
+      def to_s
+        "#<syntax:#{ @name }>"
       end
     end
     

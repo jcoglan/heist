@@ -24,11 +24,11 @@ module Heist
         # and be more specific about which pattern failed
         input = cells.map { |c| c.to_s } * ' '
         raise SyntaxError.new(
-          "Bad syntax: no macro expansion found for (_ #{input})")
+          "Bad syntax: no macro expansion found for (#{@name} #{input})")
       end
       
       def to_s
-        "#<macro>"
+        "#<macro:#{ @name }>"
       end
       
     private

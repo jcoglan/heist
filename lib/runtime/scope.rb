@@ -25,6 +25,8 @@ module Heist
       
       def []=(name, value)
         @symbols[to_name(name)] = value
+        value.name = name if Function === value
+        value
       end
       
       def defined?(name)
