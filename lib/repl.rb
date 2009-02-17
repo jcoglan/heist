@@ -24,7 +24,7 @@ module Heist
         reset!
         begin
           result = @runtime.eval(tree)
-          puts "; => #{ result }\n\n" unless result.nil?
+          puts "; => #{ result.inspect }\n\n" unless result.nil?
         rescue Exception => ex
           puts "; [error] #{ ex.message }\n\n"
           puts "; backtrace: " + ex.backtrace.join("\n;            ") +

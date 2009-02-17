@@ -23,11 +23,6 @@ module Heist
         
           when List then
             first = Heist.evaluate(expression.first, scope)
-            unless Function === first
-              rest = expression.rest.map { |cell| Heist.evaluate(cell, scope) }
-              return List.new([first] + rest)
-            end
-            
             value = first.call(scope, expression.rest)
             return value unless Macro::Expansion === value
             

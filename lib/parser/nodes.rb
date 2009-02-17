@@ -1,6 +1,13 @@
 module Heist
   module Scheme
     
+    SHORTHANDS = {
+      "'"   => :quote,
+      "`"   => :quasiquote,
+      ","   => :unquote,
+      ",@"  => :'unquote-splicing'
+    }
+    
     class Program < Treetop::Runtime::SyntaxNode
       def eval(scope)
         convert!
@@ -37,9 +44,10 @@ module Heist
     
     class Cell < Treetop::Runtime::SyntaxNode
       def eval
-        result = elements[2].eval
-        elements[1].text_value == "'" ?
-            Runtime::List.new([Runtime::Identifier.new(:quote), result]) :
+        result = elements[3].eval
+        string = elements[1].text_value
+        SHORTHANDS.has_key?(string) ?
+            Runtime::List.new([Runtime::Identifier.new(SHORTHANDS[string]), result]) :
             result
       end
     end

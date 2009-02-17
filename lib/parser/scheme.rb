@@ -36,7 +36,11 @@ module Heist
       end
 
       def space
-        elements[3]
+        elements[2]
+      end
+
+      def space
+        elements[4]
       end
     end
 
@@ -60,23 +64,27 @@ module Heist
         end
         s0 << r2
         if r2
-          i4 = index
-          r5 = _nt_list
-          if r5
-            r4 = r5
-          else
-            r6 = _nt_atom
-            if r6
-              r4 = r6
-            else
-              self.index = i4
-              r4 = nil
-            end
-          end
+          r4 = _nt_space
           s0 << r4
           if r4
-            r7 = _nt_space
-            s0 << r7
+            i5 = index
+            r6 = _nt_list
+            if r6
+              r5 = r6
+            else
+              r7 = _nt_atom
+              if r7
+                r5 = r7
+              else
+                self.index = i5
+                r5 = nil
+              end
+            end
+            s0 << r5
+            if r5
+              r8 = _nt_space
+              s0 << r8
+            end
           end
         end
       end
@@ -101,12 +109,52 @@ module Heist
         return cached
       end
 
+      i0 = index
       if input.index("'", index) == index
-        r0 = (SyntaxNode).new(input, index...(index + 1))
+        r1 = (SyntaxNode).new(input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure("'")
-        r0 = nil
+        r1 = nil
+      end
+      if r1
+        r0 = r1
+      else
+        if input.index("`", index) == index
+          r2 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
+        else
+          terminal_parse_failure("`")
+          r2 = nil
+        end
+        if r2
+          r0 = r2
+        else
+          if input.index(",@", index) == index
+            r3 = (SyntaxNode).new(input, index...(index + 2))
+            @index += 2
+          else
+            terminal_parse_failure(",@")
+            r3 = nil
+          end
+          if r3
+            r0 = r3
+          else
+            if input.index(",", index) == index
+              r4 = (SyntaxNode).new(input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure(",")
+              r4 = nil
+            end
+            if r4
+              r0 = r4
+            else
+              self.index = i0
+              r0 = nil
+            end
+          end
+        end
       end
 
       node_cache[:quote][start_index] = r0

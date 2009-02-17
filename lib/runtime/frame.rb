@@ -19,11 +19,7 @@ module Heist
           when List then
             if Syntax === @values.first or @values.size == @expression.size
               @complete = true
-              func = @values.first
-              
               merge!
-              return List.new(@data) unless Function === func
-              
               result = @data.first.call(@scope, @data[1..-1])
               return result unless Macro::Expansion === result
               return reset!(result.expression, true)

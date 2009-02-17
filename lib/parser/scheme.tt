@@ -5,11 +5,11 @@ module Heist
     end
     
     rule cell
-      space quote? (list / atom) space <Cell>
+      space quote? space (list / atom) space <Cell>
     end
     
     rule quote
-      "'"
+      "'" / "`" / ",@" / ","
     end
     
     rule list
