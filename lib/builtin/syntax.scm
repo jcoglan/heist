@@ -17,6 +17,22 @@
         (begin expression ...)
         (cond clause ...))]))
 
+(define-syntax case (syntax-rules (else)
+  [(case key) #f]
+  [(case key (else expr1 expr2 ...))
+    (begin expr1 expr2 ...)]
+  [(case key (() expr ...) clause ...)
+    (case key clause ...)]
+  [(case key
+         ((datum1 datum2 ...) expr1 expr2 ...)
+         clause ...)
+    (let ([temp key])
+      (if (eqv? temp 'datum1)
+          (begin expr1 expr2 ...)
+          (case temp
+                ((datum2 ...) expr1 expr2 ...)
+                clause ...)))]))
+
 ;----------------------------------------------------------------
 
 ; Binding constructs

@@ -44,3 +44,12 @@
 
 (assert-equal 720 (cond ((- 9 3) => fact)))
 
+(assert-equal 'composite (case (* 2 3)
+  ((2 3 5 7) 'prime)
+  ((1 4 6 8 9) 'composite)))
+
+(assert-equal 'consonant (case 'c
+  ((a e i o u) 'vowel)
+  ((w y) 'semivowel)
+  (else 'consonant)))
+
