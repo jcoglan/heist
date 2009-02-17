@@ -1,13 +1,14 @@
 # Control structures
 
-# (cond) acts like the 'switch' statement in C-style languages.
-# Once a matching precondition is found, its consequent is
-# tail-called and no further preconditions are evaluated.
+# (cond) goes through a list of tests, evaluating each one
+# in order of appearance. Once a matching precondition is
+# found, its consequent is tail-called and no further
+# preconditions are evaluated.
 syntax('cond') do |scope, *pairs|
   result = nil
   pairs.each do |list|
     next if result
-    test = Heist.evaluate(list.first, scope)
+    test = list.first.to_s == 'else' || Heist.evaluate(list.first, scope)
     next unless test
     result = list[1].to_s == '=>' ?
              Heist.evaluate(list[2], scope).call(scope, [test]) :
@@ -16,8 +17,22 @@ syntax('cond') do |scope, *pairs|
   result
 end
 
-# 'else' should really only be used inside (cond) blocks.
-define('else') { true }
+# (case) acts like Ruby's case statement. The value of the
+# given expression is compared against a series of lists;
+# once a list is found to include the value, the expressions
+# following the list are evaluated and no further lists
+# are tested.
+syntax('case') do |scope, key, *clauses|
+  value = Heist.evaluate(key, scope)
+  result = nil
+  clauses.each do |list|
+    next if result
+    values = call('quote', scope, list.first)
+    result = Body.new(list[1..-1], scope) if values == :else or
+                                             values.include?(value)
+  end
+  result
+end
 
 #----------------------------------------------------------------
 

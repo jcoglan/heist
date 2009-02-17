@@ -1,8 +1,9 @@
 ; Control structures
 
-; (cond) acts like the 'switch' statement in C-style languages.
-; Once a matching precondition is found, its consequent is
-; tail-called and no further preconditions are evaluated.
+; (cond) goes through a list of tests, evaluating each one
+; in order of appearance. Once a matching precondition is
+; found, its consequent is tail-called and no further
+; preconditions are evaluated.
 (define-syntax cond (syntax-rules (else =>)
   [(cond) #f]
   [(cond (else expr1 expr2 ...))
@@ -17,6 +18,11 @@
         (begin expression ...)
         (cond clause ...))]))
 
+; (case) acts like Ruby's case statement. The value of the
+; given expression is compared against a series of lists;
+; once a list is found to include the value, the expressions
+; following the list are evaluated and no further lists
+; are tested.
 (define-syntax case (syntax-rules (else)
   [(case key) #f]
   [(case key (else expr1 expr2 ...))
