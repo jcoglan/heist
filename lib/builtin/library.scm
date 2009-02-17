@@ -51,6 +51,10 @@
 (define (newline)
   (display "\n"))
 
+; (force)
+; Extracts the value of a promise created using (delay)
+(define (force promise) (promise))
+
 ; (call/cc)
 ; Alias for (call-with-current-continuation)
 (define call/cc call-with-current-continuation)

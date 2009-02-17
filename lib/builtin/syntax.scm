@@ -132,3 +132,24 @@
           temp
           (or test2 ...)))]))
 
+;----------------------------------------------------------------
+
+; Delayed evaluation
+
+; (delay) allows the evaluation of an expression to be delayed
+; by wrapping it in a promise. Use (force) to evaluate the promise
+; at a later time. The expression inside a promise is only
+; ever evaluated once, so a promise can be implemented as a
+; memoized closure.
+(define-syntax delay (syntax-rules ()
+  [(delay expression)
+    (let ([forced #f]
+          [memo #f])
+      (lambda ()
+        (if forced
+            memo
+            (begin
+              (set! memo expression)
+              (set! forced #t)
+              memo))))]))
+
