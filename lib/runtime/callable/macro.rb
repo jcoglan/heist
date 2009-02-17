@@ -158,6 +158,7 @@ module Heist
       end
       
       def rename(id)
+        return id unless @calling_scope.defined?(id)
         i = 1
         i += 1 while @calling_scope.defined?("#{id}#{i}")
         Identifier.new("#{id}#{i}")

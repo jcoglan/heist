@@ -34,6 +34,13 @@
 (assert-equal 9 foo)
 (assert-equal 7 bar)
 
+(define-syntax dont-rename-else (syntax-rules ()
+  [(foo test cons alt)
+    (cond (test cons)
+          (else alt))]))
+
+(assert-equal 8 (dont-rename-else #f 6 8))
+
 
 ; Test scoping - example from R5RS
 
