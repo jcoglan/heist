@@ -61,7 +61,11 @@ end
 # quotes all items in the list recursively.
 syntax('quote') do |scope, arg|
   case arg
-  when List then arg.map { |cell| call('quote', scope, cell) }
+  when List then
+    arg.inject(List.new) do |list, cell|
+      list << call('quote', scope, cell)
+      list
+    end
   when Identifier then arg.to_s.to_sym
   else arg
   end

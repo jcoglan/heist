@@ -20,6 +20,7 @@ module Heist
             if Syntax === @values.first or @values.size == @expression.size
               @complete = true
               merge!
+              return @data unless Function === @data.first
               result = @data.first.call(@scope, @data[1..-1])
               return result unless Macro::Expansion === result
               return reset!(result.expression, true)
