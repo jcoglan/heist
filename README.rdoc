@@ -36,17 +36,19 @@ library functions added as and when I need them.
 Features implemented so far
 
 * Data primitives: only literals and proper lists so far
+* <tt>(quote)</tt> and <tt>(quasiquote)</tt>, with <tt>'</tt>, <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
+* Numbers: integers, reals, rationals (sort of), arithmetic and other math functions
+* Booleans: literals, <tt>(and)</tt>, <tt>(or)</tt>, conditional logic and comparators
 * <tt>(define)</tt> for declaring variables, including function shorthand
 * First-class <tt>(lambda)</tt> expressions, lexical scoping, closures
 * Free variable assignment using <tt>(set!)</tt>
 * Scoped assignment: <tt>(let)</tt>, <tt>(let*)</tt> and <tt>(letrec)</tt>
-* Control structures: <tt>(begin)</tt>, <tt>(cond)</tt>, <tt>(if)</tt>
-* R5RS macros, expanded and inlined at runtime
+* Control structures: <tt>(begin)</tt>, <tt>(cond)</tt>, <tt>(if)</tt>, <tt>(case)</tt>, <tt>(do)</tt>
+* Delayed evaluation: <tt>(delay)</tt> and <tt>(force)</tt>
+* R5RS <tt>(syntax-rules)</tt> macros, expanded and inlined at runtime
+* Optional macro hygiene, so expansions can use either Scheme or CL semantics
 * First class continuations and <tt>(call/cc)</tt>
 * Tail call optimisation
-* <tt>(quote)</tt> for list literals, no quasiquoting yet
-* Numbers: integers, reals, rationals (sort of), arithmetic and other math functions
-* Booleans: literals, <tt>(and)</tt>, <tt>(or)</tt>, conditional logic and comparators
 * Utilities: <tt>(display)</tt>, <tt>(eval)</tt>, <tt>(runtime)</tt>
 * Load external files and libraries using <tt>(load)</tt>
 
