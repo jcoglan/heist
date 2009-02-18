@@ -24,7 +24,7 @@ module Heist
         reset!
         begin
           result = @runtime.eval(tree)
-          puts "; => #{ result.inspect }\n\n" unless result.nil?
+          puts "; => #{ result }\n\n" unless result.nil?
         rescue Exception => ex
           puts "; [error] #{ ex.message }\n\n"
           puts "; backtrace: " + ex.backtrace.join("\n;            ") +
@@ -58,6 +58,10 @@ module Heist
       code = line.dup
       while code == code.gsub!(/\([^\(\)\[\]]*\)|\[[^\(\)\[\]]*\]/, ''); end
       calls = code.scan(/[\(\[](?:[^\(\)\[\]\s]*\s*)/).flatten
+      
+      calls.pop while calls.size > 1 and
+                      SPECIAL.include?(calls.last[1..-1].strip) and
+                      SPECIAL.include?(calls[-2][1..-1].strip)
       
       offsets  = calls.inject([]) do |list, call|
         index  = list.empty? ? 0 : list.last.last - @indent
