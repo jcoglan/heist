@@ -146,10 +146,10 @@ module Heist
         
           when Identifier then
             return matches.get(template) if matches.defined?(template)
-            return template unless @hygienic
+            return Identifier.new(template) unless @hygienic
             
             @scope.defined?(template) ?
-                Binding.new(template, @scope) :
+                Binding.new(template, @scope, false) :
                 rename(template)
         
           else

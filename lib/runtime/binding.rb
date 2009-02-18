@@ -6,13 +6,15 @@ module Heist
       
       attr_reader :expression, :scope
       
-      def initialize(expression, scope)
+      def initialize(expression, scope, memoized = true)
         @expression = expression
         @scope      = scope
+        @memoized   = !!memoized
       end
       
       def extract
-        @value ||= Heist.evaluate(@expression, @scope)
+        return @value if defined?(@value) and @memoized
+        @value = Heist.evaluate(@expression, @scope)
       end
       
       def eval(scope)

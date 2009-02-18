@@ -26,3 +26,14 @@
   (assert-equal 6 set!)
   (assert-equal 5 other))
 
+(define plus +)
+(define-syntax dyn-plus (syntax-rules ()
+  [(_ x y)
+    (plus x y)]))
+(define (dyn-plus-call)
+  (dyn-plus 7 8))
+
+(assert-equal 15 (dyn-plus-call))
+(set! plus -)
+(assert-equal -1 (dyn-plus-call))
+
