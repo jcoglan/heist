@@ -15,12 +15,13 @@ module Heist
     extend Forwardable
     def_delegators(:@scope, :[], :eval, :define, :syntax, :call)
     
-    attr_reader :order
+    attr_reader :order, :hygienic
     attr_accessor :stack
     
     def initialize(options = {})
       @order         = options[:lazy] ? LAZY : EAGER
       @continuations = !!options[:continuations]
+      @hygienic      = !options[:unhygienic]
       
       @scope = Scope.new(self)
       @stack = create_stack

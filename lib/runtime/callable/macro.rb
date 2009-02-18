@@ -10,8 +10,9 @@ module Heist
         require RUNTIME_PATH + 'callable/macro/' + klass
       end
       
-      def initialize(*args)
+      def initialize(scope, *args)
         super
+        @hygienic = scope.runtime.hygienic
       end
       
       def call(scope, cells)
@@ -144,12 +145,11 @@ module Heist
             result
         
           when Identifier then
-            matches.defined?(template) ?
-                matches.get(template) :
-                
+            return matches.get(template) if matches.defined?(template)
+            return template unless @hygienic
+            
             @scope.defined?(template) ?
                 Binding.new(template, @scope) :
-                
                 rename(template)
         
           else

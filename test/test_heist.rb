@@ -45,6 +45,10 @@ Class.new(Test::Unit::TestCase) do
     end
   end
   
+  def test_macro_hygiene
+    @@env.run($dir + '/' + (@@env.hygienic ? 'hygienic' : 'unhygienic'))
+  end
+  
   def test_continuations
     return if @@env.stackless?
     @@env.run($dir + '/continuations')

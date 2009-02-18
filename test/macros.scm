@@ -1,3 +1,5 @@
+(load "macro-helpers")
+
 ; Basic test: no subpatterns or ellipses
 
 (define-syntax while
@@ -42,15 +44,6 @@
 (assert-equal 8 (dont-rename-else #f 6 8))
 
 
-; Test scoping - example from R5RS
-
-(assert-equal 'outer
-  (let ((x 'outer))
-    (let-syntax ((m (syntax-rules () [(m) x])))
-      (let ((x 'inner))
-        (m)))))
-
-
 ; Test literal matching
 
 (define-syntax iffy
@@ -88,19 +81,6 @@
 
 
 ; Test ellipses
-
-(define-syntax when
-  (syntax-rules ()
-    [(when test stmt1 stmt2 ...)
-     (if test
-         (begin stmt1
-                stmt2 ...))]))
-
-(assert-equal 'now
- (let ((if #t))
-      (when if (set! if 'now))
-      if))
-
 (when true
   (set! i (+ i 1))
   (set! i (+ i 1))
@@ -126,35 +106,12 @@
 
 
 ; Test execution scope using (swap)
-; Example from PLT docs
-
-(define-syntax swap (syntax-rules ()
-  [(swap x y)
-    (let ([temp x])
-      (set! x y)
-      (set! y temp))]))
-
 (define a 4)
 (define b 7)
 (swap a b)
 
 (assert-equal 7 a)
 (assert-equal 4 b)
-
-
-; Test macro bound variable renaming
-
-(let ([temp 5]
-      [other 6])
-  (swap temp other)
-  (assert-equal 6 temp)
-  (assert-equal 5 other))
-
-(let ([set! 5]
-      [other 6])
-  (swap set! other)
-  (assert-equal 6 set!)
-  (assert-equal 5 other))
 
 
 ; More ellipsis tests from PLT docs

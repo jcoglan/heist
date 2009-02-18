@@ -18,5 +18,8 @@ Heist::BIN_SPEC = Oyster.spec do
   
   flag :continuations, :default => false, :desc =>
         'Enable first-class continuations and (call/cc)'
+  
+  flag :unhygienic, :default => false, :desc =>
+        'Use Common Lisp-style unhygienic macros'
 end
 
