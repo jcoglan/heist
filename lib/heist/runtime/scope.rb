@@ -5,6 +5,7 @@ module Heist
       def initialize(parent = nil)
         @parent = parent || {}
         @symbols = {}
+        @start_time = Time.now.to_f
       end
       
       def [](name)
@@ -17,6 +18,10 @@ module Heist
       
       def eval(source)
         Heist.parse(source).eval(self)
+      end
+      
+      def elapsed_time
+        (Time.now.to_f - @start_time) * 1000000
       end
     end
     

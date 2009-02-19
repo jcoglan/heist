@@ -14,6 +14,14 @@ module Heist
           Function.new(scope, names.as_string, body)
         end
         
+        env["begin"] = MetaFunction.new(env) do |scope, *body|
+          body.map { |form| form.eval(scope) }.last
+        end
+        
+        env["runtime"] = MetaFunction.new(env) do |scope|
+          scope.elapsed_time
+        end
+        
         env["display"] = Function.new(env) do |expression|
           puts expression
         end
