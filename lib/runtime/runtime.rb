@@ -26,7 +26,7 @@ module Heist
       @scope = Scope.new(self)
       @stack = create_stack
       
-      syntax_type = lazy? ? 'rb' : 'scm'
+      syntax_type = (lazy? or not @hygienic) ? 'rb' : 'scm'
       
       run("#{ BUILTIN_PATH }primitives.rb")
       run("#{ BUILTIN_PATH }syntax.#{syntax_type}")
