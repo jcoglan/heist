@@ -12,7 +12,7 @@ syntax('cond') do |scope, *pairs|
     next unless test
     result = list[1].to_s == '=>' ?
              Heist.evaluate(list[2], scope).call(scope, [test]) :
-             Body.new(list[1..-1], scope)
+             Body.new(list.rest, scope)
   end
   result
 end
@@ -28,8 +28,8 @@ syntax('case') do |scope, key, *clauses|
   clauses.each do |list|
     next if result
     values = call('quote', scope, list.first)
-    result = Body.new(list[1..-1], scope) if values == :else or
-                                             values.include?(value)
+    result = Body.new(list.rest, scope) if values == :else or
+                                           values.include?(value)
   end
   result
 end
@@ -115,7 +115,7 @@ syntax('do') do |scope, assignments, test, *commands|
       closure[assign.first] = Heist.evaluate(step, closure)
     end
   end
-  call('begin', closure, *test[1..-1])
+  call('begin', closure, *test.rest)
 end
 
 #----------------------------------------------------------------

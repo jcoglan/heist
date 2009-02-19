@@ -36,7 +36,7 @@ module Heist
       
       def rule_for(cells)
         @body.each do |rule|
-          matches = rule_matches(rule.first[1..-1], cells)
+          matches = rule_matches(rule.first.rest, cells)
           return [rule, matches] if matches
         end
         nil
