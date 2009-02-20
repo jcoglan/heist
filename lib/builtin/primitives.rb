@@ -140,42 +140,54 @@ end
 
 #----------------------------------------------------------------
 
-# Arithmetic and other math functions
+# Numerical functions
 
+# Returns the sum of all arguments passed
 define('+') do |*args|
   args.any? { |arg| String === arg } ?
       args.inject("") { |str, arg| str + arg.to_s } :
       args.inject(0)  { |sum, arg| sum + arg }
 end
 
+# Subtracts the second argument from the first
 define('-') do |op1, op2|
   op2.nil? ? 0 - op1 : op1 - op2
 end
 
+# Returns the product of all arguments passed
 define('*') do |*args|
   args.inject(1) { |prod, arg| prod * arg }
 end
 
+# Returns the first argument divided by the second, or the
+# reciprocal of the first if only one argument is given
 define('/') do |op1, op2|
   op2.nil? ? 1.0 / op1 : op1 / op2.to_f
 end
 
+# Returns the result of raising the first argument to the
+# power of the second
 define('expt') do |op1, op2|
   op1 ** op2
 end
 
+# Returns the remainder after dividing the first operand
+# by the second
 define('remainder') do |op1, op2|
   op1 % op2
 end
 
+# Returns a random number in the range 0...max
 define('random') do |max|
   rand(max)
 end
 
+# Returns the maximum value in the list of arguments
 define('max') do |*args|
   args.max
 end
 
+# Returns the minimum value in the list of arguments
 define('min') do |*args|
   args.min
 end
@@ -184,21 +196,43 @@ end
 
 # Comparators
 
+# TODO write a more exact implementation, and implement (eq?) and (equal?)
 define('eqv?') do |op1, op2|
   op1.class == op2.class && op1 == op2
 end
 
-define('=') do |op1, op2|
-  # TODO raise an exception if they're not numeric
-  Numeric === op1 && Numeric === op2 && op1 == op2
+# TODO raise an exception if they're not numeric
+# Returns true iff all arguments are numerically equal
+define('=') do |*args|
+  args.all? { |arg| arg == args.first }
 end
 
-define('>') do |op1, op2|
-  op1 > op2
+# Returns true iff the arguments are monotonically decreasing
+define('>') do |*args|
+  result = true
+  args.inject { |former, prior| result = false unless former > prior }
+  result
 end
 
-define('<') do |op1, op2|
-  op1 < op2
+# Returns true iff the arguments are monotonically non-increasing
+define('>=') do |*args|
+  result = true
+  args.inject { |former, prior| result = false unless former >= prior }
+  result
+end
+
+# Returns true iff the arguments are monotonically increasing
+define('<') do |*args|
+  result = true
+  args.inject { |former, prior| result = false unless former < prior }
+  result
+end
+
+# Returns true iff the arguments are monotonically non-decreasing
+define('<=') do |*args|
+  result = true
+  args.inject { |former, prior| result = false unless former <= prior }
+  result
 end
 
 #----------------------------------------------------------------

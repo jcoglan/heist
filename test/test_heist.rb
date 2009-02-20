@@ -67,7 +67,7 @@ Class.new(Test::Unit::TestCase) do
   
   def test_birds
     return unless @@env.lazy?
-    @@env.eval('(load "birds")')
+    @@env.eval('(load "birdhouse")')
     
     @@env.eval <<-CODE
       (define factorial (Y

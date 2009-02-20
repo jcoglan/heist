@@ -11,16 +11,6 @@
 (define true #t)
 (define false #f)
 
-; (<= x y)
-; Returns true iff x <= y
-(define (<= x y)
-  (not (> x y)))
-
-; (>= x y)
-; Returns true iff x >= y
-(define (>= x y)
-  (not (< x y)))
-
 ; (boolean? x)
 ; Returns true iff x is a boolean value
 (define (boolean? x)
@@ -30,18 +20,43 @@
 ; Returns true iff x is any type of number
 (define number? complex?)
 
+; (zero? x)
+; Returns true iff x is zero
+(define (zero? x)
+  (eqv? x 0))
+
+; (positive? x)
+; Returns true iff x > 0
+(define (positive? x)
+  (> x 0))
+
+; (negative? x)
+; Returns true iff x < 0
+(define (negative? x)
+  (< x 0))
+
+; (odd? x)
+; Returns true iff x is odd
+(define (odd? x)
+  (= 1 (remainder x 2)))
+
+; (even? x)
+; Returns true iff x is even
+(define (even? x)
+  (zero? (remainder x 2)))
+
 ; (abs x)
 ; Returns the absolute value of a number
 (define (abs x)
-  (if (>= x 0)
-      x
-      (- x)))
+  (if (negative? x)
+      (- x)
+      x))
 
-; (fact x)
+; (factorial x)
 ; Returns factorial of x
-(define (fact x)
+(define (factorial x)
   (define (iter y acc)
-    (if (= y 0)
+    (if (zero? y)
         acc
         (iter (- y 1) (* y acc))))
   (iter x 1))
@@ -58,20 +73,4 @@
 ; (call/cc)
 ; Alias for (call-with-current-continuation)
 (define call/cc call-with-current-continuation)
-
-; (benchmark)
-; Runs body a given number of times and prints
-; execution time.
-(define-syntax benchmark
-  (syntax-rules (times)
-    [(_ name n times body ...)
-      (letrec ([start (runtime)]
-               [loop (lambda (count)
-                        body ...
-                        (if (> count 1)
-                            (loop (- count 1))))])
-        (loop n)
-        (display (+ name ": "
-                    n " iterations: "
-                    (- (runtime) start))))]))
 

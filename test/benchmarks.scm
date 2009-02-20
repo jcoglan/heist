@@ -1,3 +1,5 @@
+(load "benchmark")
+
 (define-syntax swap
   (syntax-rules ()
     [(swap x y)
@@ -21,6 +23,5 @@
         body ...)]))
 
 (p-let (a b c d e) (1 2 3 4 5)
-  (benchmark "(rotate speed)" 50 times
-    (rotate a b c d e)))
+  (benchmark 50 (lambda () (rotate a b c d e))))
       
