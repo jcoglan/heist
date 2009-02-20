@@ -5,7 +5,6 @@ module Heist
       def initialize(stack)
         @stack  = stack.copy(false)
         @target = stack.last.target
-        @to_s = @stack.first.to_s
       end
       
       def call(scope, cells)
@@ -16,7 +15,7 @@ module Heist
       end
       
       def to_s
-        "#<continuation #{@to_s}>"
+        "#<continuation>"
       end
     end
     

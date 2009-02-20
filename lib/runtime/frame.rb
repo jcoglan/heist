@@ -59,18 +59,6 @@ module Heist
         @target || @expression
       end
       
-      def to_s
-        parts = []
-        @expression.each_with_index do |cell, i|
-          parts << (i < @values.size ?
-              @values[i] :
-          i == @values.size ?
-              '[]' :
-              cell.to_s)
-        end
-        '(' + parts * ' ' + ')'
-      end
-      
     private
       
       def merge!
