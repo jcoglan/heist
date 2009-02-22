@@ -150,3 +150,17 @@ syntax('or') do |scope, *args|
   result
 end
 
+#----------------------------------------------------------------
+
+# Delayed evaluation
+
+# (delay) allows the evaluation of an expression to be delayed
+# by wrapping it in a promise. Use (force) to evaluate the promise
+# at a later time. The expression inside a promise is only
+# ever evaluated once, so a promise can be implemented as a
+# memoized closure.
+syntax('delay') do |scope, expression|
+  promise = Binding.new(expression, scope)
+  Function.new(scope) { promise.extract }
+end
+

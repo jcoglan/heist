@@ -37,6 +37,7 @@ Class.new(Test::Unit::TestCase) do
         conditionals
         file_loading
         macros
+        delay
         
   ].each do |test|
     define_method('test_' + test) do
