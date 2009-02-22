@@ -110,9 +110,13 @@ syntax('do') do |scope, assignments, test, *commands|
   end
   while not Heist.evaluate(test.first, closure)
     commands.each { |expr| Heist.evaluate(expr, closure) }
+    temp = {}
     assignments.each do |assign|
       step = assign[2] || assign[0]
-      closure[assign.first] = Heist.evaluate(step, closure)
+      temp[assign.first] = Heist.evaluate(step, closure)
+    end
+    assignments.each do |assign|
+      closure[assign.first] = temp[assign.first]
     end
   end
   call('begin', closure, *test.rest)

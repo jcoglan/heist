@@ -33,3 +33,10 @@
                        [(= i 10) x]
                      (set! x (* x 2))))
 
+(define (do-factorial x)
+  (do ([y x (- y 1)]
+       [acc 1 (* y acc)])
+      ((zero? y) acc)))
+
+(assert-equal 720 (do-factorial 6))
+
