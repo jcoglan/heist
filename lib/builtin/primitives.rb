@@ -292,3 +292,11 @@ define('random') do |max|
   rand(max)
 end
 
+define('number->string') do |number, radix|
+  number.to_s(radix || 10)
+end
+
+define('string->number') do |string, radix|
+  radix.nil? ? string.to_f : string.to_i(radix)
+end
+
