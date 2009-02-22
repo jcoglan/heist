@@ -27,3 +27,14 @@
 
 (assert (< (abs (- (sqrt 9) 3)) 0.0001))
 
+; http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_idx_288
+(assert-equal 1 (modulo 13 4))
+(assert-equal 1 (remainder 13 4))
+(assert-equal 3 (modulo -13 4))
+(assert-equal -1 (remainder -13 4))
+(assert-equal -3 (modulo 13 -4))
+(assert-equal 1 (remainder 13 -4))
+(assert-equal -1 (modulo -13 -4))
+(assert-equal -1 (remainder -13 -4))
+(assert-equal -1.0 (remainder -13 -4.0)) ; inexact
+

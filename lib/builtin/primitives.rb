@@ -140,60 +140,6 @@ end
 
 #----------------------------------------------------------------
 
-# Numerical functions
-
-# Returns the sum of all arguments passed
-define('+') do |*args|
-  args.any? { |arg| String === arg } ?
-      args.inject("") { |str, arg| str + arg.to_s } :
-      args.inject(0)  { |sum, arg| sum + arg }
-end
-
-# Subtracts the second argument from the first
-define('-') do |op1, op2|
-  op2.nil? ? 0 - op1 : op1 - op2
-end
-
-# Returns the product of all arguments passed
-define('*') do |*args|
-  args.inject(1) { |prod, arg| prod * arg }
-end
-
-# Returns the first argument divided by the second, or the
-# reciprocal of the first if only one argument is given
-define('/') do |op1, op2|
-  op2.nil? ? 1.0 / op1 : op1 / op2.to_f
-end
-
-# Returns the result of raising the first argument to the
-# power of the second
-define('expt') do |op1, op2|
-  op1 ** op2
-end
-
-# Returns the remainder after dividing the first operand
-# by the second
-define('remainder') do |op1, op2|
-  op1 % op2
-end
-
-# Returns a random number in the range 0...max
-define('random') do |max|
-  rand(max)
-end
-
-# Returns the maximum value in the list of arguments
-define('max') do |*args|
-  args.max
-end
-
-# Returns the minimum value in the list of arguments
-define('min') do |*args|
-  args.min
-end
-
-#----------------------------------------------------------------
-
 # Comparators
 
 # TODO write a more exact implementation, and implement (eq?) and (equal?)
@@ -253,5 +199,79 @@ end
 
 define('integer?') do |value|
   Integer === value
+end
+
+#----------------------------------------------------------------
+
+# Numerical functions
+# TODO implement exact?, inexact?
+
+# TODO implement max/min in Scheme
+
+# Returns the maximum value in the list of arguments
+define('max') do |*args|
+  args.max
+end
+
+# Returns the minimum value in the list of arguments
+define('min') do |*args|
+  args.min
+end
+
+# Returns the sum of all arguments passed
+define('+') do |*args|
+  args.any? { |arg| String === arg } ?
+      args.inject("") { |str, arg| str + arg.to_s } :
+      args.inject(0)  { |sum, arg| sum + arg }
+end
+
+# Subtracts the second argument from the first
+define('-') do |op1, op2|
+  op2.nil? ? 0 - op1 : op1 - op2
+end
+
+# Returns the product of all arguments passed
+define('*') do |*args|
+  args.inject(1) { |prod, arg| prod * arg }
+end
+
+# Returns the first argument divided by the second, or the
+# reciprocal of the first if only one argument is given
+define('/') do |op1, op2|
+  op2.nil? ? 1.0 / op1 : op1 / op2.to_f
+end
+
+# Returns the result of raising the first argument to the
+# power of the second
+define('expt') do |op1, op2|
+  op1 ** op2
+end
+
+# (quotient) and (remainder) satisfy
+# 
+# (= n1 (+ (* n2 (quotient n1 n2))
+#          (remainder n1 n2)))
+
+# Returns the quotient of two numbers, i.e. performs n1/n2
+# and rounds toward zero.
+define('quotient') do |op1, op2|
+  result = op1.to_f / op2
+  result > 0 ? result.floor : result.ceil
+end
+
+# Returns the remainder after dividing the first operand
+# by the second
+define('remainder') do |op1, op2|
+  op1 - op2 * call('quotient', op1, op2)
+end
+
+# Returns the first operand modulo the second
+define('modulo') do |op1, op2|
+  op1 % op2
+end
+
+# Returns a random number in the range 0...max
+define('random') do |max|
+  rand(max)
 end
 
