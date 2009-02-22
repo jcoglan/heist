@@ -52,6 +52,23 @@
       (- x)
       x))
 
+; (gcd x y)
+; Returns the greatest common divisor of two numbers
+; http://en.wikipedia.org/wiki/Euclidean_algorithm
+; TODO take >2 arguments
+(define (gcd x y)
+  (if (zero? y)
+      (abs x)
+      (gcd y (remainder x y))))
+
+; (lcm x y)
+; Returns the lowest common multiple of two numbers
+; http://en.wikipedia.org/wiki/Least_common_multiple
+; TODO take >2 arguments
+(define (lcm x y)
+  (/ (abs (* x y))
+     (gcd x y)))
+
 ; (factorial x)
 ; Returns factorial of x
 (define (factorial x)

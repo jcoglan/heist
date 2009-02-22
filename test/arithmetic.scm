@@ -38,3 +38,7 @@
 (assert-equal -1 (remainder -13 -4))
 (assert-equal -1.0 (remainder -13 -4.0)) ; inexact
 
+(assert-equal 4 (gcd 32 -36))
+(assert-equal 288 (lcm 32 -36))
+(assert-equal 288.0 (lcm 32.0 -36)) ; inexact
+

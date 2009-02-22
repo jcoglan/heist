@@ -255,19 +255,19 @@ end
 # Returns the quotient of two numbers, i.e. performs n1/n2
 # and rounds toward zero.
 define('quotient') do |op1, op2|
-  result = op1.to_f / op2
+  result = op1.to_i.to_f / op2.to_i
   result > 0 ? result.floor : result.ceil
 end
 
 # Returns the remainder after dividing the first operand
 # by the second
 define('remainder') do |op1, op2|
-  op1 - op2 * call('quotient', op1, op2)
+  op1.to_i - op2.to_i * call('quotient', op1, op2)
 end
 
 # Returns the first operand modulo the second
 define('modulo') do |op1, op2|
-  op1 % op2
+  op1.to_i % op2.to_i
 end
 
 # Returns a random number in the range 0...max
