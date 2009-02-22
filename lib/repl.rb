@@ -12,6 +12,20 @@ module Heist
     def run
       Heist.info(@runtime)
       
+      Readline.completion_append_character = nil
+      Readline.completion_proc = lambda do |prefix|
+        return nil if prefix == ''
+        matches = @runtime.top_level.grep(%r[^#{prefix}]i).
+                           sort_by { |r| r.length }
+        return nil unless word = matches.first
+        while word.length > prefix.length
+          break if matches.all? { |m| m =~ %r[^#{word}]i }
+          word = word.gsub(/.$/, '')
+        end
+        return nil if word == prefix
+        word + (matches.size == 1 ? ' ' : '')
+      end
+      
       loop do
         input  = Readline.readline(prompt)
         exit if input.nil?

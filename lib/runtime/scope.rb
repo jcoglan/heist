@@ -53,6 +53,14 @@ module Heist
         self[name] = Syntax.new(self, holes,&block)
       end
       
+      def grep(pattern)
+        base = (Scope === @parent) ? @parent.grep(pattern) : []
+        @symbols.each do |key, value|
+          base << key if key =~ pattern
+        end
+        base.uniq
+      end
+      
       # TODO: this isn't great, figure out a way for functions
       # to transparently handle inter-primitive calls so Ruby can
       # call Scheme code as well as other Ruby code

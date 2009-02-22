@@ -87,9 +87,9 @@ that can be enabled on a per-environment basis:
 
 * <b>More-helpful-than-usual REPL</b>. Heist's REPL does not clutter
   your display with prompts and other such cruft. It indents your
-  code automatically, and output is printed as comments so it's
-  simple to copy code out of a REPL session into a file without
-  modification.
+  code automatically, supports tab completion, and output is printed
+  as comments so it's simple to copy code out of a REPL session into
+  a file without modification.
 * <b>Transparent lazy evaluation (call by need)</b>. Expressions are not
   evaluated before being passed as arguments, instead they are
   evaluated as and when the called function requires their values.
