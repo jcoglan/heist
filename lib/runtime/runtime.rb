@@ -13,17 +13,17 @@ module Heist
     end
     
     extend Forwardable
-    def_delegators(:@scope, :[], :eval, :define, :syntax, :call)
+    def_delegators(:@top_level, :[], :eval, :define, :syntax, :call)
     
     attr_reader :order, :hygienic
-    attr_accessor :stack
+    attr_accessor :stack, :top_level
     
     def initialize(options = {})
       @order         = options[:lazy] ? LAZY : EAGER
       @continuations = !!options[:continuations]
       @hygienic      = !options[:unhygienic]
       
-      @scope = Scope.new(self)
+      @top_level = Scope.new(self)
       @stack = create_stack
       
       syntax_type = (lazy? or not @hygienic) ? 'rb' : 'scm'
@@ -37,7 +37,7 @@ module Heist
     
     def run(path)
       return instance_eval(File.read(path)) if File.extname(path) == '.rb'
-      @scope.run(path)
+      @top_level.run(path)
     end
     
     def elapsed_time

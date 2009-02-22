@@ -5,6 +5,7 @@ module Heist
     
     def initialize(options = {})
       @runtime = Runtime.new(options)
+      @scope = Runtime::FileScope.new(@runtime.top_level, File.expand_path('.'))
       reset!
     end
     
@@ -23,7 +24,7 @@ module Heist
         
         reset!
         begin
-          result = @runtime.eval(tree)
+          result = @scope.eval(tree)
           puts "; => #{ result }\n\n" unless result.nil?
         rescue Exception => ex
           puts "; [error] #{ ex.message }\n\n"

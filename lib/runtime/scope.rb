@@ -85,10 +85,6 @@ module Heist
         @path || @parent.current_file rescue nil
       end
       
-      def current_continuation
-        @runtime.stack.copy(false)
-      end
-      
     private
       
       def to_name(name)
@@ -104,12 +100,11 @@ module Heist
     
     class FileScope < Scope
       extend Forwardable
-      def_delegators(:@parent, :[]=, :eval, :run)
+      def_delegators(:@parent, :[]=)
       
       def initialize(parent, path)
         super(parent)
-        @path = path
-        self['__FILE__'] = path
+        @path = File.directory?(path) ? path + '/repl.scm' : path
       end
     end
     
