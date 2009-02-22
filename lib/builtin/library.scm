@@ -69,6 +69,8 @@
   (/ (abs (* x y))
      (gcd x y)))
 
+(define ceiling ceil)
+
 ; (factorial x)
 ; Returns factorial of x
 (define (factorial x)

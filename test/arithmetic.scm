@@ -42,3 +42,16 @@
 (assert-equal 288 (lcm 32 -36))
 (assert-equal 288.0 (lcm 32.0 -36)) ; inexact
 
+(assert-equal -5.0 (floor -4.3))
+(assert-equal -4.0 (ceiling -4.3))
+(assert-equal -4.0 (truncate -4.3))
+(assert-equal -4.0 (round -4.3))
+
+(assert-equal 3.0 (floor 3.5))
+(assert-equal 4.0 (ceiling 3.5))
+(assert-equal 3.0 (truncate 3.5))
+(assert-equal 4.0 (round 3.5)) ; inexact
+
+(assert-equal 4 (round 7/2)) ; exact
+(assert-equal 7 (round 7))
+

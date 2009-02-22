@@ -204,7 +204,8 @@ end
 #----------------------------------------------------------------
 
 # Numerical functions
-# TODO implement exact?, inexact?
+# TODO implement exact?, inexact?, numerator, denominator, rationalize,
+#                complex functions, exact->inexact and vice versa
 
 # TODO implement max/min in Scheme
 
@@ -241,12 +242,6 @@ define('/') do |op1, op2|
   op2.nil? ? 1.0 / op1 : op1 / op2.to_f
 end
 
-# Returns the result of raising the first argument to the
-# power of the second
-define('expt') do |op1, op2|
-  op1 ** op2
-end
-
 # (quotient) and (remainder) satisfy
 # 
 # (= n1 (+ (* n2 (quotient n1 n2))
@@ -268,6 +263,28 @@ end
 # Returns the first operand modulo the second
 define('modulo') do |op1, op2|
   op1.to_i % op2.to_i
+end
+
+%w[floor ceil truncate round].each do |symbol|
+  define(symbol) do |number|
+    number.__send__(symbol)
+  end
+end
+
+%w[exp log sin cos tan asin acos sqrt].each do |symbol|
+  define(symbol) do |number|
+    Math.__send__(symbol, number)
+  end
+end
+
+define('atan') do |op1, op2|
+  op2.nil? ? Math.atan(op1) : Math.atan2(op1, op2)
+end
+
+# Returns the result of raising the first argument to the
+# power of the second
+define('expt') do |op1, op2|
+  op1 ** op2
 end
 
 # Returns a random number in the range 0...max
