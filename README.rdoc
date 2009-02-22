@@ -1,56 +1,230 @@
 = Heist
 
-Heist is a Scheme written in Ruby, using as little Ruby and as much Scheme
-as possible. I'm developing it while reading SICP, Mockingbird and other
-Scheme and lambda calculus texts. The goal is to to be able to run all
-the example code I come across while learning something about interpreting
-programs. For the time being, the parser is generated using Treetop as
-Scheme's grammar is ridiculously simple and the interesting work is really
-in the interpreter and runtime.
-
-By the way, Treetop is fantastic and I cannot recommend it highly enough;
-it makes generating parse trees from language grammars almost too easy:
-
-http://treetop.rubyforge.org/
+Heist is a Scheme interpreter written in Ruby. It provides an executable
+for running Scheme code directly, and also allows the interpreter to be
+easily embedded in, and extended using, Ruby applications. It nominally
+targets R5RS, though is likely to be more liberal than other implementations.
 
 
-== Goals
+== What is Scheme?
 
-This a vague list right now as I'm just starting out, but I'd like to stick
-to them if at all possible.
+Scheme is a dialect of Lisp, one of the oldest programming languages still
+in use today. Lisp was the first language to implement conditionals, first
+class functions (lambdas), closures and recursion. Some Lisp features, such
+as closures and macros, have yet to penetrate mainstream languages and it
+has been observed that mainstream languages are slowly converging on the
+feature set of Lisp.
 
-* Keep the grammar as small as possible
-* No keywords in the grammar, only generic Lisp syntax and data literals
-* All special forms are regular functions in the symbol table
-* Write as few primitives as possible in Ruby
-* Write as much in Scheme as possible, including tests
+Scheme in particular is important for its influence on current languages,
+in particular JavaScript and Ruby (JavaScript is remarkably similar to
+Scheme if you ignore the syntactic differences). It is also used in the
+much-praised book "Structure and Interpretation of Computer Programs",
+wherein its inventors, Guy L. Steele and Gerald Jay Sussman, use it to
+explore some of the theory surrounding interpreters.
+
+It is a functional language, in that it supports first-class functions
+and many constructs that would be syntax in other languages resemble
+function calls in Scheme. However it is not purely functional as it
+allows side effects, and is more procedural in nature than, say, a
+declarative language such as Haskell. Like other Lisps, its lack of
+predefined syntax and its support for macros (functions that rewrite
+source code) make it ideal for creating new syntactic forms and embedded
+languages.
 
 
 == Features
 
-I'm building this Scheme up as I learn the language. Heist nominally targets R5RS,
-though I'm also referring to SICP and PLT Scheme for guidance and extending as I see
-fit. The current aim is to have a complete R5RS syntax/semantics implemented, with
-library functions added as and when I need them.
+Heist nominally targets R5RS and is still in the early stages of development
+(at time of writing it is about a month old). The priority at this stage
+is runtime support for features that cannot be directly expressed as
+Scheme functions. The library is therefore rather small but the runtime
+is more advanced than some other toy Schemes I've seen.
 
-Features implemented so far
+Currently implemented R5RS features include:
 
-* Data primitives: only literals and proper lists so far
-* <tt>(quote)</tt> and <tt>(quasiquote)</tt>, with <tt>'</tt>, <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
-* Numbers: integers, reals, rationals (sort of), arithmetic and other math functions
-* Booleans: literals, <tt>(and)</tt>, <tt>(or)</tt>, conditional logic and comparators
-* <tt>(define)</tt> for declaring variables, including function shorthand
-* First-class <tt>(lambda)</tt> expressions, lexical scoping, closures
-* Free variable assignment using <tt>(set!)</tt>
-* Scoped assignment: <tt>(let)</tt>, <tt>(let*)</tt> and <tt>(letrec)</tt>
-* Control structures: <tt>(begin)</tt>, <tt>(cond)</tt>, <tt>(if)</tt>, <tt>(case)</tt>, <tt>(do)</tt>
+* Boolean literals: #t and #f
+* Numeric literals for integers, reals and rationals (though rationals
+  are currently converted to floating point)
+* String and symbol literals
+* Proper lists and full (quasi)quoting with <tt>'</tt>, <tt>`</tt>,
+  <tt>,</tt>, <tt>,@</tt>
+* Macros: <tt>(syntax-rules)</tt>, <tt>(define-syntax)</tt>,
+  <tt>(let-syntax)</tt>, <tt>(letrec-syntax)</tt>. Supports keywords,
+  lists, pattern variables and ellipses down to arbitrary depth
+* Continuations: <tt>(call-with-current-continuation)</tt>, aliased
+  as <tt>(call/cc)</tt>
+* Proper tail recursion
+* Variable assignment: <tt>(define)</tt> and <tt>(set!)</tt>
+* Lambda expressions: <tt>(lambda (x) body)</tt>, including lexical
+  scoping and closures (varargs are currently not supported)
+* Control flow: <tt>(begin)</tt>, <tt>(if)</tt>, <tt>(cond)</tt>,
+  <tt>(case)</tt>
+* Binding constructs: <tt>(let)</tt>, <tt>(let*)</tt> <tt>(letrec)</tt>
+* Iteration: named <tt>(let)</tt>, <tt>(do)</tt>
 * Delayed evaluation: <tt>(delay)</tt> and <tt>(force)</tt>
-* R5RS <tt>(syntax-rules)</tt> macros, expanded and inlined at runtime
-* Optional macro hygiene, so expansions can use either Scheme or CL semantics
-* First class continuations and <tt>(call/cc)</tt>
-* Tail call optimisation
-* Utilities: <tt>(display)</tt>, <tt>(eval)</tt>, <tt>(runtime)</tt>
-* Load external files and libraries using <tt>(load)</tt>
+* Logical connectives: <tt>(and)</tt>, <tt>(or)</tt>, <tt>(not)</tt>
+* Type checking: <tt>(boolean?)</tt>, <tt>(number?)</tt>, <tt>(complex?)</tt>,
+  <tt>(real?)</tt>, <tt>(rational?)</tt>, <tt>(integer?)</tt>
+* Comparators: <tt>(eqv?)</tt>, <tt>(=)</tt>, <tt>(<)</tt>, <tt>(<=)</tt>,
+  <tt>(>)</tt>, <tt>(>=)</tt>
+* Numeric library: <tt>(max)</tt>, <tt>(min)</tt>, <tt>(+)</tt>,
+  <tt>(-)</tt>, <tt>(*)</tt>, <tt>(/)</tt>, <tt>(quotient)</tt>,
+  <tt>(remainder)</tt>, <tt>(modulo)</tt>, <tt>(floor)</tt>,
+  <tt>(ceiling)</tt>, <tt>(truncate)</tt>, <tt>(round)</tt>,
+  <tt>(exp)</tt>, <tt>(log)</tt>, <tt>(sin)</tt>, <tt>(cos)</tt>,
+  <tt>(tan)</tt>, <tt>(asin)</tt>, <tt>(acos)</tt>, <tt>(atan)</tt>,
+  <tt>(expt)</tt>, <tt>(sqrt)</tt>, <tt>(zero?)</tt>, <tt>(positive?)</tt>,
+  <tt>(negative?)</tt>, <tt>(odd?)</tt>, <tt>(even?)</tt>, <tt>(abs)</tt>,
+  <tt>(gcd)</tt>, <tt>(lcm)</tt>, <tt>(factorial)</tt>,
+  <tt>(number->string)</tt>
+* String library: <tt>(display)</tt>, <tt>(newline)</tt>,
+  <tt>(string->number)</tt>
+* File loading: <tt>(load "foo.scm")</tt>, paths are relative to the
+  current file
+
+In addition, the following features are supported as runtime options
+that can be enabled on a per-environment basis:
+
+* <b>More-helpful-than-usual REPL</b>. Heist's REPL does not clutter
+  your display with prompts and other such cruft. It indents your
+  code automatically, and output is printed as comments so it's
+  simple to copy code out of a REPL session into a file without
+  modification.
+* <b>Transparent lazy evaluation (call by need)</b>. Expressions are not
+  evaluated before being passed as arguments, instead they are
+  evaluated as and when the called function requires their values.
+* <b>Unhygienic macros</b>. Scheme mandates hygienic macros that
+  preserve lexical scoping, but other Lisps use a simpler system that
+  does not impose this restriction. Heist allows hygiene to be
+  disabled, its author not having the requisite experience to decide
+  which system he prefers yet.
+* <b>Optional continuations</b>. Supporting continuations incurs a
+  constant performance overhead, so if you don't need them you can
+  switch them off.
+
+
+== Installation and Usage
+
+  sudo gem install hoe
+  sudo gem install heist
+
+Heist can be run from the command line or embedded in Ruby applications. To
+run a Scheme file:
+
+  heist path/to/file.scm
+
+To start an REPL session:
+
+  heist -i
+
+Both these commands accept a number of runtime configuration options;
+run <tt>heist -h</tt> for more information.
+
+To embed Heist in a Ruby application, you need to create an instance of
+the runtime:
+
+  require 'rubygems'
+  require 'heist'
+  scheme = Heist::Runtime.new(options)
+
+<tt>options</tt> is an optional argument and is a hash that specifies
+the behaviour of optional parts of the runtime. For example, to enable
+lazy evaluation:
+
+  scheme = Heist::Runtime.new(:lazy => true)
+
+The full list of options is:
+
+* <tt>:continuations</tt> - sets whether continuations and <tt>(call/cc)</tt>
+  are enabled. Default is <tt>false</tt>.
+* <tt>:lazy</tt> - sets whether evaluation is lazy. By default this option
+  is <tt>false</tt> and evaluation is eager.
+* <tt>:unhygienic</tt> - set this to <tt>true</tt> to disable macro hygiene.
+
+Bear in mind that continuations and lazy evaluation are not currently
+compatible; enabling continuations forces eager evaluation. Also
+note that lazy evaluation has a slightly unpredictable effect on the
+use of macros.
+
+Every runtime gets its own copy of all the built-in functions. You can add
+your own functions written in Ruby and Heist will make them available as
+Scheme procedures. For example, for running tests I do this in my +setup+
+method:
+
+  @@env = Heist::Runtime.new
+  @@env.define('assert-equal') do |expected, actual|
+    assert_equal(expected, actual)
+  end
+
+This lets me write, for example, <tt>(assert-equal 7 (+ 3 4))</tt> in my
+tests. You can place arbitrary Ruby code in your functions, so this is
+an easy way to expose Ruby functionality to the Scheme environment.
+
+To run a Scheme file using the runtime, just call:
+
+  scheme.run("path/to/file.scm")
+
+
+== Notes
+
+This is alpha-quality software. While every attempt has been made to run
+valid Scheme code, error handling is at present very weak. Anything
+explicitly documented in this file can be assumed to work according to
+the Scheme standard, or according to the information presented here,
+and can be assumed to be reasonably stable.
+
+I have not documented how to write your own syntax using Ruby because
+it requires far too much knowledge of Heist's plumbing at present (I
+suspect this may be unavoidable). Besides, we have macros so if you
+want new syntax we've got you covered.
+
+Heist is extremely liberal as regards symbols. Any sequence of
+characters that does not contain any spaces or parentheses and that
+is not a boolean literal, a number or a string is considered a valid
+symbol. This means that syntax that should be used for chars and
+vectors will currently parse as symbols.
+
+There are currently no list operations. This may seem like a
+staggering omission but my goal initially was to work through the
+early stages of SICP, for which Heist in its current form is
+adequate. Being something of a simpleton, I wrote the list representation
+using arrays and it will need gutting and converting to linked lists
+before list operations are implemented.
+
+Macros are slightly more liberal than R5RS, in that this is a valid
+macro:
+
+  (define-syntax my-let (syntax-rules ()
+    [(my-let (name value) ... body ...)
+      (let [(name value) ...]
+        body ...)]))
+
+You are allowed to use ellipses in infix positions, as long as the
+pattern that follows the ellipsis matches input that the preceeding
+pattern would fail to match. This is, the ellipsis acts as a greedy
+star operator in regular expressions. In the above, <tt>(name value) ...</tt>
+captures input until a non-list expression is met, at which point
+<tt>body ...</tt> takes over. The following expression evaluates
+to <tt>3</tt> using this macro:
+
+  (my-let (x 2) (y 3) y)
+
+Speaking of macros, there is no distinct macro expansion stage in
+Heist. Macros are expanded as they are encountered at runtime, and
+their expansions are inlined into the AST to improve performance:
+the same macro use is never expanded more than once. Macros (and
+native syntactic forms) are first-class, so they can be easily
+aliased and used anonymously:
+
+  (define when if)
+  
+  ((syntax-rules () [(_ expr) expr])
+    (+ 3 4)) ; => 7
+
+It's not clear whether it would be useful to choose syntactic forms
+conditionally, certainly this will not work with macros as the
+inlining process will overwrite conditional code using the first
+expansion generated.
 
 
 == License
