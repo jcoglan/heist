@@ -7,7 +7,7 @@ options = Heist::BIN_SPEC.parse
 rescue Oyster::HelpRendered; exit
 end
 
-if options[:interactive]
+if options[:interactive] or options[:unclaimed].empty?
   Heist::REPL.new(options).run
 else
   env = Heist::Runtime.new(options)
