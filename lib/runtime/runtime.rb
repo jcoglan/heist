@@ -15,11 +15,11 @@ module Heist
     extend Forwardable
     def_delegators(:@top_level, :[], :eval, :define, :syntax, :call)
     
-    attr_reader :order, :hygienic
+    attr_reader :order
     attr_accessor :stack, :top_level
     
     def initialize(options = {})
-      @order         = options[:lazy] ? LAZY : EAGER
+      @lazy          = !!options[:lazy]
       @continuations = !!options[:continuations]
       @hygienic      = !options[:unhygienic]
       
@@ -44,9 +44,9 @@ module Heist
       (Time.now.to_f - @start_time) * 1000000
     end
     
-    def lazy?
-      @order == NORMAL_ORDER
-    end
+    def lazy?; @lazy; end
+    
+    def hygienic?; @hygienic; end
     
     def stackless?
       lazy? or not @continuations

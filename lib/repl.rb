@@ -10,9 +10,7 @@ module Heist
     end
     
     def run
-      puts "Heist Scheme interpreter, v. #{ VERSION }"
-      puts "Evaluation strategy: #{ @runtime.lazy? ? 'LAZY' : 'EAGER' }"
-      puts "Continuations enabled: #{ @runtime.stackless? ? 'no' : 'yes' }\n\n"
+      Heist.info(@runtime)
       
       loop do
         input  = Readline.readline(prompt)

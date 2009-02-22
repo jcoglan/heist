@@ -12,7 +12,7 @@ module Heist
       
       def initialize(scope, *args)
         super
-        @hygienic = scope.runtime.hygienic
+        @hygienic = scope.runtime.hygienic?
       end
       
       def call(scope, cells)

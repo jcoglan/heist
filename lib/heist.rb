@@ -4,11 +4,6 @@ require 'treetop'
 module Heist
   VERSION = '0.1.0'
   
-  NORMAL_ORDER      = LAZY  = 0
-  APPLICATIVE_ORDER = EAGER = 1
-  
-  ORDERS = %w(normal applicative)
-  
   ROOT_PATH    = File.expand_path(File.dirname(__FILE__))
   PARSER_PATH  = ROOT_PATH + '/parser/'
   RUNTIME_PATH = ROOT_PATH + '/runtime/'
@@ -39,6 +34,13 @@ module Heist
     Runtime::Expression === expression ?
         expression.eval(scope) :
         expression
+  end
+  
+  def self.info(runtime)
+    puts "Heist Scheme interpreter v. #{ VERSION }"
+    puts "Evaluation mode: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }"
+    puts "Continuations enabled? #{ runtime.stackless? ? 'NO' : 'YES' }"
+    puts "Macros: #{ runtime.hygienic? ? 'HYGIENIC' : 'UNHYGIENIC' }\n\n"
   end
   
 end

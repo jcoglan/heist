@@ -13,8 +13,7 @@ Class.new(Test::Unit::TestCase) do
   def setup
     return @@env if @@env
     @@env = Heist::Runtime.new(Heist::BIN_SPEC.parse($args))
-    puts "\nType of if() function: #{ @@env["if"].class }"
-    puts "Application mode: #{ Heist::ORDERS[@@env.order] }\n\n"
+    Heist.info(@@env)
     
     @@env.define('assert') do |value|
       assert(value)
@@ -46,7 +45,7 @@ Class.new(Test::Unit::TestCase) do
   end
   
   def test_macro_hygiene
-    @@env.run($dir + '/' + (@@env.hygienic ? 'hygienic' : 'unhygienic'))
+    @@env.run($dir + '/' + (@@env.hygienic? ? 'hygienic' : 'unhygienic'))
   end
   
   def test_continuations
