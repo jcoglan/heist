@@ -19,8 +19,7 @@ Scheme in particular is important for its influence on current languages,
 in particular JavaScript and Ruby (JavaScript is remarkably similar to
 Scheme if you ignore the syntactic differences). It is also used in the
 much-praised book "Structure and Interpretation of Computer Programs",
-wherein its inventors, Guy L. Steele and Gerald Jay Sussman, use it to
-explore some of the theory surrounding interpreters.
+wherein it is used to explore some of the theory surrounding interpreters.
 
 It is a functional language, in that it supports first-class functions
 and many constructs that would be syntax in other languages resemble
@@ -59,7 +58,7 @@ Currently implemented R5RS features include:
   scoping and closures (varargs are currently not supported)
 * Control flow: <tt>(begin)</tt>, <tt>(if)</tt>, <tt>(cond)</tt>,
   <tt>(case)</tt>
-* Binding constructs: <tt>(let)</tt>, <tt>(let*)</tt> <tt>(letrec)</tt>
+* Binding constructs: <tt>(let)</tt>, <tt>(let*)</tt>, <tt>(letrec)</tt>
 * Iteration: named <tt>(let)</tt>, <tt>(do)</tt>
 * Delayed evaluation: <tt>(delay)</tt> and <tt>(force)</tt>
 * Logical connectives: <tt>(and)</tt>, <tt>(or)</tt>, <tt>(not)</tt>
@@ -82,8 +81,9 @@ Currently implemented R5RS features include:
 * File loading: <tt>(load "foo.scm")</tt>, paths are relative to the
   current file
 
-In addition, the following features are supported as runtime options
-that can be enabled on a per-environment basis:
+In addition to the above R5RS features, the following are provided. Heist
+allows the behaviour of some of these features to be configured on a
+per-runtime-environment basis.
 
 * <b>More-helpful-than-usual REPL</b>. Heist's REPL does not clutter
   your display with prompts and other such cruft. It indents your

@@ -156,28 +156,28 @@ end
 # Returns true iff the arguments are monotonically decreasing
 define('>') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former > prior }
+  args.inject { |former, latter| result = false unless former > latter }
   result
 end
 
 # Returns true iff the arguments are monotonically non-increasing
 define('>=') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former >= prior }
+  args.inject { |former, latter| result = false unless former >= latter }
   result
 end
 
 # Returns true iff the arguments are monotonically increasing
 define('<') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former < prior }
+  args.inject { |former, latter| result = false unless former < latter }
   result
 end
 
 # Returns true iff the arguments are monotonically non-decreasing
 define('<=') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former <= prior }
+  args.inject { |former, latter| result = false unless former <= latter }
   result
 end
 
