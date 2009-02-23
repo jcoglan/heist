@@ -4,9 +4,10 @@ module Heist
   class Runtime
     
     %w[ data/expression     data/identifier   data/list
+        data/cons
         callable/function   callable/macro    callable/continuation
-        scope               binding           frame
-        stack               stackless
+        frame               stack             stackless
+        scope               binding
         
     ].each do |file|
       require RUNTIME_PATH + file

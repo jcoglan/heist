@@ -45,6 +45,39 @@ Class.new(Test::Unit::TestCase) do
     end
   end
   
+  def test_cons
+    cons = Heist::Runtime::Cons
+    
+    empty = cons[[]]
+    assert empty.list?
+    assert !empty.pair?
+    assert_equal cons::NULL, empty
+    assert_equal 0, empty.length
+    
+    single = cons[[4]]
+    assert single.list?
+    assert single.pair?
+    assert_equal 1, single.length
+    
+    multi = cons[[2,4,7]]
+    assert multi.list?
+    assert multi.pair?
+    assert_equal 3, multi.length
+    
+    multi.tail.cdr = 8
+    assert multi.pair?
+    assert !multi.list?
+    assert_raise(Heist::TypeError) { multi.size }
+    
+    nested = cons[[2,4,6,cons.new(7,8)]]
+    assert nested.list?
+    assert nested.pair?
+    assert_equal 4, nested.length
+    assert !nested.cdr.cdr.cdr.car.list?
+    assert nested.cdr.cdr.cdr.car.pair?
+    assert_equal 8, nested.cdr.cdr.cdr.car.cdr
+  end
+  
   def test_macro_hygiene
     @@env.run($dir + '/' + (@@env.hygienic? ? 'hygienic' : 'unhygienic'))
   end

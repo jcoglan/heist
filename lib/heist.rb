@@ -24,6 +24,7 @@ module Heist
   class SyntaxError           < RuntimeError; end
   class MacroError            < SyntaxError; end
   class MacroTemplateMismatch < MacroError; end
+  class TypeError             < RuntimeError; end
   
   def self.parse(source)
     @parser ||= SchemeParser.new
