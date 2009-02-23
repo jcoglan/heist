@@ -31,15 +31,15 @@ module Heist
     end
 
     module Cell0
-      def space
+      def ignore
         elements[0]
       end
 
-      def space
+      def ignore
         elements[2]
       end
 
-      def space
+      def ignore
         elements[4]
       end
     end
@@ -53,7 +53,7 @@ module Heist
       end
 
       i0, s0 = index, []
-      r1 = _nt_space
+      r1 = _nt_ignore
       s0 << r1
       if r1
         r3 = _nt_quote
@@ -64,7 +64,7 @@ module Heist
         end
         s0 << r2
         if r2
-          r4 = _nt_space
+          r4 = _nt_ignore
           s0 << r4
           if r4
             i5 = index
@@ -82,7 +82,7 @@ module Heist
             end
             s0 << r5
             if r5
-              r8 = _nt_space
+              r8 = _nt_ignore
               s0 << r8
             end
           end
@@ -300,6 +300,9 @@ module Heist
       return r0
     end
 
+    module Datum0
+    end
+
     def _nt_datum
       start_index = index
       if node_cache[:datum].has_key?(index)
@@ -308,23 +311,50 @@ module Heist
         return cached
       end
 
-      i0 = index
-      r1 = _nt_boolean
-      if r1
-        r0 = r1
+      i0, s0 = index, []
+      i1 = index
+      r2 = _nt_boolean
+      if r2
+        r1 = r2
       else
-        r2 = _nt_number
-        if r2
-          r0 = r2
+        r3 = _nt_number
+        if r3
+          r1 = r3
         else
-          r3 = _nt_string
-          if r3
-            r0 = r3
+          r4 = _nt_string
+          if r4
+            r1 = r4
           else
-            self.index = i0
-            r0 = nil
+            self.index = i1
+            r1 = nil
           end
         end
+      end
+      s0 << r1
+      if r1
+        i5 = index
+        i6 = index
+        r7 = _nt_delimiter
+        if r7
+          r6 = nil
+        else
+          self.index = i6
+          r6 = SyntaxNode.new(input, index...index)
+        end
+        if r6
+          r5 = nil
+        else
+          self.index = i5
+          r5 = SyntaxNode.new(input, index...index)
+        end
+        s0 << r5
+      end
+      if s0.last
+        r0 = (Datum).new(input, i0...index, s0)
+        r0.extend(Datum0)
+      else
+        self.index = i0
+        r0 = nil
       end
 
       node_cache[:datum][start_index] = r0
@@ -757,6 +787,9 @@ module Heist
       return r0
     end
 
+    module Identifier0
+    end
+
     def _nt_identifier
       start_index = index
       if node_cache[:identifier].has_key?(index)
@@ -767,10 +800,31 @@ module Heist
 
       s0, i0 = [], index
       loop do
-        if input.index(Regexp.new('[^\\(\\)\\[\\]\\s]'), index) == index
-          r1 = (SyntaxNode).new(input, index...(index + 1))
-          @index += 1
+        i1, s1 = index, []
+        i2 = index
+        r3 = _nt_delimiter
+        if r3
+          r2 = nil
         else
+          self.index = i2
+          r2 = SyntaxNode.new(input, index...index)
+        end
+        s1 << r2
+        if r2
+          if index < input_length
+            r4 = (SyntaxNode).new(input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure("any character")
+            r4 = nil
+          end
+          s1 << r4
+        end
+        if s1.last
+          r1 = (SyntaxNode).new(input, i1...index, s1)
+          r1.extend(Identifier0)
+        else
+          self.index = i1
           r1 = nil
         end
         if r1
@@ -811,7 +865,36 @@ module Heist
       return r0
     end
 
-    module Space0
+    def _nt_delimiter
+      start_index = index
+      if node_cache[:delimiter].has_key?(index)
+        cached = node_cache[:delimiter][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0 = index
+      if input.index(Regexp.new('[\\(\\)\\[\\]]'), index) == index
+        r1 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        r1 = nil
+      end
+      if r1
+        r0 = r1
+      else
+        r2 = _nt_space
+        if r2
+          r0 = r2
+        else
+          self.index = i0
+          r0 = nil
+        end
+      end
+
+      node_cache[:delimiter][start_index] = r0
+
+      return r0
     end
 
     def _nt_space
@@ -822,15 +905,33 @@ module Heist
         return cached
       end
 
+      if input.index(Regexp.new('[\\s\\n\\r\\t]'), index) == index
+        r0 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        r0 = nil
+      end
+
+      node_cache[:space][start_index] = r0
+
+      return r0
+    end
+
+    module Ignore0
+    end
+
+    def _nt_ignore
+      start_index = index
+      if node_cache[:ignore].has_key?(index)
+        cached = node_cache[:ignore][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
       i0, s0 = index, []
       s1, i1 = [], index
       loop do
-        if input.index(Regexp.new('[\\s\\n\\r\\t]'), index) == index
-          r2 = (SyntaxNode).new(input, index...(index + 1))
-          @index += 1
-        else
-          r2 = nil
-        end
+        r2 = _nt_space
         if r2
           s1 << r2
         else
@@ -850,13 +951,13 @@ module Heist
       end
       if s0.last
         r0 = (SyntaxNode).new(input, i0...index, s0)
-        r0.extend(Space0)
+        r0.extend(Ignore0)
       else
         self.index = i0
         r0 = nil
       end
 
-      node_cache[:space][start_index] = r0
+      node_cache[:ignore][start_index] = r0
 
       return r0
     end
@@ -865,7 +966,7 @@ module Heist
     end
 
     module Comment1
-      def space
+      def ignore
         elements[2]
       end
     end
@@ -931,7 +1032,7 @@ module Heist
         r2 = SyntaxNode.new(input, i2...index, s2)
         s0 << r2
         if r2
-          r7 = _nt_space
+          r7 = _nt_ignore
           s0 << r7
         end
       end

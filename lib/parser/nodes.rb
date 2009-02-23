@@ -52,6 +52,12 @@ module Heist
       end
     end
     
+    class Datum < Treetop::Runtime::SyntaxNode
+      def eval
+        elements[0].eval
+      end
+    end
+    
     module Boolean
       def eval
         @value ||= (text_value == "#t")

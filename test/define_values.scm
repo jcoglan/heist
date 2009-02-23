@@ -23,3 +23,6 @@
 (assert-raise UndefinedVariable (set! undef-var 10))
 (assert-raise UndefinedVariable (no-fun 13))
 
+(define 3k 9)
+(assert-equal 9 3k)
+
