@@ -3,8 +3,7 @@ require 'forwardable'
 module Heist
   class Runtime
     
-    %w[ data/expression     data/identifier   data/list
-        data/cons
+    %w[ data/expression     data/identifier   data/cons
         callable/function   callable/macro    callable/continuation
         frame               stack             stackless
         scope               binding

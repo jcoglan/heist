@@ -51,6 +51,10 @@ module Heist
         not @car.nil?
       end
       
+      def improper?
+        pair? and not list?
+      end
+      
       def null?
         self == NULL
       end
@@ -65,6 +69,4 @@ module Heist
     
   end
 end
-
-Cons = Heist::Runtime::Cons
 

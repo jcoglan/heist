@@ -37,6 +37,12 @@ module Heist
         expression
   end
   
+  %w[list? pair? improper? null?].each do |symbol|
+    define_method(symbol) do |object|
+      Runtime::Cons === object and object.__send__(symbol)
+    end
+  end
+  
   def self.info(runtime)
     puts "Heist Scheme interpreter v. #{ VERSION }"
     puts "Evaluation mode: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }"
