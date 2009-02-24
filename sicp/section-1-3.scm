@@ -148,3 +148,14 @@
 
 (output "(product-relative-primes 25)")
 
+
+(exercise "1.34")
+; Invalid expression
+
+(define (f g)
+  (g 2))
+(output "(f square)")
+(output "(f (lambda (z) (* z (+ z 1))))")
+
+; (f f) -> (f 2) -> (2 2) -> invalid expression
+

@@ -23,6 +23,8 @@ module Heist
         
           when List then
             first = Heist.evaluate(expression.first, scope)
+            raise SyntaxError.new("Invalid expression: #{expression}") unless Function === first
+            
             value = first.call(scope, expression.rest)
             return value unless Macro::Expansion === value
             

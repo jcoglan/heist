@@ -23,3 +23,5 @@
 
 (assert-equal 3 (1+ 2))
 
+(assert-raise SyntaxError (2 2))
+
