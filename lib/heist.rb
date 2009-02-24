@@ -38,6 +38,17 @@ module Heist
           expression
     end
     
+    def quote(arg)
+      case arg
+      when Runtime::Cons then
+        Runtime::Cons.construct(arg) { |cell| quote(cell) }
+      when Runtime::Identifier then
+        arg.to_s.to_sym
+      else
+        arg
+      end
+    end
+    
     %w[list? pair? improper? null?].each do |symbol|
       define_method(symbol) do |object|
         Runtime::Cons === object and object.__send__(symbol)

@@ -62,17 +62,7 @@ end
 # (quote) casts identifiers to symbols. If given a list, it
 # quotes all items in the list recursively.
 syntax('quote') do |scope, cells|
-  helper = lambda do |arg|
-    case arg
-    when Cons then
-      Cons.construct(arg) { |cell| helper.call(cell) }
-    when Identifier then
-      arg.to_s.to_sym
-    else
-      arg
-    end
-  end
-  helper.call(cells.car)
+  Heist.quote(cells.car)
 end
 
 # (quasiquote) is similar to (quote), except that when it
