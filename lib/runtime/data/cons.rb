@@ -12,13 +12,13 @@ module Heist
       NULL.freeze
       
       class << self
-        def construct(enum, &block)
+        def construct(enum, syntax = false, &block)
           pairs = enum.map do |value|
             value = block.call(value) if block_given?
             self.new(value)
           end
           pairs.inject { |former, latter| former.cdr = latter }
-          pairs.first || NULL
+          pairs.first || (syntax ? self.new : NULL)
         end
         
         alias :[] :construct
@@ -40,7 +40,7 @@ module Heist
       
       def each
         pair, tail = self, NULL
-        while Cons === pair and pair != NULL
+        while Cons === pair and pair.pair?
           yield(pair.car) if block_given?
           tail = pair
           pair = pair.cdr

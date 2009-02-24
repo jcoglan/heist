@@ -16,13 +16,13 @@ module Heist
       
       def convert!
         return if @data
-        @data = Runtime::Cons.construct(elements.map { |c| c.eval })
+        @data = Runtime::Cons.construct(elements) { |c| c.eval }
       end
     end
     
     module List
       def eval
-        Runtime::Cons.construct(cells.map { |c| c.eval })
+        Runtime::Cons.construct(cells, true) { |c| c.eval }
       end
       
       def cells
