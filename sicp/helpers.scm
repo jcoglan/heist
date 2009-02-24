@@ -1,9 +1,11 @@
 (define (exercise x)
   (newline)
-  (display (+ "Exercise " x)))
+  (display (+ "Exercise " x))
+  (newline))
 
 (define (output expression)
-  (display (+ expression " = " (eval expression))))
+  (display (+ expression " = " (eval expression)))
+  (newline))
 
 (define (square x)
   (* x x))

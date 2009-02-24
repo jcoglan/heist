@@ -405,14 +405,14 @@
 
 (define (timed-prime-test n)
   ; (newline)
-  ; (display n)
+  ; (display n) (newline)
   (start-prime-test n (runtime)))
 (define (start-prime-test n start-time)
   (if (prime? n)
       (report-prime n (- (runtime) start-time))))
 (define (report-prime n elapsed-time)
-  (display (+ " *** " n))
-  (display elapsed-time)
+  (display (+ " *** " n)) (newline)
+  (display elapsed-time) (newline)
   #t)
 
 ; Search for first 3 primes above x

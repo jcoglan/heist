@@ -7,5 +7,6 @@
             (begin (fn)
                    (iter (- n 1)))))))
     (iter n)
-    (display (- (runtime) start)))))
+    (display (+ n " iterations: " (- (runtime) start)))
+    (newline))))
 

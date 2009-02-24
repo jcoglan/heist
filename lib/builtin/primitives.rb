@@ -131,7 +131,7 @@ syntax('eval') do |scope, string|
 end
 
 define('display') do |expression|
-  puts expression
+  print expression
 end
 
 syntax('load') do |scope, file|
