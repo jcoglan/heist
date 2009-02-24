@@ -144,7 +144,7 @@ end
 
 # TODO write a more exact implementation, and implement (eq?) and (equal?)
 define('eqv?') do |op1, op2|
-  op1.class == op2.class && op1 == op2
+  op1.class == op2.class and op1 == op2
 end
 
 # TODO raise an exception if they're not numeric

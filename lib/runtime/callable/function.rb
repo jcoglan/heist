@@ -32,7 +32,7 @@ module Heist
       end
       
       def lazy?
-        @lazy && !primitive?
+        @lazy and not primitive?
       end
       
       def to_s
