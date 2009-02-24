@@ -25,6 +25,8 @@ module Heist
         case expression
         
           when Cons then
+            return expression if expression.null?
+            
             first = Heist.evaluate(expression.car, scope)
             value = first.call(scope, expression.cdr)
             return value unless Macro::Expansion === value
