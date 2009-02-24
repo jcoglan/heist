@@ -90,7 +90,7 @@ module Heist
     end
     
     def indent
-      return 0 if @buffer.empty?
+      return 0 if @buffer.empty? or @open.empty?
       open = @open.last
       @indent = (SPECIAL.include?(open[0].strip) or open[1]) ?
                 open[2] + INDENT :

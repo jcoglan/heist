@@ -21,7 +21,7 @@ module Heist
     end
     
     rule datum
-      (boolean / number / string) !(!delimiter) <Datum>
+      (boolean / number / string) !(!delimiter .) <Datum>
     end
     
     rule boolean

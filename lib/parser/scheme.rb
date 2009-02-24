@@ -303,6 +303,9 @@ module Heist
     module Datum0
     end
 
+    module Datum1
+    end
+
     def _nt_datum
       start_index = index
       if node_cache[:datum].has_key?(index)
@@ -333,13 +336,32 @@ module Heist
       s0 << r1
       if r1
         i5 = index
-        i6 = index
-        r7 = _nt_delimiter
+        i6, s6 = index, []
+        i7 = index
+        r8 = _nt_delimiter
+        if r8
+          r7 = nil
+        else
+          self.index = i7
+          r7 = SyntaxNode.new(input, index...index)
+        end
+        s6 << r7
         if r7
-          r6 = nil
+          if index < input_length
+            r9 = (SyntaxNode).new(input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure("any character")
+            r9 = nil
+          end
+          s6 << r9
+        end
+        if s6.last
+          r6 = (SyntaxNode).new(input, i6...index, s6)
+          r6.extend(Datum0)
         else
           self.index = i6
-          r6 = SyntaxNode.new(input, index...index)
+          r6 = nil
         end
         if r6
           r5 = nil
@@ -351,7 +373,7 @@ module Heist
       end
       if s0.last
         r0 = (Datum).new(input, i0...index, s0)
-        r0.extend(Datum0)
+        r0.extend(Datum1)
       else
         self.index = i0
         r0 = nil
