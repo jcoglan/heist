@@ -3,16 +3,13 @@ module Heist
     
     class Cons
       include Enumerable
+      include Expression
+      
       attr_accessor :car, :cdr
       
       NULL = self.new
-      NULL.cdr = NULL
+      NULL.car = NULL.cdr = NULL
       NULL.freeze
-      
-      def initialize(car = nil, cdr = nil)
-        self.car = car
-        self.cdr = cdr || NULL
-      end
       
       class << self
         def construct(enum)
@@ -22,6 +19,20 @@ module Heist
         end
         
         alias :[] :construct
+      end
+      
+      def initialize(car = nil, cdr = nil)
+        self.car = car
+        self.cdr = cdr
+      end
+      
+      def car=(car)
+        @car = car.nil? ? NULL : car
+        car.parent = self if Expression === car and car != NULL
+      end
+      
+      def cdr=(cdr)
+        @cdr = cdr.nil? ? NULL : cdr
       end
       
       def each
@@ -48,7 +59,7 @@ module Heist
       end
       
       def pair?
-        not @car.nil?
+        @car != NULL
       end
       
       def improper?

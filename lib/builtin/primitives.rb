@@ -4,28 +4,30 @@
 # If the first parameter is a list it creates a function,
 # otherwise it eval's the second parameter and binds it
 # to the name given by the first.
-syntax('define') do |scope, names, *body|
-  List === names ?
-      scope.define(names.first, names.rest, body) :
-      scope[names] = Heist.evaluate(body.first, scope)
+syntax('define') do |scope, cells|
+  name = cells.car
+  Heist.list?(name) ?
+      scope.define(name.car, name.cdr, cells.cdr) :
+      scope[name] = Heist.evaluate(cells.cdr.car, scope)
 end
 
 # (lambda) returns an anonymous function whose arguments
 # are named by the first parameter and whose body is given
 # by the remaining parameters.
-syntax('lambda') do |scope, names, *body|
-  Function.new(scope, names, body)
+syntax('lambda') do |scope, cells|
+  Function.new(scope, cells.car, cells.cdr)
 end
 
 # (set!) reassigns the value of an existing bound variable,
 # in the innermost scope responsible for binding it.
-syntax('set!') do |scope, name, value|
-  scope.set!(name, Heist.evaluate(value, scope))
+syntax('set!') do |scope, cells|
+  scope.set!(cells.car, Heist.evaluate(cells.cdr.car, scope))
 end
 
 #----------------------------------------------------------------
 
 # Macros
+# TODO fix using new Cons implementation
 
 syntax('define-syntax') do |scope, name, transformer|
   scope[name] = Heist.evaluate(transformer, scope)
@@ -105,14 +107,14 @@ end
 # Control structures
 
 # (begin) simply executes a series of lists in the current scope.
-syntax('begin') do |scope, *body|
-  Body.new(body, scope)
+syntax('begin') do |scope, cells|
+  Body.new(cells, scope)
 end
 
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
-syntax('if') do |scope, cond, cons, alt|
-  which = Heist.evaluate(cond, scope) ? cons : alt
+syntax('if') do |scope, cells|
+  which = Heist.evaluate(cells.car, scope) ? cells.cdr.car : cells.cdr.cdr.car
   Frame.new(which, scope)
 end
 
@@ -122,20 +124,20 @@ end
 
 define('exit') { exit }
 
-syntax('runtime') do |scope|
+syntax('runtime') do |scope, cells|
   scope.runtime.elapsed_time
 end
 
-syntax('eval') do |scope, string|
-  scope.eval(Heist.evaluate(string, scope))
+syntax('eval') do |scope, cells|
+  scope.eval(Heist.evaluate(cells.car, scope))
 end
 
 define('display') do |expression|
   puts expression
 end
 
-syntax('load') do |scope, file|
-  scope.load(file)
+syntax('load') do |scope, cells|
+  scope.load(cells.car)
 end
 
 #----------------------------------------------------------------

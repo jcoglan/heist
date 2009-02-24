@@ -21,9 +21,9 @@ Class.new(Test::Unit::TestCase) do
     @@env.define('assert-equal') do |expected, actual|
       assert_equal(expected, actual)
     end
-    @@env.syntax('assert-raise') do |scope, name, expression|
-      exception = Heist.const_get(name.to_s)
-      assert_raise(exception) { @@env.eval(expression) }
+    @@env.syntax('assert-raise') do |scope, cells|
+      exception = Heist.const_get(cells.car.to_s)
+      assert_raise(exception) { @@env.eval(cells.cdr.car) }
     end
   end
   

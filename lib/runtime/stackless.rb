@@ -15,15 +15,18 @@ module Heist
                             @current.scope
         
         if Body === @current
-          expression[0...-1].each { |expr| Heist.evaluate(expr, scope) }
-          return Frame.new(expression.last, scope)
+          limit = expression.size - 1
+          expression.each_with_index do |expr, i|
+            return Frame.new(expr, scope) if i == limit
+            Heist.evaluate(expr, scope)
+          end
         end
         
         case expression
         
-          when List then
-            first = Heist.evaluate(expression.first, scope)
-            value = first.call(scope, expression.rest)
+          when Cons then
+            first = Heist.evaluate(expression.car, scope)
+            value = first.call(scope, expression.cdr)
             return value unless Macro::Expansion === value
             
             expression.replace(value.expression)

@@ -26,28 +26,30 @@ module Heist
   class MacroTemplateMismatch < MacroError; end
   class TypeError             < RuntimeError; end
   
-  def self.parse(source)
-    @parser ||= SchemeParser.new
-    @parser.parse(source)
-  end
-  
-  def self.evaluate(expression, scope)
-    Runtime::Expression === expression ?
-        expression.eval(scope) :
-        expression
-  end
-  
-  %w[list? pair? improper? null?].each do |symbol|
-    define_method(symbol) do |object|
-      Runtime::Cons === object and object.__send__(symbol)
+  class << self
+    def parse(source)
+      @parser ||= SchemeParser.new
+      @parser.parse(source)
     end
-  end
-  
-  def self.info(runtime)
-    puts "Heist Scheme interpreter v. #{ VERSION }"
-    puts "Evaluation mode: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }"
-    puts "Continuations enabled? #{ runtime.stackless? ? 'NO' : 'YES' }"
-    puts "Macros: #{ runtime.hygienic? ? 'HYGIENIC' : 'UNHYGIENIC' }\n\n"
+    
+    def evaluate(expression, scope)
+      Runtime::Expression === expression ?
+          expression.eval(scope) :
+          expression
+    end
+    
+    %w[list? pair? improper? null?].each do |symbol|
+      define_method(symbol) do |object|
+        Runtime::Cons === object and object.__send__(symbol)
+      end
+    end
+    
+    def info(runtime)
+      puts "Heist Scheme interpreter v. #{ VERSION }"
+      puts "Evaluation mode: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }"
+      puts "Continuations enabled? #{ runtime.stackless? ? 'NO' : 'YES' }"
+      puts "Macros: #{ runtime.hygienic? ? 'HYGIENIC' : 'UNHYGIENIC' }\n\n"
+    end
   end
   
 end

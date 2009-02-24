@@ -6,7 +6,7 @@ module Heist
       
       def initialize(scope, formals = [], body = nil, &block)
         @scope   = scope
-        @body    = body ? List.from(body) : block
+        @body    = body || block
         @formals = formals.map { |id| id.to_s }
       end
       
@@ -40,7 +40,7 @@ module Heist
     
     class Syntax < Function
       def call(scope, cells)
-        @body.call(scope, *cells)
+        @body.call(scope, cells)
       end
       
       def to_s
