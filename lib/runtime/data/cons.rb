@@ -12,8 +12,11 @@ module Heist
       NULL.freeze
       
       class << self
-        def construct(enum)
-          pairs = enum.map { |value| self.new(value) }
+        def construct(enum, &block)
+          pairs = enum.map do |value|
+            value = block.call(value) if block_given?
+            self.new(value)
+          end
           pairs.inject { |former, latter| former.cdr = latter }
           pairs.first || NULL
         end

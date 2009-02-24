@@ -27,7 +27,7 @@ syntax('case') do |scope, cells|
   result = nil
   cells.cdr.each do |list|
     next if result
-    values = call('quote', scope, list.car)
+    values = call('quote', scope, list)
     result = Body.new(list.cdr, scope) if values == :else or
                                           values.include?(value)
   end
