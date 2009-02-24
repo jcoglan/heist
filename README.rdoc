@@ -226,6 +226,27 @@ conditionally, certainly this will not work with macros as the
 inlining process will overwrite conditional code using the first
 expansion generated.
 
+Lazy evaluation mode is mainly useful for doing lambda calculus
+without being concerned about the difference between normal and
+applicative order, which for example affects the expression for
+the Y combinator. It displays some interesting properties, such
+as the fact that this is a perfectly reasonable definition for
+<tt>Y</tt>:
+
+  (define (Y f)
+    (f (Y f)))
+  ; => #<procedure:Y>
+  
+  (define fact (Y (lambda (rec)
+                    (lambda (x)
+                      (if (zero? x)
+                          1
+                          (* x (rec (- x 1))))))))
+  ; => #<procedure:fact>
+  
+  (fact 6)
+  ; => 720
+
 
 == License
 
