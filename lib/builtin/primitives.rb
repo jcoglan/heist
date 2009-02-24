@@ -138,6 +138,10 @@ syntax('load') do |scope, file|
   scope.load(file)
 end
 
+define('error') do |message, *args|
+  raise RuntimeError.new("#{ message } :: #{ args * ', ' }")
+end
+
 #----------------------------------------------------------------
 
 # Comparators
