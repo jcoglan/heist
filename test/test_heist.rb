@@ -91,11 +91,11 @@ Class.new(Test::Unit::TestCase) do
   def test_quotes
     assert_equal 7, @@env.eval("(+ 3 4)")
     assert_equal [:+, 3, 4], @@env.eval("'(+ 3 4)").to_a
-    assert Heist::Runtime::List === @@env.eval("'(+ 3 4)")
+    assert Heist::Runtime::Cons === @@env.eval("'(+ 3 4)")
     assert_equal 7, @@env.eval("(+ '3 4)")
     assert_equal [:+, [:-, 7, 9], 4], @@env.eval("'(+ (- 7 9) 4)").to_a
     assert_equal [7, 9, 6], @@env.eval("`(7 ,(+ 4 5) 6)").to_a
-    assert Heist::Runtime::List === @@env.eval("`(7 ,(+ 4 5) 6)")
+    assert Heist::Runtime::Cons === @@env.eval("`(7 ,(+ 4 5) 6)")
     assert_equal [3, 7, 6, 2, 6, 9], @@env.eval("`(3 7 6 ,@((lambda () '(2 6))) 9)").to_a
   end
   

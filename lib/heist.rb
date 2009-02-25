@@ -49,6 +49,20 @@ module Heist
       end
     end
     
+    def quasiquote(arg, scope)
+      case arg
+      when Runtime::Cons
+        if Runtime::Identifier === arg.car
+          name = arg.car.to_s
+          return evaluate(arg.cdr.car, scope) if name == 'unquote'
+          return Runtime::Cons.splice(arg.cdr.car, scope) if name == 'unquote-splicing'
+        end
+        Runtime::Cons.construct(arg) { |cell| quasiquote(cell, scope) }
+      else
+        quote(arg)
+      end
+    end
+    
     %w[list? pair? improper? null?].each do |symbol|
       define_method(symbol) do |object|
         Runtime::Cons === object and object.__send__(symbol)

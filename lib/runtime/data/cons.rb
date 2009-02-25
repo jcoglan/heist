@@ -11,17 +11,32 @@ module Heist
       NULL.car = NULL.cdr = NULL
       NULL.freeze
       
+      class Splice
+        attr_reader :cons
+        def initialize(value)
+          @cons = value
+        end
+      end
+      
       class << self
         def construct(enum, syntax = false, &block)
-          pairs = enum.map do |value|
+          root, last = nil, nil
+          enum.each do |value|
             value = block.call(value) if block_given?
-            self.new(value)
+            pair = (Splice === value) ? value.cons : self.new(value)
+            root ||= pair
+            last.cdr = pair if last
+            last = pair.tail
           end
-          pairs.inject { |former, latter| former.cdr = latter }
-          pairs.first || (syntax ? self.new : NULL)
+          root || (syntax ? self.new : NULL)
         end
-        
         alias :[] :construct
+        
+        def splice(expression, scope)
+          value = Heist.evaluate(expression, scope)
+          raise TypeError.new("(unquote-splicing) expected list, got: #{expression} -> #{value}") unless Heist.list?(value)
+          Splice.new(value)
+        end
       end
       
       def initialize(car = nil, cdr = nil)
@@ -52,7 +67,7 @@ module Heist
       def length
         size = 0
         tail = each { |value| size += 1 }
-        raise TypeError.new("Cannot get the length of an improper list") unless tail.cdr == NULL
+        raise TypeError.new("Cannot get the length of improper list #{self}") unless tail.cdr == NULL
         size
       end
       alias :size :length
@@ -71,6 +86,10 @@ module Heist
       
       def null?
         self == NULL
+      end
+      
+      def to_a
+        map { |cell| Cons === cell ? cell.to_a : cell }
       end
       
       def to_s
