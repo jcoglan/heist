@@ -18,3 +18,10 @@
     (+ a 1) (* a 2)))
   5))
 
+(define (1+ x)
+  (+ 1 x))
+
+(assert-equal 3 (1+ 2))
+
+(assert-raise SyntaxError (2 2))
+

@@ -39,6 +39,7 @@ module Heist
           result = @scope.eval(tree)
           puts "; => #{ result }\n\n" unless result.nil?
         rescue Exception => ex
+          return if SystemExit === ex
           puts "; [error] #{ ex.message }\n\n"
           puts "; backtrace: " + ex.backtrace.join("\n;            ") +
             "\n\n" unless Heist::RuntimeError === ex
@@ -89,7 +90,7 @@ module Heist
     end
     
     def indent
-      return 0 if @buffer.empty?
+      return 0 if @buffer.empty? or @open.empty?
       open = @open.last
       @indent = (SPECIAL.include?(open[0].strip) or open[1]) ?
                 open[2] + INDENT :

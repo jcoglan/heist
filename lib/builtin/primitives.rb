@@ -125,11 +125,15 @@ syntax('eval') do |scope, cells|
 end
 
 define('display') do |expression|
-  puts expression
+  print expression
 end
 
 syntax('load') do |scope, cells|
   scope.load(cells.car)
+end
+
+define('error') do |message, *args|
+  raise RuntimeError.new("#{ message } :: #{ args * ', ' }")
 end
 
 #----------------------------------------------------------------
@@ -138,7 +142,7 @@ end
 
 # TODO write a more exact implementation, and implement (eq?) and (equal?)
 define('eqv?') do |op1, op2|
-  op1.class == op2.class && op1 == op2
+  op1.class == op2.class and op1 == op2
 end
 
 # TODO raise an exception if they're not numeric
@@ -150,28 +154,28 @@ end
 # Returns true iff the arguments are monotonically decreasing
 define('>') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former > prior }
+  args.inject { |former, latter| result = false unless former > latter }
   result
 end
 
 # Returns true iff the arguments are monotonically non-increasing
 define('>=') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former >= prior }
+  args.inject { |former, latter| result = false unless former >= latter }
   result
 end
 
 # Returns true iff the arguments are monotonically increasing
 define('<') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former < prior }
+  args.inject { |former, latter| result = false unless former < latter }
   result
 end
 
 # Returns true iff the arguments are monotonically non-decreasing
 define('<=') do |*args|
   result = true
-  args.inject { |former, prior| result = false unless former <= prior }
+  args.inject { |former, latter| result = false unless former <= latter }
   result
 end
 

@@ -32,6 +32,13 @@ module Heist
         raise ex
       end
       
+      def value=(value)
+        @value  = value
+        @unwind = (Stack === @value)
+        @tail   = (Frame === @value)
+        restack!(value) if @unwind
+      end
+      
     private
       
       def process!
@@ -39,13 +46,6 @@ module Heist
         return if empty? or @unwind or not last.complete?
         @value.replaces(last.target) if @tail
         fill!(pop.target, @value)
-      end
-      
-      def value=(value)
-        @value  = value
-        @unwind = (Stack === @value)
-        @tail   = (Frame === @value)
-        restack!(value) if @unwind
       end
       
       def restack!(stack = [])

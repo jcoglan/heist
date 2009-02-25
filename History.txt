@@ -1,6 +1,21 @@
-=== 1.0.0 / 2009-01-12
+=== Version 0.1.0 (2009-02-25)
 
-* 1 major enhancement
+First public release
+* Data: booleans, numbers, strings, symbols, proper lists
+* Most of R5RS syntax (chapter 4)
+* Quoting, quasiquoting
+* Binding constructs, conditionals
+* Boolean logic
+* Delayed evaluation
+* Macros
+* Tail recursion
+* Continuations
+* Optional transparent lazy evaluation
+* Decent chunk of R5RS numeric library
 
-  * Birthday!
+
+=== Version 0 (2009-01-12)
+
+Initial draft. Supports (define), (lambda), lexical scoping,
+closures, arithmetic and (display).
 

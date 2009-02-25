@@ -30,8 +30,8 @@ module Heist
       end
       
       def defined?(name)
-        @symbols.has_key?(to_name(name)) ||
-            (Scope === @parent && @parent.defined?(name))
+        @symbols.has_key?(to_name(name)) or
+            (Scope === @parent and @parent.defined?(name))
       end
       
       def set!(name, value)

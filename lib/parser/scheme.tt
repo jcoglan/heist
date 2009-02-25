@@ -5,7 +5,7 @@ module Heist
     end
     
     rule cell
-      space quote? space (list / atom) space <Cell>
+      ignore quote? ignore (list / atom) ignore <Cell>
     end
     
     rule quote
@@ -21,7 +21,7 @@ module Heist
     end
     
     rule datum
-      boolean / number / string
+      (boolean / number / string) !(!delimiter .) <Datum>
     end
     
     rule boolean
@@ -53,19 +53,27 @@ module Heist
     end
     
     rule identifier
-      [^\(\)\[\]\s]+ <Identifier>
+      (!delimiter .)+ <Identifier>
     end
     
     rule digit
       [0-9]
     end
     
+    rule delimiter
+      [\(\)\[\]] / space
+    end
+    
     rule space
-      [\s\n\r\t]* comment?
+      [\s\n\r\t]
+    end
+    
+    rule ignore
+      space* comment?
     end
     
     rule comment
-      ";" (![\n\r] .)* space
+      ";" (![\n\r] .)* ignore
     end
   end
 end

@@ -28,7 +28,7 @@ module Heist
             return expression if expression.null?
             
             first = Heist.evaluate(expression.car, scope)
-            raise SyntaxError.new("Expressions must begin with a procedure") unless Function === first
+            raise SyntaxError.new("Invalid expression: #{expression}") unless Function === first
             
             value = first.call(scope, expression.cdr)
             return value unless Macro::Expansion === value

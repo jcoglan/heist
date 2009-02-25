@@ -86,8 +86,8 @@ module Heist
               next unless value
               idx += 1
               
-              idx += 1 while idx < input.size &&
-                             followed_by_ellipsis &&
+              idx += 1 while idx < input.size and
+                             followed_by_ellipsis and
                              consume[]
             end
             return nil unless idx == input.size

@@ -8,6 +8,8 @@ module Heist
         @scope   = scope
         @body    = body || block
         @formals = formals.map { |id| id.to_s }
+        @lazy    = scope.runtime.lazy?
+        @eager   = !scope.runtime.stackless?
       end
       
       def name=(name)
@@ -19,7 +21,7 @@ module Heist
         cells.each_with_index do |arg, i|
           params[i] = closure[@formals[i]] = lazy? ?
               Binding.new(arg, scope) :
-              Heist.evaluate(arg, scope)
+              (@eager ? arg : Heist.evaluate(arg, scope))
         end
         return @body.call(*params) if primitive?
         Body.new(@body, closure)
@@ -30,7 +32,7 @@ module Heist
       end
       
       def lazy?
-        @scope.runtime.lazy? && !primitive?
+        @lazy and not primitive?
       end
       
       def to_s
