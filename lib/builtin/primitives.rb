@@ -27,10 +27,9 @@ end
 #----------------------------------------------------------------
 
 # Macros
-# TODO fix using new Cons implementation
 
-syntax('define-syntax') do |scope, name, transformer|
-  scope[name] = Heist.evaluate(transformer, scope)
+syntax('define-syntax') do |scope, cells|
+  scope[cells.car] = Heist.evaluate(cells.cdr.car, scope)
 end
 
 syntax('let-syntax') do |*args|
@@ -41,8 +40,8 @@ syntax('letrec-syntax') do |*args|
   call('letrec', *args)
 end
 
-syntax('syntax-rules') do |scope, keywords, *rules|
-  Macro.new(scope, keywords, rules)
+syntax('syntax-rules') do |scope, cells|
+  Macro.new(scope, cells.car, cells.cdr)
 end
 
 #----------------------------------------------------------------

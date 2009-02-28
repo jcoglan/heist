@@ -19,10 +19,8 @@ module Heist
         @calling_scope = scope
         rule, matches = *rule_for(cells)
         
-        return Expansion.new(expand_template(rule.last, matches)) if rule
+        return Expansion.new(expand_template(rule.cdr.car, matches)) if rule
         
-        # TODO include macro name in error message,
-        # and be more specific about which pattern failed
         input = cells.map { |c| c.to_s } * ' '
         raise SyntaxError.new(
           "Bad syntax: no macro expansion found for (#{@name} #{input})")
@@ -36,7 +34,7 @@ module Heist
       
       def rule_for(cells)
         @body.each do |rule|
-          matches = rule_matches(rule.first.rest, cells)
+          matches = rule_matches(rule.car.cdr, cells)
           return [rule, matches] if matches
         end
         nil
@@ -71,26 +69,31 @@ module Heist
       def rule_matches(pattern, input, matches = Matches.new, depth = 0)
         case pattern
         
-          when List then
-            return nil unless List === input
-            idx = 0
-            pattern.each_with_index do |token, i|
-              followed_by_ellipsis = (pattern[i+1].to_s == ELLIPSIS)
+          when Cons then
+            return nil unless Cons === input
+            pattern_pair, input_pair = pattern, input
+            
+            skip = lambda { pattern_pair = pattern_pair.cdr }
+            
+            while not pattern_pair.null?
+              token = pattern_pair.car
+              followed_by_ellipsis = (pattern_pair.cdr.car.to_s == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
               matches.depth = depth + dx
-              next if token.to_s == ELLIPSIS
+              skip[] and next if token.to_s == ELLIPSIS
               
-              consume = lambda { rule_matches(token, input[idx], matches, depth + dx) }
+              consume = lambda { rule_matches(token, input_pair.car, matches, depth + dx) }
               return nil unless value = consume[] or followed_by_ellipsis
-              next unless value
-              idx += 1
+              skip[] and next unless value
+              input_pair = input_pair.cdr
               
-              idx += 1 while idx < input.size and
-                             followed_by_ellipsis and
-                             consume[]
+              input_pair = input_pair.cdr while not input_pair.null? and
+                                                followed_by_ellipsis and
+                                                consume[]
+              skip[]
             end
-            return nil unless idx == input.size
+            return nil unless input_pair.null?
         
           when Identifier then
             return (pattern.to_s == input.to_s) if @formals.include?(pattern.to_s)
@@ -123,24 +126,37 @@ module Heist
       def expand_template(template, matches, depth = 0, inspection = false)
         case template
         
-          when List then
-            result = List.new
-            template.each_with_index do |cell, i|
-              followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
+          when Cons then
+            result, last, repeater, template_pair = nil, nil, nil, template
+            
+            push = lambda do |value|
+              return if value == Cons::NULL
+              pair = Cons.new(value)
+              result ||= pair
+              last.cdr = pair if last
+              last = pair
+            end
+            
+            while not template_pair.null?
+              cell = template_pair.car
+              followed_by_ellipsis = (template_pair.cdr.car.to_s == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
               matches.inspecting(depth + 1) if followed_by_ellipsis and
                                                not inspection
               
+              repeater = cell if followed_by_ellipsis
+              
               if cell.to_s == ELLIPSIS and not inspection
-                repeater = template[i-1]
-                matches.expand! { result << expand_template(repeater, matches, depth + 1) }
+                matches.expand! { push[expand_template(repeater, matches, depth + 1)] }
                 matches.depth = depth
               else
                 inspect = inspection || (followed_by_ellipsis && depth + 1)
                 value = expand_template(cell, matches, depth + dx, inspect)
-                result << value unless inspect
+                push[value] unless inspect
               end
+              
+              template_pair = template_pair.cdr
             end
             result
         
