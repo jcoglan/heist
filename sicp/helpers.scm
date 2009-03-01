@@ -13,6 +13,8 @@
 (define (cube x)
   (* x x x))
 
+(define dx 0.000001)
+
 
 (define (smallest-divisor n)
   (find-divisor n 2))

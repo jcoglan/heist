@@ -293,3 +293,101 @@
 (output "(tan-cf (/ pi 2) 10)")         ; 753695.994435399
 (output "(tan-cf (* 3 (/ pi 4)) 10)")   ; -1.00000398040374
 
+
+; Higher-order functions for the final few exercises
+
+(define (average-damp f)
+  (lambda (x) (average x (f x))))
+
+(define (sqrt x)
+  (fixed-point (average-damp (lambda (y) (/ x y)))
+               1.0))
+
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x) ((deriv g) x)))))
+
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define (sqrt x)
+  (newtons-method (lambda (y) (- (square y) x))
+                  1.0))
+
+(define (fixed-point-of-transform g transform guess)
+  (fixed-point (transform g) guess))
+
+(define (sqrt x)
+  (fixed-point-of-transform (lambda (y) (/ x y))
+                            average-damp
+                            1.0))
+
+
+(exercise "1.40")
+; Functions as return values
+
+(define (cubic a b c)
+  (lambda (x)
+    (+ (* x x x)
+       (* a x x)
+       (* b x)
+       c)))
+
+
+(exercise "1.41")
+; Double application
+
+(define (double f)
+  (lambda (x)
+    (f (f x))))
+
+(define (inc x) (+ 1 x))
+(output "(((double (double double)) inc) 5)")
+
+
+(exercise "1.42")
+; Composition
+
+(define (compose f g)
+  (lambda (x)
+    (f (g x))))
+
+
+(exercise "1.43")
+; n-ary application
+
+(define (repeated f n)
+  (define (loop m x)
+    (if (= m 0)
+        x
+        (f (loop (- m 1) x))))
+  (lambda (x)
+    (loop n x)))
+
+; or, using compose:
+(define (repeated f n)
+  (if (= n 1)
+      f
+      (compose f (repeated f (- n 1)))))
+
+(output "((repeated square 2) 5)")
+
+
+(exercise "1.44")
+; Functional smoothing
+
+(define (smooth f)
+  (lambda (x)
+    (/ (+ (f (- x dx))
+          (f x)
+          (f (+ x dx)))
+       3)))
+
+(define (n-smooth f n)
+  ((repeated smooth n) f))
+
