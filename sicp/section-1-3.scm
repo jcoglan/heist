@@ -441,3 +441,25 @@
 (output "((nth-root 16) 65536)")
 (output "((nth-root 17) 131072)")
 
+
+(exercise "1.46")
+; Abstracted iterative improvement
+
+(define (iterative-improve good-enough? improve)
+  (define (iterate guess)
+    (if (good-enough? guess)
+        guess
+        (iterate (improve guess))))
+  (lambda (first-guess)
+    (iterate first-guess)))
+
+(define (sqrt x)
+  ((iterative-improve (lambda (guess)
+                        (< (abs (- (square guess) x))
+                           0.001))
+                      (lambda (guess)
+                        (average guess (/ x guess))))
+   1.0))
+
+(output "(sqrt 9)")
+
