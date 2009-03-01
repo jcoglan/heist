@@ -38,9 +38,6 @@
 ; (test 0 (p))
 
 
-(define (average x y)
-  (/ (+ x y) 2))
-
 (define (sqrt-iter guess x)
   (if (good-enough? guess x)
       guess

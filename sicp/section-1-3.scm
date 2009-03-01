@@ -296,6 +296,17 @@
 
 ; Higher-order functions for the final few exercises
 
+(define tolerance 0.00001)
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+          next
+          (try next))))
+  (try first-guess))
+
 (define (average-damp f)
   (lambda (x) (average x (f x))))
 
@@ -390,4 +401,43 @@
 
 (define (n-smooth f n)
   ((repeated smooth n) f))
+
+
+(exercise "1.45")
+; nth roots
+
+; To find the nth root of x, we find the fixed point
+; y of y -> x/y^(n-1). Provide a function to generate
+; this transformation, curried on n and x
+(define (nth-root-transform n)
+  (lambda (x)
+    (lambda (y)
+      (/ x (expt y (- n 1))))))
+
+; To converge, this must be average-damped by a factor
+; given by floor(log2(n)). Again, curry on n,x
+(define (nth-root n)
+  (let ([transform (nth-root-transform n)]
+        [k (floor (/ (log n) (log 2)))])
+    (lambda (x)
+      (fixed-point-of-transform (transform x)
+                                (repeated average-damp k)
+                                1.0))))
+
+(output "((nth-root 2) 9)")
+(output "((nth-root 3) 27)")
+(output "((nth-root 4) 16)")
+(output "((nth-root 5) 32)")
+(output "((nth-root 6) 64)")
+(output "((nth-root 7) 128)")
+(output "((nth-root 8) 256)")
+(output "((nth-root 9) 512)")
+(output "((nth-root 10) 1024)")
+(output "((nth-root 11) 2048)")
+(output "((nth-root 12) 4096)")
+(output "((nth-root 13) 8192)")
+(output "((nth-root 14) 16384)")
+(output "((nth-root 15) 32768)")
+(output "((nth-root 16) 65536)")
+(output "((nth-root 17) 131072)")
 

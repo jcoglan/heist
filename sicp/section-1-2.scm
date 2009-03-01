@@ -230,9 +230,6 @@
 ; This is divide and conquer: n multiplications can be divided
 ; into log(n) squarings.
 
-(define (even? n)
-  (= (remainder n 2) 0))
-
 (define (fast-expt b n)
   (define (expt-iter b n a)
     (cond ((= n 0) a)
@@ -250,12 +247,6 @@
 ; cheap when you get down to the hardware level: even?() just
 ; checks if the last bit is zero, double() bit-shifts to the left
 ; and halve() bit-shifts to the right.
-
-(define (double x)
-  (* 2 x))
-
-(define (halve x)
-  (/ x 2))
 
 (define (mult x y)
   (cond ((= y 0) 0)

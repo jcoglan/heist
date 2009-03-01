@@ -15,6 +15,15 @@
 
 (define dx 0.000001)
 
+(define (average x y)
+  (/ (+ x y) 2))
+
+(define (double x)
+  (* 2 x))
+
+(define (halve x)
+  (/ x 2))
+
 
 (define (smallest-divisor n)
   (find-divisor n 2))
