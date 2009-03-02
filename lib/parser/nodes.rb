@@ -22,7 +22,7 @@ module Heist
     
     module List
       def eval
-        Runtime::Cons.construct(cells, true) { |c| c.eval }
+        Runtime::Cons.construct(cells) { |c| c.eval }
       end
       
       def cells

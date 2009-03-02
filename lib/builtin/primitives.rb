@@ -118,9 +118,13 @@ end
 
 # Comparators
 
-# TODO write a more exact implementation, and implement (eq?) and (equal?)
+# TODO write a more exact implementation, and implement (eq?)
 define('eqv?') do |op1, op2|
-  op1.class == op2.class and op1 == op2
+  op1.equal?(op2)
+end
+
+define('equal?') do |op1, op2|
+  op1 == op2
 end
 
 # TODO raise an exception if they're not numeric
@@ -175,6 +179,22 @@ end
 
 define('integer?') do |value|
   Integer === value
+end
+
+define('procedure?') do |value|
+  Function === value
+end
+
+define('null?') do |value|
+  Cons::NULL == value
+end
+
+define('list?') do |value|
+  Cons === value and value.list?
+end
+
+define('pair?') do |value|
+  Cons === value and value.pair?
 end
 
 #----------------------------------------------------------------

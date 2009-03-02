@@ -9,6 +9,7 @@ module Heist
       
       NULL = self.new
       NULL.car = NULL.cdr = NULL
+      def NULL.==(other); equal?(other); end
       NULL.freeze
       
       class Splice
@@ -19,7 +20,7 @@ module Heist
       end
       
       class << self
-        def construct(enum, syntax = false, &block)
+        def construct(enum, &block)
           root, last = nil, nil
           enum.each do |value|
             value = block.call(value) if block_given?
@@ -28,7 +29,7 @@ module Heist
             last.cdr = pair if last
             last = pair.tail
           end
-          root || (syntax ? self.new : NULL)
+          root || NULL
         end
         alias :[] :construct
         
@@ -72,21 +73,23 @@ module Heist
       end
       alias :size :length
       
-      def list?
-        tail.cdr == NULL
+      def ==(other)
+        return false unless Cons === other
+        return false if NULL == other
+        @car == other.car and @cdr == other.cdr
       end
+      
+      def list?
+        tail.cdr == NULL; end
       
       def pair?
-        @car != NULL
-      end
+        not null?; end
       
       def improper?
-        pair? and not list?
-      end
+        pair? and not list?; end
       
       def null?
-        self == NULL
-      end
+        self == NULL; end
       
       def to_a
         map { |cell| Cons === cell ? cell.to_a : cell }
