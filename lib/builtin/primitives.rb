@@ -181,6 +181,14 @@ define('integer?') do |value|
   Integer === value
 end
 
+define('string?') do |value|
+  String === value
+end
+
+define('symbol?') do |value|
+  Symbol === value
+end
+
 define('procedure?') do |value|
   Function === value
 end
@@ -294,5 +302,40 @@ end
 
 define('string->number') do |string, radix|
   radix.nil? ? string.to_f : string.to_i(radix)
+end
+
+#----------------------------------------------------------------
+
+# List/pair functions
+
+# Allocates and returns a new pair from its arguments
+define('cons') do |car, cdr|
+  Cons.new(car, cdr)
+end
+
+# Allocates and returns a new list from its arguments
+define('list') do |*values|
+  Cons.construct(values)
+end
+
+# car/cdr accessors (dynamically generated)
+Cons::ACCESSORS.each do |accsr|
+  define(accsr) do |cons|
+    cons.__send__(accsr)
+  end
+end
+
+# Mutators for car/cdr fields
+define('set-car!') do |cons, value|
+  cons.car = value
+end
+define('set-cdr!') do |cons, value|
+  cons.cdr = value
+end
+
+# Returns the length of a proper list, and throws an
+# exception for the length of improper lists
+define('length') do |list|
+  list.length
 end
 

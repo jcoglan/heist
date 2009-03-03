@@ -12,6 +12,12 @@ module Heist
       def NULL.==(other); equal?(other); end
       NULL.freeze
       
+      ACCESSORS = (1..4).map { |n|
+        (0...(2**n)).map do |x|
+          'c' + ("%0#{n}d" % x.to_s(2)).gsub('0', 'a').gsub('1', 'd') + 'r'
+        end
+      }.flatten
+      
       class Splice
         attr_reader :cons
         def initialize(value)
@@ -43,6 +49,14 @@ module Heist
       def initialize(car = nil, cdr = nil)
         self.car = car
         self.cdr = cdr
+      end
+      
+      ACCESSORS[2..-1].each do |accsr|
+        class_eval <<-EOS
+          def #{ accsr }
+            #{ accsr.scan(/[ad]/).reverse.map { |s| "c#{s}r" } * '.' }
+          end
+        EOS
       end
       
       def car=(car)
