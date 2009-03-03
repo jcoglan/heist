@@ -19,7 +19,7 @@ module Heist
           name = name.to_s
           @names[@depth] << name
           @data[name] ||= Splice.new(name, @depth)
-          @data[name] << expression unless expression.nil?
+          @data[name] << expression
         end
         
         def inspecting(depth)

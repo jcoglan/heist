@@ -14,6 +14,7 @@ module Heist
         end
         
         def <<(value)
+          return if Cons::NULL == value
           @stack.pop.call() while not @stack.empty?
           tail(@depth) << value
         end

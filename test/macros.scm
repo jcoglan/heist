@@ -312,32 +312,13 @@
     (triple-deep2 (((foo bar)) ((wont) (matter really anyway)))
                  ((5 6)) ((4) (8 7 2))))
 
+(define-syntax trial (syntax-rules (with)
+  [(_ ((with (value ...) ...) ...) obj ...)
+    '((obj ((value ...) (value value) ...) ... (obj obj)) ...)]))
 
-; Really nasty nested repetition. PLT won't run this in its entirity
-; due to overuse of infix ellipses, but comparison output for
-; subsets of this macro can be seen in plt-macros.txt
-
-(define-syntax convoluted
-  (syntax-rules (with)
-    [(_ (with (value ...) ...) ... thing ((name ...) ...) obj ...)
-      '((obj ((value ...) (value value) ...) ... (obj obj)) ...
-        (((name name) ... obj obj (obj (name ...))) ...))]))
-
-(assert-equal '((foo ((a u) (a a) (u u)) ((j e n k l) (j j) (e e) (n n) (k k) (l l))
-                     (()) ((q c y n) (q q) (c c) (y y) (n n)) (foo foo))
-                (bar (bar bar))
-                (baz ((b) (b b)) ((d f) (d d) (f f)) (baz baz))
-                (what ((k l e) (k k) (l l) (e e)) ((s) (s s)) ((u n) (u u) (n n))
-                      ((f i k w) (f f) (i i) (k k) (w w)) ((p) (p p)) (what what))
-                      (((8 8) (3 3) (2 2) (9 9) foo foo (foo (8 3 2 9)))
-                       ((2 2) (3 3) bar bar (bar (2 3)))
-                       ((1 1) (0 0) (4 4) baz baz (baz (1 0 4)))
-                       ((8 8) (3 3) (2 2) (1 1) (7 7) what what (what (8 3 2 1 7)))))
-    (convoluted (with (a u) (j e n k l) () (q c y n)) (with)
-                (with (b) (d f)) (with (k l e) (s) (u n) (f i k w) (p))
-                thing ((8 3 2 9) (2 3) (1 0 4) (8 3 2 1 7))
-                foo bar baz what))
-
-(assert-raise MacroTemplateMismatch (convoluted (with (a)) (with (b)) thing () foo))
-(assert-raise SyntaxError (convoluted nothing))
+(assert-equal '((bar ((4 2 7) (4 4) (2 2) (7 7)) (bar bar)))
+              (trial ((with (4 2 7))) bar))
+(assert-equal '((bar (bar bar)))
+              (trial ((with)) bar))
+(assert-raise MacroTemplateMismatch (trial () bar))
 
