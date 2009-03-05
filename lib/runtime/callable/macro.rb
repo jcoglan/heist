@@ -4,7 +4,7 @@ module Heist
   class Runtime
     
     class Macro < Syntax
-      ELLIPSIS = '...'
+      ELLIPSIS = Identifier.new('...')
       
       %w[expansion splice matches].each do |klass|
         require RUNTIME_PATH + 'callable/macro/' + klass
@@ -71,11 +71,11 @@ module Heist
             
             while not pattern_pair.null?
               token = pattern_pair.car
-              followed_by_ellipsis = (pattern_pair.cdr.car.to_s == ELLIPSIS)
+              followed_by_ellipsis = (pattern_pair.cdr.car == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
               matches.depth = depth + dx
-              skip[] and next if token.to_s == ELLIPSIS
+              skip[] and next if token == ELLIPSIS
               
               consume = lambda { rule_matches(token, input_pair.car, matches, depth + dx) }
               return nil unless value = consume[] or followed_by_ellipsis

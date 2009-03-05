@@ -31,10 +31,14 @@ module Heist
         # inserted as a bound identifier then it is in effect renamed to prevent
         # inadvertent captures of free identifiers.
         # 
-        def expand(template, matches, depth = 0, inspection = false)
+        def expand(template, matches, depth = 0, ignoring_ellipses = false, inspection = false)
           case template
           
             when Cons then
+              return expand(template.cdr.car,
+                            matches, depth,
+                            true, inspection) if template.car == ELLIPSIS
+              
               result, last, repeater, template_pair = nil, nil, nil, template
               
               push = lambda do |value|
@@ -47,7 +51,7 @@ module Heist
               
               while not template_pair.null?
                 cell = template_pair.car
-                followed_by_ellipsis = (template_pair.cdr.car.to_s == ELLIPSIS)
+                followed_by_ellipsis = (template_pair.cdr.car == ELLIPSIS) && !ignoring_ellipses
                 dx = followed_by_ellipsis ? 1 : 0
                 
                 matches.inspecting(depth + 1) if followed_by_ellipsis and
@@ -55,12 +59,12 @@ module Heist
                 
                 repeater = cell if followed_by_ellipsis
                 
-                if cell.to_s == ELLIPSIS and not inspection
+                if cell == ELLIPSIS and not inspection and not ignoring_ellipses
                   matches.expand! { push[expand(repeater, matches, depth + 1)] }
                   matches.depth = depth
                 else
                   inspect = inspection || (followed_by_ellipsis && depth + 1)
-                  value = expand(cell, matches, depth + dx, inspect)
+                  value = expand(cell, matches, depth + dx, ignoring_ellipses, inspect)
                   push[value] unless inspect
                 end
                 
