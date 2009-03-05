@@ -24,7 +24,8 @@ module Heist
         end
         
         def size(depth)
-          current(depth).size
+          current = current(depth)
+          empty?(current) ? 0 : current.size
         end
         
         def read
@@ -48,6 +49,10 @@ module Heist
         
         def current(depth)
           @indexes[0...depth].inject(@data) { |list, i| list[i] }
+        end
+        
+        def empty?(array)
+          array == [] or array == [[]]
         end
       end
       
