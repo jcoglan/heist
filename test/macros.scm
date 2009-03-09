@@ -43,6 +43,22 @@
 
 (assert-equal 8 (dont-rename-else #f 6 8))
 
+(define-syntax bad-keyword (syntax-rules (with)
+  [(_ with x)
+    `(,with ,x)]))
+
+(let ([with 16])
+  ; TODO this should really raise a SyntaxError
+  ; because of the local binding of 'with'. As it stands,
+  ; the macro renames 'with' to 'with1' in the expansion
+  ; so we get a missing variable
+  (assert-raise UndefinedVariable (bad-keyword with 10)))
+
+(assert-raise UndefinedVariable (bad-keyword with 10))
+
+(define with 16)
+(assert-equal '(16 10) (bad-keyword with 10))
+
 
 ; Test literal matching
 
