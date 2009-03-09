@@ -26,8 +26,7 @@ module Heist
       @top_level = Scope.new(self)
       @stack = create_stack
       
-      # TODO use macro syntaxes
-      syntax_type = 'rb' # (lazy? or not @hygienic) ? 'rb' : 'scm'
+      syntax_type = (lazy? or not @hygienic) ? 'rb' : 'scm'
       
       run("#{ BUILTIN_PATH }primitives.rb")
       run("#{ BUILTIN_PATH }syntax.#{syntax_type}")

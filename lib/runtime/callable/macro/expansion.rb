@@ -31,18 +31,16 @@ module Heist
         # inserted as a bound identifier then it is in effect renamed to prevent
         # inadvertent captures of free identifiers.
         # 
-        def expand(template, matches, depth = 0, ignoring_ellipses = false, inspection = false)
+        def expand(template, matches, depth = 0, ignoring_ellipses = false)
           case template
           
             when Cons then
               return expand(template.cdr.car,
-                            matches, depth,
-                            true, inspection) if template.car == ELLIPSIS
+                            matches, depth, true) if template.car == ELLIPSIS
               
               result, last, repeater, template_pair = nil, nil, nil, template
               
               push = lambda do |value|
-                return if value == Cons::NULL
                 pair = Cons.new(value)
                 result ||= pair
                 last.cdr = pair if last
@@ -54,18 +52,15 @@ module Heist
                 followed_by_ellipsis = (template_pair.cdr.car == ELLIPSIS) && !ignoring_ellipses
                 dx = followed_by_ellipsis ? 1 : 0
                 
-                matches.inspecting(depth + 1) if followed_by_ellipsis and
-                                                 not inspection
-                
                 repeater = cell if followed_by_ellipsis
                 
-                if cell == ELLIPSIS and not inspection and not ignoring_ellipses
-                  matches.expand! { push[expand(repeater, matches, depth + 1)] }
-                  matches.depth = depth
+                if cell == ELLIPSIS and not ignoring_ellipses
+                  matches.expand!(repeater, depth + 1) do
+                    push[expand(repeater, matches, depth + 1)]
+                  end
                 else
-                  inspect = inspection || (followed_by_ellipsis && depth + 1)
-                  value = expand(cell, matches, depth + dx, ignoring_ellipses, inspect)
-                  push[value] unless inspect
+                  push[expand(cell, matches, depth + dx,
+                              ignoring_ellipses)] unless followed_by_ellipsis
                 end
                 
                 template_pair = template_pair.cdr
@@ -73,7 +68,7 @@ module Heist
               result
           
             when Identifier then
-              return matches.get(template) if matches.defined?(template)
+              return matches.get(template) if matches.has?(template)
               return Identifier.new(template) unless @hygienic
               
               @lexical_scope.defined?(template) ?

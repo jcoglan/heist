@@ -320,7 +320,7 @@
               (trial ((with (4 2 7))) bar))
 (assert-equal '((bar (bar bar)))
               (trial ((with)) bar))
-; (assert-raise MacroTemplateMismatch (trial () bar)) TODO fix this
+(assert-raise MacroTemplateMismatch (trial () bar))
 
 
 ; Test nested macros with keywords and nested splices

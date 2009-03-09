@@ -5,6 +5,23 @@ module Heist
     
     class Macro < Syntax
       ELLIPSIS = Identifier.new('...')
+      RESERVED = %w[_ ...]
+      
+      class << self
+        def pattern_vars(pattern, excluded = [])
+          case pattern
+            when Identifier then
+              name = pattern.to_s
+              return nil if excluded.include?(name) or
+                            RESERVED.include?(name)
+              [name]
+            when Cons then
+              pattern.map(&method(:pattern_vars)).
+                      flatten.
+                      compact
+          end
+        end
+      end
       
       %w[expansion splice matches].each do |klass|
         require RUNTIME_PATH + 'callable/macro/' + klass
@@ -15,9 +32,8 @@ module Heist
         
         return Expansion.new(@scope, scope, rule.cdr.car, matches) if rule
         
-        input = cells.map { |c| c.to_s } * ' '
         raise SyntaxError.new(
-          "Bad syntax: no macro expansion found for (#{@name} #{input})")
+          "Bad syntax: no macro expansion found for #{Cons.new(@name, cells)}")
       end
       
       def to_s
@@ -31,7 +47,7 @@ module Heist
           matches = rule_matches(rule.car.cdr, cells)
           return [rule, matches] if matches
         end
-        nil
+        return nil
       end
       
       # More formally, an input form F matches a pattern P if and only if:
@@ -60,7 +76,8 @@ module Heist
       # It is an error to use a macro keyword, within the scope of its
       # binding, in an expression that does not match any of the patterns.
       # 
-      def rule_matches(pattern, input, matches = Matches.new, depth = 0)
+      def rule_matches(pattern, input, matches = nil, depth = 0)
+        matches ||= Matches.new(Macro.pattern_vars(pattern, @formals))
         case pattern
         
           when Cons then
@@ -74,7 +91,9 @@ module Heist
               followed_by_ellipsis = (pattern_pair.cdr.car == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
-              matches.depth = depth + dx
+              matches.descend!(Macro.pattern_vars(token, @formals),
+                               depth + dx) if followed_by_ellipsis
+              
               skip[] and next if token == ELLIPSIS
               
               consume = lambda { rule_matches(token, input_pair.car, matches, depth + dx) }
@@ -90,7 +109,7 @@ module Heist
             return nil unless input_pair.null?
         
           when Identifier then
-            return (pattern.to_s == input.to_s) if @formals.include?(pattern.to_s)
+            return (pattern == input) if @formals.include?(pattern.to_s)
             matches.put(pattern, input)
             return nil if input.nil?
         
@@ -99,6 +118,7 @@ module Heist
         end
         matches
       end
+      
     end
     
   end
