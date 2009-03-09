@@ -5,7 +5,7 @@ module Heist
       class Matches
         def initialize(names)
           @data = {}
-          names.each { |name| @data[name] = Splice.new }
+          names.each { |name| @data[name] = Splice.new(name) }
         end
         
         def descend!(names, depth)

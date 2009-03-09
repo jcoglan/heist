@@ -3,21 +3,19 @@ module Heist
     class Macro
       
       class Splice
-        def initialize
+        def initialize(name)
+          @name  = name
           @data  = []
           @depth = 0
-          @queue = []
         end
         
         def descend!(depth)
-          @queue.shift.call() while not @queue.empty?
-          @queue << lambda { tail(depth-1) << [] }
+          tail(depth-1) << []
           @depth = depth if depth > @depth
         end
         
         def <<(value)
           return if Cons::NULL == value
-          @queue.shift.call() while not @queue.empty?
           tail(@depth) << value
         end
         

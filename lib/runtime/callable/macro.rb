@@ -16,7 +16,7 @@ module Heist
                             RESERVED.include?(name)
               [name]
             when Cons then
-              pattern.map(&method(:pattern_vars)).
+              pattern.map { |cell| pattern_vars(cell, excluded) }.
                       flatten.
                       compact
           end
@@ -97,9 +97,12 @@ module Heist
               skip[] and next if token == ELLIPSIS
               
               consume = lambda { rule_matches(token, input_pair.car, matches, depth + dx) }
-              return nil unless value = consume[] or followed_by_ellipsis
-              skip[] and next unless value
-              input_pair = input_pair.cdr
+              
+              unless followed_by_ellipsis
+                return nil unless consume[]
+                input_pair = input_pair.cdr
+                skip[] and next
+              end
               
               input_pair = input_pair.cdr while not input_pair.null? and
                                                 followed_by_ellipsis and

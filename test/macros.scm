@@ -301,6 +301,7 @@
     (triple-deep (((foo bar) (it)) ((wont) (matter really anyway)))
                  ((5 6) (2)) ((4) (8 7 2))))
 
+
 (define-syntax triple-deep2
   (syntax-rules ()
     [(_ (((name ...) ...) ...) ((value ...) ...) ...)
@@ -312,6 +313,7 @@
     (triple-deep2 (((foo bar)) ((wont) (matter really anyway)))
                  ((5 6)) ((4) (8 7 2))))
 
+
 (define-syntax trial (syntax-rules (with)
   [(_ ((with (value ...) ...) ...) obj ...)
     '((obj ((value ...) (value value) ...) ... (obj obj)) ...)]))
@@ -321,6 +323,20 @@
 (assert-equal '((bar (bar bar)))
               (trial ((with)) bar))
 (assert-raise MacroTemplateMismatch (trial () bar))
+
+
+(define-syntax trial2 (syntax-rules (with)
+  [(_ (with (value ...) ...) ... obj ...)
+    '((obj ((value ...) (value value) ...) ... (obj obj)) ...)]))
+
+(assert-equal '((foo ((a) (a a)) (foo foo))
+                (bar (bar bar)))
+    (trial2 (with (a)) (with) foo bar))
+
+(assert-equal '((foo ((a) (a a)) (foo foo))
+                (bar (bar bar))
+                (baz ((1 2 3) (1 1) (2 2) (3 3)) (baz baz)))
+    (trial2 (with (a)) (with) (with (1 2 3)) foo bar baz))
 
 
 ; Test nested macros with keywords and nested splices
