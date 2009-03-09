@@ -105,6 +105,20 @@
 (assert-equal 13 (one-or-more (+ 2 4) (+ 3 8) (+ 7 6)))
 
 
+; Test that null lists terminators don't count as input
+
+(define-syntax table (syntax-rules ()
+  [(_)
+    '()]
+  [(_ key value rest ...)
+    (cons (cons key value) (table rest ...))]))
+
+(assert-equal (list (cons 1 2) (cons 3 4) (cons 5 6))
+              (table 1 2 3 4 5 6))
+
+(assert-raise SyntaxError (table 1 2 3))
+
+
 ; Test execution scope using (swap)
 (define a 4)
 (define b 7)

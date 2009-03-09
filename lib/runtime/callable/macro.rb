@@ -88,18 +88,18 @@ module Heist
             
             while not pattern_pair.null?
               token = pattern_pair.car
+              skip[] and next if token == ELLIPSIS
+              
               followed_by_ellipsis = (pattern_pair.cdr.car == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
               matches.descend!(Macro.pattern_vars(token, @formals),
                                depth + dx) if followed_by_ellipsis
               
-              skip[] and next if token == ELLIPSIS
-              
               consume = lambda { rule_matches(token, input_pair.car, matches, depth + dx) }
               
               unless followed_by_ellipsis
-                return nil unless consume[]
+                return nil if input_pair.null? or not consume[]
                 input_pair = input_pair.cdr
                 skip[] and next
               end
