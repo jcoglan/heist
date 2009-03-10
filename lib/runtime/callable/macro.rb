@@ -26,10 +26,8 @@ module Heist
       end
       
       def call(scope, cells)
-        rule, matches = *rule_for(cells)
-        
+        rule, matches = *rule_for(cells, scope)
         return Expansion.new(@scope, scope, rule.cdr.car, matches) if rule
-        
         raise SyntaxError.new(
           "Bad syntax: no macro expansion found for #{Cons.new(@name, cells)}")
       end
@@ -40,9 +38,9 @@ module Heist
       
     private
       
-      def rule_for(cells)
+      def rule_for(cells, scope)
         @body.each do |rule|
-          matches = rule_matches(rule.car.cdr, cells)
+          matches = rule_matches(scope, rule.car.cdr, cells)
           return [rule, matches] if matches
         end
         return nil
@@ -74,7 +72,7 @@ module Heist
       # It is an error to use a macro keyword, within the scope of its
       # binding, in an expression that does not match any of the patterns.
       # 
-      def rule_matches(pattern, input, matches = nil, depth = 0)
+      def rule_matches(scope, pattern, input, matches = nil, depth = 0)
         matches ||= Matches.new(Macro.pattern_vars(pattern, @formals))
         case pattern
         
@@ -94,7 +92,7 @@ module Heist
               matches.descend!(Macro.pattern_vars(token, @formals),
                                depth + dx) if followed_by_ellipsis
               
-              consume = lambda { rule_matches(token, input_pair.car, matches, depth + dx) }
+              consume = lambda { rule_matches(scope, token, input_pair.car, matches, depth + dx) }
               
               unless followed_by_ellipsis
                 return nil if input_pair.null? or not consume[]
@@ -110,9 +108,14 @@ module Heist
             return nil unless input_pair.null?
         
           when Identifier then
-            return (pattern == input) if @formals.include?(pattern.to_s)
-            matches.put(pattern, input)
-            return nil if input.nil?
+            if @formals.include?(pattern.to_s)
+              return false unless Identifier === input
+              return scope.defined?(input) ?
+                          @scope.get(pattern) == scope[input] :
+                          pattern == input
+            else
+              matches.put(pattern, input)
+            end
         
           else
             return pattern == input ? true : nil

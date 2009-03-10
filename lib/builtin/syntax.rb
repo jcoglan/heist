@@ -8,9 +8,9 @@ syntax('cond') do |scope, cells|
   result = nil
   cells.each do |list|
     next if result
-    test = list.car.to_s == 'else' || Heist.evaluate(list.car, scope)
+    test = scope.keyword?(list.car, 'else') || Heist.evaluate(list.car, scope)
     next unless test
-    result = list.cdr.car.to_s == '=>' ?
+    result = scope.keyword?(list.cdr.car, '=>') ?
              Heist.evaluate(list.cdr.cdr.car, scope).call(scope, [test]) :
              Body.new(list.cdr, scope)
   end

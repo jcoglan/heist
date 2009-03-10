@@ -43,21 +43,22 @@
 
 (assert-equal 8 (dont-rename-else #f 6 8))
 
+; Check that keywords are ignored if locally bound
+; example from R6RS -- http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-14.html#node_sec_11.19
+(assert-equal 'ok (let ((=> #f))
+                    (cond (#t => 'ok))))
+
 (define-syntax bad-keyword (syntax-rules (with)
   [(_ with x)
     `(,with ,x)]))
 
 (let ([with 16])
-  ; TODO this should really raise a SyntaxError
-  ; because of the local binding of 'with'. As it stands,
-  ; the macro renames 'with' to 'with1' in the expansion
-  ; so we get a missing variable
-  (assert-raise UndefinedVariable (bad-keyword with 10)))
+  (assert-raise SyntaxError (bad-keyword with 1)))
 
-(assert-raise UndefinedVariable (bad-keyword with 10))
+(assert-raise UndefinedVariable (bad-keyword with 2))
 
 (define with 16)
-(assert-equal '(16 10) (bad-keyword with 10))
+(assert-equal '(16 3) (bad-keyword with 3))
 
 
 ; Test literal matching

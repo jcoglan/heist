@@ -13,7 +13,7 @@ module Heist
       
       def [](name)
         name = to_name(name)
-        bound = @symbols.has_key?(to_name(name))
+        bound = @symbols.has_key?(name)
         
         raise UndefinedVariable.new(
           "Variable '#{name}' is not defined") unless bound or Scope === @parent
@@ -32,6 +32,15 @@ module Heist
       def defined?(name)
         @symbols.has_key?(to_name(name)) or
             (Scope === @parent and @parent.defined?(name))
+      end
+      
+      def get(name)
+        self[name] rescue nil
+      end
+      
+      def keyword?(expression, expected)
+        return false unless Identifier === expression
+        !self.defined?(expression) && expression.to_s == expected.to_s
       end
       
       def set!(name, value)
