@@ -8,18 +8,16 @@ module Heist
       RESERVED = %w[_ ...]
       
       class << self
-        def pattern_vars(pattern, excluded = [])
+        def pattern_vars(pattern, excluded = [], results = [])
           case pattern
             when Identifier then
               name = pattern.to_s
-              return nil if excluded.include?(name) or
-                            RESERVED.include?(name)
-              [name]
+              return if excluded.include?(name) or RESERVED.include?(name)
+              results << name unless results.include?(name)
             when Cons then
-              pattern.map { |cell| pattern_vars(cell, excluded) }.
-                      flatten.
-                      compact
+              pattern.each { |cell| pattern_vars(cell, excluded, results) }
           end
+          results
         end
       end
       
