@@ -23,7 +23,7 @@ Class.new(Test::Unit::TestCase) do
     end
     @@env.syntax('assert-raise') do |scope, cells|
       exception = Heist.const_get(cells.car.to_s)
-      assert_raise(exception) { @@env.eval(cells.cdr.car) }
+      assert_raise(exception) { scope.eval(cells.cdr.car) }
     end
   end
   
