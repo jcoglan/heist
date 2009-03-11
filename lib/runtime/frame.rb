@@ -16,18 +16,19 @@ module Heist
       def process!
         case @expression
         
-          when List then
-            if Syntax === @values.first or @values.size == @expression.size
+          when Cons then
+            function = @values.car
+            if Syntax === function or @current.null?
               @complete = true
-              merge!
-              raise SyntaxError.new("Invalid expression: #{@expression}") unless Function === @data.first
-              result = @data.first.call(@scope, @data[1..-1])
+              raise SyntaxError.new("Invalid expression: #{@expression}") unless Function === function
+              result = function.call(@scope, @values.cdr)
               return result unless Macro::Expansion === result
               return reset!(result.expression, true)
             end
             
             stack = @scope.runtime.stack
-            stack << Frame.new(@expression[@values.size], @scope)
+            stack << Frame.new(@current.car, @scope)
+            @current = @current.cdr
         
           when Identifier then
             @complete = true
@@ -39,16 +40,18 @@ module Heist
         end
       end
       
-      def dup
-        copy, values = super, @values.dup
+      def clone
+        copy, values = super, @values.clone
         copy.instance_eval { @values = values }
         copy
       end
       
       def fill!(subexpr, value)
-        subexpr ||= @expression[@values.size]
-        @values << value
-        @subexprs << subexpr
+        pair = @values
+        while not pair.nil? and not pair.null?
+          pair.car = value if pair.car.equal?(subexpr)
+          pair = pair.cdr
+        end
       end
       
       def replaces(expression)
@@ -61,20 +64,11 @@ module Heist
       
     private
       
-      def merge!
-        return @data = @values unless Syntax === @values.first
-        @data = @expression.dup
-        @expression.each_with_index do |expr, i|
-          index = @subexprs.index(expr)
-          @data[i] = @values[index] if index
-        end
-      end
-      
       def reset!(expression, replace = false)
         @expression.replace(expression) if replace
         @expression = expression
-        @values     = []
-        @subexprs   = []
+        @current    = expression
+        @values     = (Cons === expression) ? expression.clone : nil
         @complete   = false
       end
     end
@@ -88,16 +82,17 @@ module Heist
       end
       
       def complete?
-        @index == @expression.size
+        @expression.null?
       end
       
       def process!
-        expression = @expression[@index]
-        @index += 1   # increment before evaluating the expression
-                      # so that when a continuation is saved we
-                      # resume from the following statement
+        expression = @expression.car
         
-        return Frame.new(expression, @scope) if @index == @expression.size
+        # Increment before evaluating the expression so that when a
+        # continuation is saved we resume from the following statement
+        @expression = @expression.cdr
+        
+        return Frame.new(expression, @scope) if complete?
         
         stack = @scope.runtime.stack
         stack << Frame.new(expression, @scope)

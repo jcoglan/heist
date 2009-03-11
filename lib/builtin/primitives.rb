@@ -48,9 +48,9 @@ end
 
 # Continuations
 
-syntax('call-with-current-continuation') do |scope, callback|
+syntax('call-with-current-continuation') do |scope, cells|
   continuation = Continuation.new(scope.runtime.stack)
-  callback = Heist.evaluate(callback, scope)
+  callback = Heist.evaluate(cells.car, scope)
   callback.call(scope, [continuation])
 end
 

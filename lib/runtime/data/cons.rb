@@ -68,6 +68,10 @@ module Heist
         @cdr = cdr.nil? ? NULL : cdr
       end
       
+      def clone(&block)
+        Cons.construct(self, &block)
+      end
+      
       def each
         pair, tail = self, NULL
         while Cons === pair and pair.pair?
