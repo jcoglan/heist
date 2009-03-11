@@ -109,10 +109,8 @@ module Heist
         
           when Identifier then
             if @formals.include?(pattern.to_s)
-              return false unless Identifier === input
-              return scope.defined?(input) ?
-                          @scope.get(pattern) == scope[input] :
-                          pattern == input
+              return pattern == input && @scope.innermost_binding(pattern) ==
+                                         scope.innermost_binding(input)
             else
               matches.put(pattern, input)
             end

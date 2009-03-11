@@ -48,6 +48,17 @@
 (assert-equal 'ok (let ((=> #f))
                     (cond (#t => 'ok))))
 
+; These tests come from tinkering with MZScheme
+(define-syntax keyword-detect (syntax-rules (word)
+  [(_ word) 'keyword]
+  [(_ data) 'data]))
+(assert-equal 'keyword (keyword-detect word))
+(assert-equal 'word (let ([word 4]) (keyword-detect word)))
+(define word 5)
+(assert-equal 'keyword (keyword-detect word))
+(define copy word)
+(assert-equal 'copy (keyword-detect copy))
+
 (define-syntax bad-keyword (syntax-rules (with)
   [(_ with x)
     `(,with ,x)]))

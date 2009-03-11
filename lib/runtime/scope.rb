@@ -34,13 +34,13 @@ module Heist
             (Scope === @parent and @parent.defined?(name))
       end
       
-      def get(name)
-        self[name] rescue nil
-      end
-      
-      def keyword?(expression, expected)
-        return false unless Identifier === expression
-        !self.defined?(expression) && expression.to_s == expected.to_s
+      def innermost_binding(name)
+        name = to_name(name)
+        @symbols.has_key?(name) ?
+            self :
+        Scope === @parent ?
+            @parent.innermost_binding(name) :
+            nil
       end
       
       def set!(name, value)
@@ -110,6 +110,11 @@ module Heist
       
       def to_name(name)
         name.to_s.downcase
+      end
+      
+      def keyword?(scope, expression, name)
+        expression == Identifier.new(name) &&
+            innermost_binding(name) == scope.innermost_binding(expression)
       end
       
       def load_path
