@@ -13,7 +13,7 @@ module Heist
     end
     
     extend Forwardable
-    def_delegators(:@top_level, :[], :eval, :define, :syntax, :call)
+    def_delegators(:@top_level, :[], :eval, :define, :syntax, :call, :run)
     
     attr_reader :order
     attr_accessor :stack, :top_level
@@ -33,11 +33,6 @@ module Heist
       run("#{ BUILTIN_PATH }library.scm")
       
       @start_time = Time.now.to_f
-    end
-    
-    def run(path)
-      return instance_eval(File.read(path)) if File.extname(path) == '.rb'
-      @top_level.run(path)
     end
     
     def elapsed_time

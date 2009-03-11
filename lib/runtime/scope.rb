@@ -77,11 +77,15 @@ module Heist
         self[name].body.call(*params)
       end
       
-      def run(path)
-        path   = path + FILE_EXT unless File.file?(path)
-        source = Heist.parse(File.read(path))
-        scope  = FileScope.new(self, path)
-        source.eval(scope)
+      # Note that local vars in this method can cause block vars
+      # to become delocalized when running Ruby files under 1.8,
+      # so make sure we use 'obscure' names here.
+      def run(_path)
+        return instance_eval(File.read(_path)) if File.extname(_path) == '.rb'
+        _path   = _path + FILE_EXT unless File.file?(_path)
+        _source = Heist.parse(File.read(_path))
+        _scope  = FileScope.new(self, _path)
+        _source.eval(_scope)
       end
       
       def eval(source)
