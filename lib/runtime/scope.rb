@@ -13,7 +13,7 @@ module Heist
       
       def [](name)
         name = to_name(name)
-        bound = @symbols.has_key?(to_name(name))
+        bound = @symbols.has_key?(name)
         
         raise UndefinedVariable.new(
           "Variable '#{name}' is not defined") unless bound or Scope === @parent
@@ -32,6 +32,15 @@ module Heist
       def defined?(name)
         @symbols.has_key?(to_name(name)) or
             (Scope === @parent and @parent.defined?(name))
+      end
+      
+      def innermost_binding(name)
+        name = to_name(name)
+        @symbols.has_key?(name) ?
+            self :
+        Scope === @parent ?
+            @parent.innermost_binding(name) :
+            nil
       end
       
       def set!(name, value)
@@ -101,6 +110,11 @@ module Heist
       
       def to_name(name)
         name.to_s.downcase
+      end
+      
+      def keyword?(scope, expression, name)
+        expression == Identifier.new(name) &&
+            innermost_binding(name) == scope.innermost_binding(expression)
       end
       
       def load_path

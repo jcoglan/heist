@@ -4,28 +4,32 @@ module Heist
   class Runtime
     
     class Macro < Syntax
-      ELLIPSIS = '...'
+      ELLIPSIS = Identifier.new('...')
+      RESERVED = %w[_ ...]
+      
+      class << self
+        def pattern_vars(pattern, excluded = [], results = [])
+          case pattern
+            when Identifier then
+              name = pattern.to_s
+              return if excluded.include?(name) or RESERVED.include?(name)
+              results << name unless results.include?(name)
+            when Cons then
+              pattern.each { |cell| pattern_vars(cell, excluded, results) }
+          end
+          results
+        end
+      end
       
       %w[expansion splice matches].each do |klass|
         require RUNTIME_PATH + 'callable/macro/' + klass
       end
       
-      def initialize(scope, *args)
-        super
-        @hygienic = scope.runtime.hygienic?
-      end
-      
       def call(scope, cells)
-        @calling_scope = scope
-        rule, matches = *rule_for(cells)
-        
-        return Expansion.new(expand_template(rule.last, matches)) if rule
-        
-        # TODO include macro name in error message,
-        # and be more specific about which pattern failed
-        input = cells.map { |c| c.to_s } * ' '
+        rule, matches = *rule_for(cells, scope)
+        return Expansion.new(@scope, scope, rule.cdr.car, matches) if rule
         raise SyntaxError.new(
-          "Bad syntax: no macro expansion found for (#{@name} #{input})")
+          "Bad syntax: no macro expansion found for #{Cons.new(@name, cells)}")
       end
       
       def to_s
@@ -34,12 +38,12 @@ module Heist
       
     private
       
-      def rule_for(cells)
+      def rule_for(cells, scope)
         @body.each do |rule|
-          matches = rule_matches(rule.first.rest, cells)
+          matches = rule_matches(scope, rule.car.cdr, cells)
           return [rule, matches] if matches
         end
-        nil
+        return nil
       end
       
       # More formally, an input form F matches a pattern P if and only if:
@@ -68,34 +72,48 @@ module Heist
       # It is an error to use a macro keyword, within the scope of its
       # binding, in an expression that does not match any of the patterns.
       # 
-      def rule_matches(pattern, input, matches = Matches.new, depth = 0)
+      def rule_matches(scope, pattern, input, matches = nil, depth = 0)
+        matches ||= Matches.new(Macro.pattern_vars(pattern, @formals))
         case pattern
         
-          when List then
-            return nil unless List === input
-            idx = 0
-            pattern.each_with_index do |token, i|
-              followed_by_ellipsis = (pattern[i+1].to_s == ELLIPSIS)
+          when Cons then
+            return nil unless Cons === input
+            pattern_pair, input_pair = pattern, input
+            
+            skip = lambda { pattern_pair = pattern_pair.cdr }
+            
+            while not pattern_pair.null?
+              token = pattern_pair.car
+              skip[] and next if token == ELLIPSIS
+              
+              followed_by_ellipsis = (pattern_pair.cdr.car == ELLIPSIS)
               dx = followed_by_ellipsis ? 1 : 0
               
-              matches.depth = depth + dx
-              next if token.to_s == ELLIPSIS
+              matches.descend!(Macro.pattern_vars(token, @formals),
+                               depth + dx) if followed_by_ellipsis
               
-              consume = lambda { rule_matches(token, input[idx], matches, depth + dx) }
-              return nil unless value = consume[] or followed_by_ellipsis
-              next unless value
-              idx += 1
+              consume = lambda { rule_matches(scope, token, input_pair.car, matches, depth + dx) }
               
-              idx += 1 while idx < input.size and
-                             followed_by_ellipsis and
-                             consume[]
+              unless followed_by_ellipsis
+                return nil if input_pair.null? or not consume[]
+                input_pair = input_pair.cdr
+                skip[] and next
+              end
+              
+              input_pair = input_pair.cdr while not input_pair.null? and
+                                                followed_by_ellipsis and
+                                                consume[]
+              skip[]
             end
-            return nil unless idx == input.size
+            return nil unless input_pair.null?
         
           when Identifier then
-            return (pattern.to_s == input.to_s) if @formals.include?(pattern.to_s)
-            matches.put(pattern, input)
-            return nil if input.nil?
+            if @formals.include?(pattern.to_s)
+              return pattern == input && @scope.innermost_binding(pattern) ==
+                                         scope.innermost_binding(input)
+            else
+              matches.put(pattern, input)
+            end
         
           else
             return pattern == input ? true : nil
@@ -103,66 +121,6 @@ module Heist
         matches
       end
       
-      # When a macro use is transcribed according to the template of the
-      # matching <syntax rule>, pattern variables that occur in the template
-      # are replaced by the subforms they match in the input. Pattern variables
-      # that occur in subpatterns followed by one or more instances of the
-      # identifier '...' are allowed only in subtemplates that are followed
-      # by as many instances of '...'. They are replaced in the output by all
-      # of the subforms they match in the input, distributed as indicated. It
-      # is an error if the output cannot be built up as specified.
-      # 
-      # Identifiers that appear in the template but are not pattern variables
-      # or the identifier '...' are inserted into the output as literal
-      # identifiers. If a literal identifier is inserted as a free identifier
-      # then it refers to the binding of that identifier within whose scope
-      # the instance of 'syntax-rules' appears. If a literal identifier is
-      # inserted as a bound identifier then it is in effect renamed to prevent
-      # inadvertent captures of free identifiers.
-      # 
-      def expand_template(template, matches, depth = 0, inspection = false)
-        case template
-        
-          when List then
-            result = List.new
-            template.each_with_index do |cell, i|
-              followed_by_ellipsis = (template[i+1].to_s == ELLIPSIS)
-              dx = followed_by_ellipsis ? 1 : 0
-              
-              matches.inspecting(depth + 1) if followed_by_ellipsis and
-                                               not inspection
-              
-              if cell.to_s == ELLIPSIS and not inspection
-                repeater = template[i-1]
-                matches.expand! { result << expand_template(repeater, matches, depth + 1) }
-                matches.depth = depth
-              else
-                inspect = inspection || (followed_by_ellipsis && depth + 1)
-                value = expand_template(cell, matches, depth + dx, inspect)
-                result << value unless inspect
-              end
-            end
-            result
-        
-          when Identifier then
-            return matches.get(template) if matches.defined?(template)
-            return Identifier.new(template) unless @hygienic
-            
-            @scope.defined?(template) ?
-                Binding.new(template, @scope, false) :
-                rename(template)
-        
-          else
-            template
-        end
-      end
-      
-      def rename(id)
-        return id unless @calling_scope.defined?(id)
-        i = 1
-        i += 1 while @calling_scope.defined?("#{id}#{i}")
-        Identifier.new("#{id}#{i}")
-      end
     end
     
   end

@@ -43,6 +43,34 @@
 
 (assert-equal 8 (dont-rename-else #f 6 8))
 
+; Check that keywords are ignored if locally bound
+; example from R6RS -- http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-14.html#node_sec_11.19
+(assert-equal 'ok (let ((=> #f))
+                    (cond (#t => 'ok))))
+
+; These tests come from tinkering with MZScheme
+(define-syntax keyword-detect (syntax-rules (word)
+  [(_ word) 'keyword]
+  [(_ data) 'data]))
+(assert-equal 'keyword (keyword-detect word))
+(assert-equal 'word (let ([word 4]) (keyword-detect word)))
+(define word 5)
+(assert-equal 'keyword (keyword-detect word))
+(define copy word)
+(assert-equal 'copy (keyword-detect copy))
+
+(define-syntax bad-keyword (syntax-rules (with)
+  [(_ with x)
+    `(,with ,x)]))
+
+(let ([with 16])
+  (assert-raise SyntaxError (bad-keyword with 1)))
+
+(assert-raise UndefinedVariable (bad-keyword with 2))
+
+(define with 16)
+(assert-equal '(16 3) (bad-keyword with 3))
+
 
 ; Test literal matching
 
@@ -103,6 +131,20 @@
 (assert-equal 6 (one-or-more (+ 2 4)))
 (assert-equal 11 (one-or-more (+ 2 4) (+ 3 8)))
 (assert-equal 13 (one-or-more (+ 2 4) (+ 3 8) (+ 7 6)))
+
+
+; Test that null lists terminators don't count as input
+
+(define-syntax table (syntax-rules ()
+  [(_)
+    '()]
+  [(_ key value rest ...)
+    (cons (cons key value) (table rest ...))]))
+
+(assert-equal (list (cons 1 2) (cons 3 4) (cons 5 6))
+              (table 1 2 3 4 5 6))
+
+(assert-raise SyntaxError (table 1 2 3))
 
 
 ; Test execution scope using (swap)
@@ -301,6 +343,7 @@
     (triple-deep (((foo bar) (it)) ((wont) (matter really anyway)))
                  ((5 6) (2)) ((4) (8 7 2))))
 
+
 (define-syntax triple-deep2
   (syntax-rules ()
     [(_ (((name ...) ...) ...) ((value ...) ...) ...)
@@ -313,31 +356,62 @@
                  ((5 6)) ((4) (8 7 2))))
 
 
-; Really nasty nested repetition. PLT won't run this in its entirity
-; due to overuse of infix ellipses, but comparison output for
-; subsets of this macro can be seen in plt-macros.txt
+(define-syntax trial (syntax-rules (with)
+  [(_ ((with (value ...) ...) ...) obj ...)
+    '((obj ((value ...) (value value) ...) ... (obj obj)) ...)]))
 
-(define-syntax convoluted
-  (syntax-rules (with)
-    [(_ (with (value ...) ...) ... thing ((name ...) ...) obj ...)
-      '((obj ((value ...) (value value) ...) ... (obj obj)) ...
-        (((name name) ... obj obj (obj (name ...))) ...))]))
+(assert-equal '((bar ((4 2 7) (4 4) (2 2) (7 7)) (bar bar)))
+              (trial ((with (4 2 7))) bar))
+(assert-equal '((bar (bar bar)))
+              (trial ((with)) bar))
+(assert-raise MacroTemplateMismatch (trial () bar))
 
-(assert-equal '((foo ((a u) (a a) (u u)) ((j e n k l) (j j) (e e) (n n) (k k) (l l))
-                     (()) ((q c y n) (q q) (c c) (y y) (n n)) (foo foo))
+
+(define-syntax trial2 (syntax-rules (with)
+  [(_ (with (value ...) ...) ... obj ...)
+    '((obj ((value ...) (value value) ...) ... (obj obj)) ...)]))
+
+(assert-equal '((foo ((a) (a a)) (foo foo))
+                (bar (bar bar)))
+    (trial2 (with (a)) (with) foo bar))
+
+(assert-equal '((foo ((a) (a a)) (foo foo))
                 (bar (bar bar))
-                (baz ((b) (b b)) ((d f) (d d) (f f)) (baz baz))
-                (what ((k l e) (k k) (l l) (e e)) ((s) (s s)) ((u n) (u u) (n n))
-                      ((f i k w) (f f) (i i) (k k) (w w)) ((p) (p p)) (what what))
-                      (((8 8) (3 3) (2 2) (9 9) foo foo (foo (8 3 2 9)))
-                       ((2 2) (3 3) bar bar (bar (2 3)))
-                       ((1 1) (0 0) (4 4) baz baz (baz (1 0 4)))
-                       ((8 8) (3 3) (2 2) (1 1) (7 7) what what (what (8 3 2 1 7)))))
-    (convoluted (with (a u) (j e n k l) () (q c y n)) (with)
-                (with (b) (d f)) (with (k l e) (s) (u n) (f i k w) (p))
-                thing ((8 3 2 9) (2 3) (1 0 4) (8 3 2 1 7))
-                foo bar baz what))
+                (baz ((1 2 3) (1 1) (2 2) (3 3)) (baz baz)))
+    (trial2 (with (a)) (with) (with (1 2 3)) foo bar baz))
 
-(assert-raise MacroTemplateMismatch (convoluted (with (a)) (with (b)) thing () foo))
-(assert-raise SyntaxError (convoluted nothing))
+
+; Test nested macros with keywords and nested splices
+; http://fabiokung.com/2007/10/24/ruby-dsl-to-describe-automata/
+
+(define-syntax automaton (syntax-rules (:)
+  [(_ init-state
+      [state : response ...]
+      ...)
+    (let-syntax ([process-state (syntax-rules (-> accept)
+                    [(_ accept)
+                      (lambda (stream)
+                        (cond [(null? stream) #t]
+                              [else #f]))]
+                    [(... (_ (label -> target) ...))
+                      (lambda (stream)
+                        (cond [(null? stream) #f]
+                              [else (case (car stream)
+                                      [(label) (target (cdr stream))]
+                                      (... ...)
+                                      [else #f])]))])])
+      (letrec ([state (process-state response ...)]
+               ...)
+        init-state))]))
+
+(define cdar-sequence?
+  (automaton init
+             [init : (c -> more)]
+             [more : (a -> more)
+                     (d -> more)
+                     (r -> end)]
+             [end : accept]))
+
+(assert (cdar-sequence? '(c a d a d r)))
+(assert (not (cdar-sequence? '(a c a d r c))))
 

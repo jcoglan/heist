@@ -4,31 +4,32 @@
 # If the first parameter is a list it creates a function,
 # otherwise it eval's the second parameter and binds it
 # to the name given by the first.
-syntax('define') do |scope, names, *body|
-  List === names ?
-      scope.define(names.first, names.rest, body) :
-      scope[names] = Heist.evaluate(body.first, scope)
+syntax('define') do |scope, cells|
+  name = cells.car
+  Heist.list?(name) ?
+      scope.define(name.car, name.cdr, cells.cdr) :
+      scope[name] = Heist.evaluate(cells.cdr.car, scope)
 end
 
 # (lambda) returns an anonymous function whose arguments
 # are named by the first parameter and whose body is given
 # by the remaining parameters.
-syntax('lambda') do |scope, names, *body|
-  Function.new(scope, names, body)
+syntax('lambda') do |scope, cells|
+  Function.new(scope, cells.car, cells.cdr)
 end
 
 # (set!) reassigns the value of an existing bound variable,
 # in the innermost scope responsible for binding it.
-syntax('set!') do |scope, name, value|
-  scope.set!(name, Heist.evaluate(value, scope))
+syntax('set!') do |scope, cells|
+  scope.set!(cells.car, Heist.evaluate(cells.cdr.car, scope))
 end
 
 #----------------------------------------------------------------
 
 # Macros
 
-syntax('define-syntax') do |scope, name, transformer|
-  scope[name] = Heist.evaluate(transformer, scope)
+syntax('define-syntax') do |scope, cells|
+  scope[cells.car] = Heist.evaluate(cells.cdr.car, scope)
 end
 
 syntax('let-syntax') do |*args|
@@ -39,18 +40,18 @@ syntax('letrec-syntax') do |*args|
   call('letrec', *args)
 end
 
-syntax('syntax-rules') do |scope, keywords, *rules|
-  Macro.new(scope, keywords, rules)
+syntax('syntax-rules') do |scope, cells|
+  Macro.new(scope, cells.car, cells.cdr)
 end
 
 #----------------------------------------------------------------
 
 # Continuations
 
-syntax('call-with-current-continuation') do |scope, callback|
+syntax('call-with-current-continuation') do |scope, cells|
   continuation = Continuation.new(scope.runtime.stack)
-  callback = Heist.evaluate(callback, scope)
-  callback.call(scope, [continuation])
+  callback = Heist.evaluate(cells.car, scope)
+  callback.call(scope, Cons.new(continuation))
 end
 
 #----------------------------------------------------------------
@@ -59,45 +60,16 @@ end
 
 # (quote) casts identifiers to symbols. If given a list, it
 # quotes all items in the list recursively.
-syntax('quote') do |scope, arg|
-  case arg
-  when List then
-    arg.inject(List.new) do |list, cell|
-      list << call('quote', scope, cell)
-      list
-    end
-  when Identifier then arg.to_s.to_sym
-  else arg
-  end
+syntax('quote') do |scope, cells|
+  Heist.quote(cells.car)
 end
 
 # (quasiquote) is similar to (quote), except that when it
 # encounters an (unquote) or (unquote-splicing) expression
 # it will evaluate it and insert the result into the
 # surrounding quoted list.
-syntax('quasiquote') do |scope, arg|
-  case arg
-  when List then
-    result = List.new
-    arg.each do |cell|
-      if List === cell
-        case cell.first.to_s
-        when 'unquote' then
-          result << Heist.evaluate(cell.last, scope)
-        when 'unquote-splicing' then
-          list = Heist.evaluate(cell.last, scope)
-          list.each { |value| result << value }
-        else
-          result << call('quasiquote', scope, cell)
-        end
-      else
-        result << call('quasiquote', scope, cell)
-      end
-    end
-    result
-  when Identifier then arg.to_s.to_sym
-  else arg
-  end
+syntax('quasiquote') do |scope, cells|
+  Heist.quasiquote(cells.car, scope)
 end
 
 #----------------------------------------------------------------
@@ -105,15 +77,15 @@ end
 # Control structures
 
 # (begin) simply executes a series of lists in the current scope.
-syntax('begin') do |scope, *body|
-  Body.new(body, scope)
+syntax('begin') do |scope, cells|
+  Body.new(cells, scope)
 end
 
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
-syntax('if') do |scope, cond, cons, alt|
-  which = Heist.evaluate(cond, scope) ? cons : alt
-  Frame.new(which, scope)
+syntax('if') do |scope, cells|
+  which = Heist.evaluate(cells.car, scope) ? cells.cdr : cells.cdr.cdr
+  which.null? ? which : Frame.new(which.car, scope)
 end
 
 #----------------------------------------------------------------
@@ -122,20 +94,20 @@ end
 
 define('exit') { exit }
 
-syntax('runtime') do |scope|
+syntax('runtime') do |scope, cells|
   scope.runtime.elapsed_time
 end
 
-syntax('eval') do |scope, string|
-  scope.eval(Heist.evaluate(string, scope))
+syntax('eval') do |scope, cells|
+  scope.eval(Heist.evaluate(cells.car, scope))
 end
 
 define('display') do |expression|
   print expression
 end
 
-syntax('load') do |scope, file|
-  scope.load(file)
+syntax('load') do |scope, cells|
+  scope.load(cells.car)
 end
 
 define('error') do |message, *args|
@@ -146,9 +118,13 @@ end
 
 # Comparators
 
-# TODO write a more exact implementation, and implement (eq?) and (equal?)
+# TODO write a more exact implementation, and implement (eq?)
 define('eqv?') do |op1, op2|
-  op1.class == op2.class and op1 == op2
+  op1.equal?(op2)
+end
+
+define('equal?') do |op1, op2|
+  op1 == op2
 end
 
 # TODO raise an exception if they're not numeric
@@ -203,6 +179,30 @@ end
 
 define('integer?') do |value|
   Integer === value
+end
+
+define('string?') do |value|
+  String === value
+end
+
+define('symbol?') do |value|
+  Symbol === value
+end
+
+define('procedure?') do |value|
+  Function === value
+end
+
+define('null?') do |value|
+  Cons::NULL == value
+end
+
+define('list?') do |value|
+  Cons === value and value.list?
+end
+
+define('pair?') do |value|
+  Cons === value and value.pair?
 end
 
 #----------------------------------------------------------------
@@ -302,5 +302,40 @@ end
 
 define('string->number') do |string, radix|
   radix.nil? ? string.to_f : string.to_i(radix)
+end
+
+#----------------------------------------------------------------
+
+# List/pair functions
+
+# Allocates and returns a new pair from its arguments
+define('cons') do |car, cdr|
+  Cons.new(car, cdr)
+end
+
+# Allocates and returns a new list from its arguments
+define('list') do |*values|
+  Cons.construct(values)
+end
+
+# car/cdr accessors (dynamically generated)
+Cons::ACCESSORS.each do |accsr|
+  define(accsr) do |cons|
+    cons.__send__(accsr)
+  end
+end
+
+# Mutators for car/cdr fields
+define('set-car!') do |cons, value|
+  cons.car = value
+end
+define('set-cdr!') do |cons, value|
+  cons.cdr = value
+end
+
+# Returns the length of a proper list, and throws an
+# exception for the length of improper lists
+define('length') do |list|
+  list.length
 end
 

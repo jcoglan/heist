@@ -13,6 +13,10 @@ module Heist
         @name = name.to_s
         @metadata = {}
       end
+      
+      def ==(other)
+        Identifier === other and @name == other.to_s
+      end
     end
     
   end

@@ -21,14 +21,15 @@ Class.new(Test::Unit::TestCase) do
     @@env.define('assert-equal') do |expected, actual|
       assert_equal(expected, actual)
     end
-    @@env.syntax('assert-raise') do |scope, name, expression|
-      exception = Heist.const_get(name.to_s)
-      assert_raise(exception) { @@env.eval(expression) }
+    @@env.syntax('assert-raise') do |scope, cells|
+      exception = Heist.const_get(cells.car.to_s)
+      assert_raise(exception) { scope.eval(cells.cdr.car) }
     end
   end
   
   %w[   booleans
         numbers
+        lists
         arithmetic
         define_values
         define_functions
@@ -45,6 +46,39 @@ Class.new(Test::Unit::TestCase) do
     end
   end
   
+  def test_cons
+    cons = Heist::Runtime::Cons
+    
+    empty = cons[[]]
+    assert empty.list?
+    assert !empty.pair?
+    assert_equal cons::NULL, empty
+    assert_equal 0, empty.length
+    
+    single = cons[[4]]
+    assert single.list?
+    assert single.pair?
+    assert_equal 1, single.length
+    
+    multi = cons[[2,4,7]]
+    assert multi.list?
+    assert multi.pair?
+    assert_equal 3, multi.length
+    
+    multi.tail.cdr = 8
+    assert multi.pair?
+    assert !multi.list?
+    assert_raise(Heist::TypeError) { multi.size }
+    
+    nested = cons[[2,4,6,cons.new(7,8)]]
+    assert nested.list?
+    assert nested.pair?
+    assert_equal 4, nested.length
+    assert !nested.cdr.cdr.cdr.car.list?
+    assert nested.cdr.cdr.cdr.car.pair?
+    assert_equal 8, nested.cdr.cdr.cdr.car.cdr
+  end
+  
   def test_macro_hygiene
     @@env.run($dir + '/' + (@@env.hygienic? ? 'hygienic' : 'unhygienic'))
   end
@@ -57,11 +91,11 @@ Class.new(Test::Unit::TestCase) do
   def test_quotes
     assert_equal 7, @@env.eval("(+ 3 4)")
     assert_equal [:+, 3, 4], @@env.eval("'(+ 3 4)").to_a
-    assert Heist::Runtime::List === @@env.eval("'(+ 3 4)")
+    assert Heist::Runtime::Cons === @@env.eval("'(+ 3 4)")
     assert_equal 7, @@env.eval("(+ '3 4)")
     assert_equal [:+, [:-, 7, 9], 4], @@env.eval("'(+ (- 7 9) 4)").to_a
     assert_equal [7, 9, 6], @@env.eval("`(7 ,(+ 4 5) 6)").to_a
-    assert Heist::Runtime::List === @@env.eval("`(7 ,(+ 4 5) 6)")
+    assert Heist::Runtime::Cons === @@env.eval("`(7 ,(+ 4 5) 6)")
     assert_equal [3, 7, 6, 2, 6, 9], @@env.eval("`(3 7 6 ,@((lambda () '(2 6))) 9)").to_a
   end
   

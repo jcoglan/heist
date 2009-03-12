@@ -16,25 +16,13 @@ module Heist
       
       def convert!
         return if @data
-        @data = []
-        elements.each_with_index { |cell, i| self[i] = cell.eval }
-      end
-      
-      def [](index)
-        @data[index]
-      end
-      
-      def []=(index, value)
-        value.exists_at!(self, index) if Runtime::Expression === value
-        @data[index] = value
+        @data = Runtime::Cons.construct(elements) { |c| c.eval }
       end
     end
     
     module List
       def eval
-        list = Runtime::List.new
-        cells.each { |c| list << c.eval }
-        list
+        Runtime::Cons.construct(cells) { |c| c.eval }
       end
       
       def cells
@@ -47,7 +35,7 @@ module Heist
         result = elements[3].eval
         string = elements[1].text_value
         SHORTHANDS.has_key?(string) ?
-            Runtime::List.new([Runtime::Identifier.new(SHORTHANDS[string]), result]) :
+            Runtime::Cons.construct([Runtime::Identifier.new(SHORTHANDS[string]), result]) :
             result
       end
     end

@@ -24,23 +24,57 @@ module Heist
   class SyntaxError           < RuntimeError; end
   class MacroError            < SyntaxError; end
   class MacroTemplateMismatch < MacroError; end
+  class TypeError             < RuntimeError; end
   
-  def self.parse(source)
-    @parser ||= SchemeParser.new
-    @parser.parse(source)
-  end
-  
-  def self.evaluate(expression, scope)
-    Runtime::Expression === expression ?
-        expression.eval(scope) :
-        expression
-  end
-  
-  def self.info(runtime)
-    puts "Heist Scheme interpreter v. #{ VERSION }"
-    puts "Evaluation mode: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }"
-    puts "Continuations enabled? #{ runtime.stackless? ? 'NO' : 'YES' }"
-    puts "Macros: #{ runtime.hygienic? ? 'HYGIENIC' : 'UNHYGIENIC' }\n\n"
+  class << self
+    def parse(source)
+      @parser ||= SchemeParser.new
+      @parser.parse(source)
+    end
+    
+    def evaluate(expression, scope)
+      Runtime::Expression === expression ?
+          expression.eval(scope) :
+          expression
+    end
+    
+    def quote(arg)
+      case arg
+      when Runtime::Cons then
+        Runtime::Cons.construct(arg) { |cell| quote(cell) }
+      when Runtime::Identifier then
+        arg.to_s.to_sym
+      else
+        arg
+      end
+    end
+    
+    def quasiquote(arg, scope)
+      case arg
+      when Runtime::Cons
+        if Runtime::Identifier === arg.car
+          name = arg.car.to_s
+          return evaluate(arg.cdr.car, scope) if name == 'unquote'
+          return Runtime::Cons.splice(arg.cdr.car, scope) if name == 'unquote-splicing'
+        end
+        Runtime::Cons.construct(arg) { |cell| quasiquote(cell, scope) }
+      else
+        quote(arg)
+      end
+    end
+    
+    %w[list? pair? improper? null?].each do |symbol|
+      define_method(symbol) do |object|
+        Runtime::Cons === object and object.__send__(symbol)
+      end
+    end
+    
+    def info(runtime)
+      puts "Heist Scheme interpreter v. #{ VERSION }"
+      puts "Evaluation mode: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }"
+      puts "Continuations enabled? #{ runtime.stackless? ? 'NO' : 'YES' }"
+      puts "Macros: #{ runtime.hygienic? ? 'HYGIENIC' : 'UNHYGIENIC' }\n\n"
+    end
   end
   
 end

@@ -2,15 +2,11 @@ module Heist
   class Runtime
     
     module Expression
-      attr_reader :parent, :index
-      
-      def exists_at!(parent, index)
-        @parent, @index = parent, index
-      end
+      attr_accessor :parent
       
       def replace(expression)
         return unless @parent
-        @parent[@index] = expression
+        @parent.car = expression
       end
       
       def eval(scope)

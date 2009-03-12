@@ -13,6 +13,7 @@
 (define (cube x)
   (* x x x))
 
+
 (define dx 0.000001)
 
 (define (average x y)
@@ -23,6 +24,8 @@
 
 (define (halve x)
   (/ x 2))
+
+(define (inc x) (+ 1 x))
 
 
 (define (smallest-divisor n)
