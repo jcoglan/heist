@@ -1,5 +1,5 @@
-(define r)
-(define value)
+(define r #f)
+(define value #f)
 
 ; call/cc returning normally
 (set! value (+ 3 (call/cc (lambda (k) (+ 2 7)))))

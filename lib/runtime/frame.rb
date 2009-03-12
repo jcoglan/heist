@@ -28,7 +28,6 @@ module Heist
             
             stack = @scope.runtime.stack
             stack << Frame.new(@current.car, @scope)
-            @current = @current.cdr
         
           when Identifier then
             @complete = true
@@ -49,7 +48,10 @@ module Heist
       def fill!(subexpr, value)
         pair = @values
         while not pair.nil? and not pair.null?
-          pair.car = value if pair.car.equal?(subexpr)
+          if pair.car.equal?(subexpr)
+            pair.car = value
+            @current = pair.cdr
+          end
           pair = pair.cdr
         end
       end
