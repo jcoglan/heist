@@ -10,6 +10,7 @@ lib/builtin/primitives.rb
 lib/builtin/syntax.rb
 lib/builtin/syntax.scm
 lib/builtin/library.scm
+lib/parser/ruby.rb
 lib/parser/scheme.tt
 lib/parser/scheme.rb
 lib/parser/nodes.rb

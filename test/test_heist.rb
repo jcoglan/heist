@@ -114,5 +114,13 @@ Class.new(Test::Unit::TestCase) do
     
     assert_equal 45, @@env.eval("((K 45) 6)")
   end
+  
+  def test_ruby_execution
+    expr = [[:lambda, [:x], [:+, 1, :x]], 3]
+    assert_equal 4, @@env.exec(expr)
+    list = Heist.parse(expr)
+    assert Heist::Runtime::Cons === list
+    assert_equal expr, list.to_ruby
+  end
 end
 

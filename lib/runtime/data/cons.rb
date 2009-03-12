@@ -113,6 +113,10 @@ module Heist
         map { |cell| Cons === cell ? cell.to_a : cell }
       end
       
+      def to_ruby
+        map { |cell| cell.respond_to?(:to_ruby) ? cell.to_ruby : cell }
+      end
+      
       def to_s
         strings = []
         tail = each { |value| strings << value.to_s }.cdr

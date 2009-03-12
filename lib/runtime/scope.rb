@@ -89,9 +89,10 @@ module Heist
       end
       
       def eval(source)
-        source = Heist.parse(source) if String === source
+        source = Heist.parse(source)
         source.eval(self)
       end
+      alias :exec :eval
       
       def load(path)
         dir = load_path.find do |dir|

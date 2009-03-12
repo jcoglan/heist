@@ -10,6 +10,7 @@ module Heist
   BUILTIN_PATH = ROOT_PATH + '/builtin/'
   LIB_PATH     = ROOT_PATH + '/stdlib/'
   
+  require PARSER_PATH + 'ruby'
   require PARSER_PATH + 'scheme'
   require PARSER_PATH + 'nodes'
   require RUNTIME_PATH + 'runtime'
@@ -28,8 +29,10 @@ module Heist
   
   class << self
     def parse(source)
-      @parser ||= SchemeParser.new
-      @parser.parse(source)
+      @scheme ||= SchemeParser.new
+      @ruby   ||= RubyParser.new
+      parser = (String === source) ? @scheme : @ruby
+      parser.parse(source)
     end
     
     def evaluate(expression, scope)

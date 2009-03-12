@@ -17,6 +17,10 @@ module Heist
       def ==(other)
         Identifier === other and @name == other.to_s
       end
+      
+      def to_ruby
+        @name.to_s.to_sym
+      end
     end
     
   end

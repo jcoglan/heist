@@ -13,7 +13,7 @@ module Heist
     end
     
     extend Forwardable
-    def_delegators(:@top_level, :[], :eval, :define, :syntax, :call, :run)
+    def_delegators(:@top_level, :[], :eval, :exec, :define, :syntax, :call, :run)
     
     attr_reader :order
     attr_accessor :stack, :top_level
