@@ -107,7 +107,7 @@ end
 # loop is halted and the value of the expression following
 # the test is returned.
 syntax('do') do |scope, cells|
-  assignments, test, commands = cells.car, cells.cdr.car, cells.cdr.cdr
+  assignments, test, commands = cells.car, cells.cdr.car, cells.cdr.cdr.clone
   closure = Scope.new(scope)
   assignments.each do |assign|
     closure[assign.car] = Heist.evaluate(assign.cdr.car, scope)
