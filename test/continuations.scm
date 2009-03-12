@@ -142,3 +142,17 @@
 (r 3)
 (assert-equal 20 value)
 
+; continuations should work inside loops
+(set! value (do ((y 10)
+                 (acc 1 (* y acc)))
+                ((= y 1) acc)
+                (set! y (call/cc (lambda (k)
+                                   (set! r k)
+                                   (- y 1))))))
+(r 1)
+(assert-equal 362880 value)
+(r 2)
+(assert-equal 725760 value)
+(r 3)
+(assert-equal 4354560 value)
+
