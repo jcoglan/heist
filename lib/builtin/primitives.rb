@@ -84,8 +84,8 @@ end
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
 syntax('if') do |scope, cells|
-  which = Heist.evaluate(cells.car, scope) ? cells.cdr.car : cells.cdr.cdr.car
-  Frame.new(which, scope)
+  which = Heist.evaluate(cells.car, scope) ? cells.cdr : cells.cdr.cdr
+  which.null? ? which : Frame.new(which.car, scope)
 end
 
 #----------------------------------------------------------------
