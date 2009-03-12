@@ -51,7 +51,7 @@ end
 syntax('call-with-current-continuation') do |scope, cells|
   continuation = Continuation.new(scope.runtime.stack)
   callback = Heist.evaluate(cells.car, scope)
-  callback.call(scope, [continuation])
+  callback.call(scope, Cons.new(continuation))
 end
 
 #----------------------------------------------------------------
