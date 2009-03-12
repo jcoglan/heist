@@ -146,6 +146,10 @@ compatible; enabling continuations forces eager evaluation. Also
 note that lazy evaluation has a slightly unpredictable effect on the
 use of macros.
 
+To run a Scheme file using the runtime, just call:
+
+  scheme.run("path/to/file.scm")
+
 Every runtime gets its own copy of all the built-in functions. You can add
 your own functions written in Ruby and Heist will make them available as
 Scheme procedures. For example, for running tests I do this in my +setup+
@@ -159,10 +163,6 @@ method:
 This lets me write, for example, <tt>(assert-equal 7 (+ 3 4))</tt> in my
 tests. You can place arbitrary Ruby code in your functions, so this is
 an easy way to expose Ruby functionality to the Scheme environment.
-
-To run a Scheme file using the runtime, just call:
-
-  scheme.run("path/to/file.scm")
 
 
 == Notes
@@ -202,10 +202,10 @@ macro:
 You are allowed to use ellipses in infix positions, as long as the
 pattern that follows the ellipsis matches input that the preceeding
 pattern would fail to match. This is, the ellipsis acts as a greedy
-star operator in regular expressions. In the above, <tt>(name value) ...</tt>
-captures input until a non-list expression is met, at which point
-<tt>body ...</tt> takes over. The following expression evaluates
-to <tt>3</tt> using this macro:
+star operator in regular expressions. In the above, <tt>(name value) ... body ...</tt>
+matches zero or more two-element lists followed by zero or more
+expressions of any type. The following expression evaluates to
+<tt>3</tt> using this macro:
 
   (my-let (x 2) (y 3) y)
 
