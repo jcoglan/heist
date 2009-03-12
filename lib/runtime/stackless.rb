@@ -25,9 +25,7 @@ module Heist
         case expression
         
           when Cons then
-            return expression if expression.null?
-            
-            first = Heist.evaluate(expression.car, scope)
+            first = !expression.null? && Heist.evaluate(expression.car, scope)
             raise SyntaxError.new("Invalid expression: #{expression}") unless Function === first
             
             value = first.call(scope, expression.cdr)

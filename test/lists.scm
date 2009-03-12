@@ -40,6 +40,6 @@
 (assert (equal? '(27 64) my-pair))
 (assert-equal 2 (length my-pair))
 
-; TODO fix this
-; (assert-raise SyntaxError ())
+(assert-raise SyntaxError ())
+(assert-raise SyntaxError (1 2 3))
 
