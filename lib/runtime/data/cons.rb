@@ -119,8 +119,15 @@ module Heist
       
       def to_s
         strings = []
-        tail = each { |value| strings << value.to_s }.cdr
-        '(' + (strings * ' ') + (tail == NULL ? '' : ' . ' + tail.to_s) + ')'
+        tail = each { |value|
+          strings << case value
+                       when String then value.inspect
+                       when Symbol then "'#{value}"
+                       else value
+                     end
+        }.cdr
+        '(' + (strings * ' ') +
+              (tail == NULL ? '' : ' . ' + tail.to_s) + ')'
       end
       alias :inspect :to_s
     end
