@@ -26,11 +26,12 @@ module Heist
       end
       
       class << self
-        def construct(enum, &block)
+        def construct(enum, linking = false, &block)
           root, last = nil, nil
           enum.each do |value|
             value = block.call(value) if block_given?
             pair = (Splice === value) ? value.cons : self.new(value)
+            pair.hosts(value) if linking
             root ||= pair
             last.cdr = pair if last
             last = pair.tail
@@ -61,11 +62,14 @@ module Heist
       
       def car=(car)
         @car = car.nil? ? NULL : car
-        car.parent = self if Expression === car and car != NULL
       end
       
       def cdr=(cdr)
         @cdr = cdr.nil? ? NULL : cdr
+      end
+      
+      def hosts(value)
+        value.parent = self if Expression === value and value != NULL
       end
       
       def clone(&block)

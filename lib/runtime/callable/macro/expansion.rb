@@ -42,6 +42,7 @@ module Heist
               
               push = lambda do |value|
                 pair = Cons.new(value)
+                pair.hosts(value)
                 result ||= pair
                 last.cdr = pair if last
                 last = pair

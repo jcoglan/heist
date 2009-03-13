@@ -7,6 +7,7 @@ module Heist
       def replace(expression)
         return unless @parent
         @parent.car = expression
+        @parent.hosts(expression)
       end
       
       def eval(scope)
