@@ -46,13 +46,13 @@ module Heist
       end
       
       def fill!(subexpr, value)
-        pair = @values
-        while not pair.nil? and not pair.null?
-          if pair.car.equal?(subexpr)
-            pair.car = value
-            @current = pair.cdr
+        epair, vpair = @expression, @values
+        while Cons === epair and not epair.null?
+          if epair.car.equal?(subexpr)
+            vpair.car = value
+            @current = epair.cdr
           end
-          pair = pair.cdr
+          epair, vpair = epair.cdr, vpair.cdr
         end
       end
       
