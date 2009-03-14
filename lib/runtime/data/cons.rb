@@ -101,11 +101,11 @@ module Heist
         @car == other.car and @cdr == other.cdr
       end
       
-      def extract!
+      def force!
         return self unless Binding === @car
         pair = self
         while not pair.null?
-          pair.car = pair.car.extract!
+          pair.car = pair.car.force!
           pair = pair.cdr
         end
         self

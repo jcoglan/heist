@@ -19,7 +19,7 @@ module Heist
           "Variable '#{name}' is not defined") unless bound or Scope === @parent
             
         value = bound ? @symbols[name] : @parent[name]
-        value = value.extract! if value.respond_to?(:extract!)
+        value = value.force! if value.respond_to?(:force!)
         value
       end
       
