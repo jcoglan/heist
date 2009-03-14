@@ -193,14 +193,6 @@ define('procedure?') do |value|
   Function === value
 end
 
-define('null?') do |value|
-  Cons::NULL == value
-end
-
-define('list?') do |value|
-  Cons === value and value.list?
-end
-
 define('pair?') do |value|
   Cons === value and value.pair?
 end
@@ -331,11 +323,5 @@ define('set-car!') do |cons, value|
 end
 define('set-cdr!') do |cons, value|
   cons.cdr = value
-end
-
-# Returns the length of a proper list, and throws an
-# exception for the length of improper lists
-define('length') do |list|
-  list.length
 end
 

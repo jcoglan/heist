@@ -2,6 +2,19 @@
 ; in Scheme should go here. If at all possible, write
 ; builtins in Scheme rather than Ruby.
 
+; (newline)
+; prints a new-line character
+(define (newline)
+  (display "\n"))
+
+; (force)
+; Extracts the value of a promise created using (delay)
+(define (force promise) (promise))
+
+; (call/cc)
+; Alias for (call-with-current-continuation)
+(define call/cc call-with-current-continuation)
+
 ; (not x)
 ; Boolean inverse of x
 (define (not x)
@@ -15,6 +28,10 @@
 ; Returns true iff x is a boolean value
 (define (boolean? x)
   (or (eqv? x #t) (eqv? x #f)))
+
+;----------------------------------------------------------------
+
+; Numerical functions
 
 ; (number? x)
 ; Returns true iff x is any type of number
@@ -80,16 +97,28 @@
         (iter (- y 1) (* y acc))))
   (iter x 1))
 
-; (newline)
-; prints a new-line character
-(define (newline)
-  (display "\n"))
+;----------------------------------------------------------------
 
-; (force)
-; Extracts the value of a promise created using (delay)
-(define (force promise) (promise))
+; List/pair functions
 
-; (call/cc)
-; Alias for (call-with-current-continuation)
-(define call/cc call-with-current-continuation)
+; (null object)
+; Returns true iff object is the empty list
+(define (null? object)
+  (eqv? '() object))
+
+; (list? object)
+; Returns true iff object is a proper list
+(define (list? object)
+  (or (null? object)
+      (and (pair? object)
+           (list? (cdr object)))))
+
+; (length object)
+; Returns the length of a proper list
+(define (length object)
+  (define (iter list acc)
+    (if (null? list)
+        acc
+        (iter (cdr list) (+ 1 acc))))
+  (iter object 0))
 
