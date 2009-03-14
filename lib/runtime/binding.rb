@@ -12,13 +12,13 @@ module Heist
         @memoized   = !!memoized
       end
       
-      def extract
+      def extract!
         return @value if defined?(@value) and @memoized
         @value = Heist.evaluate(@expression, @scope)
       end
       
       def eval(scope)
-        extract
+        extract!
       end
       
       def to_s

@@ -113,6 +113,10 @@
       (and (pair? object)
            (list? (cdr object)))))
 
+; (list arg ...)
+; Allocates and returns a new list from its arguments
+(define list (lambda args args))
+
 ; (length object)
 ; Returns the length of a proper list
 (define (length object)

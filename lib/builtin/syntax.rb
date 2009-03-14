@@ -166,6 +166,6 @@ end
 # memoized closure.
 syntax('delay') do |scope, cells|
   promise = Binding.new(cells.car, scope)
-  Function.new(scope) { promise.extract }
+  Function.new(scope) { promise.extract! }
 end
 

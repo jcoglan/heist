@@ -5,9 +5,9 @@ module Heist
       attr_reader :body, :name
       
       def initialize(scope, formals = [], body = nil, &block)
-        @scope   = scope
+        @scope, @formals = scope, formals
+        @formals = @formals.map { |id| id.to_s } if Enumerable === @formals
         @body    = body || block
-        @formals = formals.map { |id| id.to_s }
         @lazy    = scope.runtime.lazy?
         @eager   = !scope.runtime.stackless?
       end
@@ -17,11 +17,17 @@ module Heist
       end
       
       def call(scope, cells)
-        params, closure = [], Scope.new(@scope)
-        cells.each_with_index do |arg, i|
-          params[i] = closure[@formals[i]] = lazy? ?
-              Binding.new(arg, scope) :
-              (@eager ? arg : Heist.evaluate(arg, scope))
+        closure = Scope.new(@scope)
+        params = cells.map do |arg|
+          lazy? ? Binding.new(arg, scope) :
+                  (@eager ? arg : Heist.evaluate(arg, scope))
+        end
+        if Array === @formals
+          params.each_with_index do |param, i|
+            closure[@formals[i]] = param
+          end
+        else
+          closure[@formals] = Cons.construct(params)
         end
         return @body.call(*params) if primitive?
         Body.new(@body, closure)

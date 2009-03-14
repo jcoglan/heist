@@ -101,6 +101,16 @@ module Heist
         @car == other.car and @cdr == other.cdr
       end
       
+      def extract!
+        return self unless Binding === @car
+        pair = self
+        while not pair.null?
+          pair.car = pair.car.extract!
+          pair = pair.cdr
+        end
+        self
+      end
+      
       def list?
         tail.cdr == NULL; end
       

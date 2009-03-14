@@ -305,11 +305,6 @@ define('cons') do |car, cdr|
   Cons.new(car, cdr)
 end
 
-# Allocates and returns a new list from its arguments
-define('list') do |*values|
-  Cons.construct(values)
-end
-
 # car/cdr accessors (dynamically generated)
 Cons::ACCESSORS.each do |accsr|
   define(accsr) do |cons|
