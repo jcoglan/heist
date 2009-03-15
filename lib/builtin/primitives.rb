@@ -203,18 +203,6 @@ end
 # TODO implement exact?, inexact?, numerator, denominator, rationalize,
 #                complex functions, exact->inexact and vice versa
 
-# TODO implement max/min in Scheme
-
-# Returns the maximum value in the list of arguments
-define('max') do |*args|
-  args.max
-end
-
-# Returns the minimum value in the list of arguments
-define('min') do |*args|
-  args.min
-end
-
 # Returns the sum of all arguments passed
 define('+') do |*args|
   args.any? { |arg| String === arg } ?
@@ -318,5 +306,16 @@ define('set-car!') do |cons, value|
 end
 define('set-cdr!') do |cons, value|
   cons.cdr = value
+end
+
+#----------------------------------------------------------------
+
+# Control features
+
+# Calls a function using a list for the arguments
+# TODO take multiple argument values instead of a single list
+syntax('apply') do |scope, cells|
+  func = cells.car.eval(scope)
+  func.call(scope, Heist.evaluate(cells.cdr.car, scope))
 end
 

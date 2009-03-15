@@ -62,6 +62,24 @@
 (define (even? x)
   (zero? (remainder x 2)))
 
+; (max arg1 arg2 ...)
+; Returns the maximum value in the list of arguments
+(define (max first . rest)
+  (cond [(null? rest) first]
+        [else
+          (let* ([head (car rest)]
+                 [x (if (>= first head) first head)])
+            (apply max (cons x (cdr rest))))]))
+
+; (min arg1 arg2 ...)
+; Returns the minimum value in the list of arguments
+(define (min first . rest)
+  (cond [(null? rest) first]
+        [else
+          (let* ([head (car rest)]
+                 [x (if (<= first head) first head)])
+            (apply min (cons x (cdr rest))))]))
+
 ; (abs x)
 ; Returns the absolute value of a number
 (define (abs x)

@@ -17,3 +17,17 @@
 (assert (not (integer? 22/7)))
 (assert (integer? 42))
 
+(assert (zero? 0))
+(assert (not (zero? 1)))
+(assert (odd? 1))
+(assert (not (odd? 2)))
+(assert (even? 6))
+(assert (not (even? 7)))
+(assert (positive? 5))
+(assert (not (positive? -4)))
+(assert (negative? -13))
+(assert (not (negative? 0)))
+
+(assert-equal 9 (max 8 2 7 3 9 5))
+(assert-equal 2 (min 8 2 7 3 9 5))
+
