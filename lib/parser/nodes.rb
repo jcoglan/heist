@@ -30,13 +30,17 @@ module Heist
       end
     end
     
+    class QuotedCell < Treetop::Runtime::SyntaxNode
+      def eval
+        quote = elements[1].text_value
+        cell  = elements[2].eval
+        Runtime::Cons.construct([Runtime::Identifier.new(SHORTHANDS[quote]), cell])
+      end
+    end
+    
     class Cell < Treetop::Runtime::SyntaxNode
       def eval
-        result = elements[3].eval
-        string = elements[1].text_value
-        SHORTHANDS.has_key?(string) ?
-            Runtime::Cons.construct([Runtime::Identifier.new(SHORTHANDS[string]), result]) :
-            result
+        elements[1].eval
       end
     end
     

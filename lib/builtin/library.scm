@@ -101,7 +101,7 @@
 
 ; List/pair functions
 
-; (null object)
+; (null? object)
 ; Returns true iff object is the empty list
 (define (null? object)
   (eqv? '() object))

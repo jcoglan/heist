@@ -35,12 +35,22 @@ module Heist
         elements[0]
       end
 
-      def ignore
+      def quote
+        elements[1]
+      end
+
+      def cell
         elements[2]
+      end
+    end
+
+    module Cell1
+      def ignore
+        elements[0]
       end
 
       def ignore
-        elements[4]
+        elements[2]
       end
     end
 
@@ -52,48 +62,64 @@ module Heist
         return cached
       end
 
-      i0, s0 = index, []
-      r1 = _nt_ignore
-      s0 << r1
-      if r1
+      i0 = index
+      i1, s1 = index, []
+      r2 = _nt_ignore
+      s1 << r2
+      if r2
         r3 = _nt_quote
+        s1 << r3
         if r3
-          r2 = r3
-        else
-          r2 = SyntaxNode.new(input, index...index)
-        end
-        s0 << r2
-        if r2
-          r4 = _nt_ignore
-          s0 << r4
-          if r4
-            i5 = index
-            r6 = _nt_list
-            if r6
-              r5 = r6
-            else
-              r7 = _nt_atom
-              if r7
-                r5 = r7
-              else
-                self.index = i5
-                r5 = nil
-              end
-            end
-            s0 << r5
-            if r5
-              r8 = _nt_ignore
-              s0 << r8
-            end
-          end
+          r4 = _nt_cell
+          s1 << r4
         end
       end
-      if s0.last
-        r0 = (Cell).new(input, i0...index, s0)
-        r0.extend(Cell0)
+      if s1.last
+        r1 = (QuotedCell).new(input, i1...index, s1)
+        r1.extend(Cell0)
       else
-        self.index = i0
-        r0 = nil
+        self.index = i1
+        r1 = nil
+      end
+      if r1
+        r0 = r1
+      else
+        i5, s5 = index, []
+        r6 = _nt_ignore
+        s5 << r6
+        if r6
+          i7 = index
+          r8 = _nt_list
+          if r8
+            r7 = r8
+          else
+            r9 = _nt_atom
+            if r9
+              r7 = r9
+            else
+              self.index = i7
+              r7 = nil
+            end
+          end
+          s5 << r7
+          if r7
+            r10 = _nt_ignore
+            s5 << r10
+          end
+        end
+        if s5.last
+          r5 = (Cell).new(input, i5...index, s5)
+          r5.extend(Cell1)
+        else
+          self.index = i5
+          r5 = nil
+        end
+        if r5
+          r0 = r5
+        else
+          self.index = i0
+          r0 = nil
+        end
       end
 
       node_cache[:cell][start_index] = r0
