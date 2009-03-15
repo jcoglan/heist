@@ -115,7 +115,7 @@
 
 ; (list arg ...)
 ; Allocates and returns a new list from its arguments
-(define list (lambda args args))
+(define (list . args) args)
 
 ; (length object)
 ; Returns the length of a proper list

@@ -4,12 +4,17 @@ module Heist
     class Function
       attr_reader :body, :name
       
-      def initialize(scope, formals = [], body = nil, &block)
-        @scope, @formals = scope, formals
-        @formals = @formals.map { |id| id.to_s } if Enumerable === @formals
-        @body    = body || block
-        @lazy    = scope.runtime.lazy?
-        @eager   = !scope.runtime.stackless?
+      def initialize(scope, formals = nil, body = nil, &block)
+        @formals, @rest = [], formals
+        if Cons === formals
+          tail     = formals.tail.cdr
+          @formals = formals.map { |id| id.to_s }
+          @rest    = (Identifier === tail) ? tail : nil
+        end
+        @scope = scope
+        @body  = body || block
+        @lazy  = scope.runtime.lazy?
+        @eager = !scope.runtime.stackless?
       end
       
       def name=(name)
@@ -22,14 +27,14 @@ module Heist
           lazy? ? Binding.new(arg, scope) :
                   (@eager ? arg : Heist.evaluate(arg, scope))
         end
-        if Array === @formals
-          params.each_with_index do |param, i|
-            closure[@formals[i]] = param
-          end
-        else
-          closure[@formals] = Cons.construct(params)
-        end
         return @body.call(*params) if primitive?
+        
+        idx = 0
+        @formals.each do |name|
+          closure[name] = params[idx]
+          idx += 1
+        end
+        closure[@rest] = Cons.construct(params[idx..-1]) if @rest
         Body.new(@body, closure)
       end
       

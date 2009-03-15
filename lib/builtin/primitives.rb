@@ -6,7 +6,7 @@
 # to the name given by the first.
 syntax('define') do |scope, cells|
   name = cells.car
-  Heist.list?(name) ?
+  Cons === name ?
       scope.define(name.car, name.cdr, cells.cdr) :
       scope[name] = Heist.evaluate(cells.cdr.car, scope)
 end
