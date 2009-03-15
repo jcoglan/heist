@@ -163,3 +163,14 @@
             (cons (apply proc args)
                   (apply map (cons proc rest)))))))
 
+; (for-each proc list1 list2 ...)
+; Calls proc once for each member of list1, passing each
+; member (or set of members if more than one list given)
+; as arguments to proc.
+(define (for-each proc list1 . list2)
+  (do ([pair list1 (cdr pair)]
+       [others list2 (map cdr others)])
+      ((null? pair) '())
+    (apply proc (cons (car pair)
+                      (map car others)))))
+
