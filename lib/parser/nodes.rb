@@ -22,11 +22,17 @@ module Heist
     
     module List
       def eval
-        Runtime::Cons.construct(cells, true) { |c| c.eval }
+        list = Runtime::Cons.construct(cells, true) { |c| c.eval }
+        list.tail.cdr = tail.cell.eval if tail.respond_to?(:dot)
+        list
       end
       
       def cells
-        @cells ||= elements[1].elements
+        @cells ||= elements[1].elements[0].elements
+      end
+      
+      def tail
+        @tail ||= elements[1].elements[1]
       end
     end
     
@@ -86,7 +92,7 @@ module Heist
       end
     end
     
-    class Identifier < Treetop::Runtime::SyntaxNode
+    module Identifier
       def eval
         Runtime::Identifier.new(text_value)
       end

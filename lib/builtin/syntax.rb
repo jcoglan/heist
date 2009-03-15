@@ -8,9 +8,9 @@ syntax('cond') do |scope, cells|
   result = nil
   cells.each do |list|
     next if result
-    test = keyword?(scope, list.car, 'else') || Heist.evaluate(list.car, scope)
+    test = keyword?(scope, list.car, ELSE) || Heist.evaluate(list.car, scope)
     next unless test
-    result = keyword?(scope, list.cdr.car, '=>') ?
+    result = keyword?(scope, list.cdr.car, PIPE) ?
              Heist.evaluate(list.cdr.cdr.car, scope).call(scope, [test]) :
              Body.new(list.cdr, scope)
   end
@@ -27,8 +27,8 @@ syntax('case') do |scope, cells|
   result = nil
   cells.cdr.each do |list|
     next if result
-    values = call('quote', scope, list)
-    result = Body.new(list.cdr, scope) if values == :else or
+    values = call(QUOTE, scope, list)
+    result = Body.new(list.cdr, scope) if values == ELSE or
                                           values.include?(value)
   end
   result

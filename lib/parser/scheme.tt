@@ -13,8 +13,17 @@ module Heist
       "'" / "`" / ",@" / ","
     end
     
+    rule dot
+      "."
+    end
+    
     rule list
-      ("(" cell* ")" / "[" cell* "]") <List>
+      ("(" cells ")" / "[" cells "]") <List>
+    end
+    
+    rule cells
+      cell+ (dot space cell) /
+      cell* ignore
     end
     
     rule atom
@@ -54,15 +63,23 @@ module Heist
     end
     
     rule identifier
-      (!delimiter .)+ <Identifier>
+      ((!delimiter .) (!delimiter .)+ / (!reserved .)) <Identifier>
     end
     
     rule digit
       [0-9]
     end
     
+    rule reserved
+      dot / delimiter
+    end
+    
     rule delimiter
-      [\(\)\[\]] / space
+      quote / paren / space
+    end
+    
+    rule paren
+      [\(\)\[\]]
     end
     
     rule space

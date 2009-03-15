@@ -33,7 +33,7 @@
          ((datum1 datum2 ...) expr1 expr2 ...)
          clause ...)
     (let ([temp key])
-      (if (eqv? temp 'datum1)
+      (if (equal? temp 'datum1)
           (begin expr1 expr2 ...)
           (case temp
                 ((datum2 ...) expr1 expr2 ...)

@@ -58,10 +58,10 @@ end
 
 # Quoting functions
 
-# (quote) casts identifiers to symbols. If given a list, it
-# quotes all items in the list recursively.
+# (quote) treats its argument as a literal. Returns the given
+# portion of the parse tree as a list
 syntax('quote') do |scope, cells|
-  Heist.quote(cells.car)
+  cells.car
 end
 
 # (quasiquote) is similar to (quote), except that when it

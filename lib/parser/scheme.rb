@@ -188,10 +188,39 @@ module Heist
       return r0
     end
 
+    def _nt_dot
+      start_index = index
+      if node_cache[:dot].has_key?(index)
+        cached = node_cache[:dot][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      if input.index(".", index) == index
+        r0 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure(".")
+        r0 = nil
+      end
+
+      node_cache[:dot][start_index] = r0
+
+      return r0
+    end
+
     module List0
+      def cells
+        elements[1]
+      end
+
     end
 
     module List1
+      def cells
+        elements[1]
+      end
+
     end
 
     def _nt_list
@@ -213,26 +242,17 @@ module Heist
       end
       s1 << r2
       if r2
-        s3, i3 = [], index
-        loop do
-          r4 = _nt_cell
-          if r4
-            s3 << r4
-          else
-            break
-          end
-        end
-        r3 = SyntaxNode.new(input, i3...index, s3)
+        r3 = _nt_cells
         s1 << r3
         if r3
           if input.index(")", index) == index
-            r5 = (SyntaxNode).new(input, index...(index + 1))
+            r4 = (SyntaxNode).new(input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure(")")
-            r5 = nil
+            r4 = nil
           end
-          s1 << r5
+          s1 << r4
         end
       end
       if s1.last
@@ -246,47 +266,38 @@ module Heist
         r0 = r1
         r0.extend(List)
       else
-        i6, s6 = index, []
+        i5, s5 = index, []
         if input.index("[", index) == index
-          r7 = (SyntaxNode).new(input, index...(index + 1))
+          r6 = (SyntaxNode).new(input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("[")
-          r7 = nil
+          r6 = nil
         end
-        s6 << r7
-        if r7
-          s8, i8 = [], index
-          loop do
-            r9 = _nt_cell
-            if r9
-              s8 << r9
-            else
-              break
-            end
-          end
-          r8 = SyntaxNode.new(input, i8...index, s8)
-          s6 << r8
-          if r8
+        s5 << r6
+        if r6
+          r7 = _nt_cells
+          s5 << r7
+          if r7
             if input.index("]", index) == index
-              r10 = (SyntaxNode).new(input, index...(index + 1))
+              r8 = (SyntaxNode).new(input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure("]")
-              r10 = nil
+              r8 = nil
             end
-            s6 << r10
+            s5 << r8
           end
         end
-        if s6.last
-          r6 = (SyntaxNode).new(input, i6...index, s6)
-          r6.extend(List1)
+        if s5.last
+          r5 = (SyntaxNode).new(input, i5...index, s5)
+          r5.extend(List1)
         else
-          self.index = i6
-          r6 = nil
+          self.index = i5
+          r5 = nil
         end
-        if r6
-          r0 = r6
+        if r5
+          r0 = r5
           r0.extend(List)
         else
           self.index = i0
@@ -295,6 +306,122 @@ module Heist
       end
 
       node_cache[:list][start_index] = r0
+
+      return r0
+    end
+
+    module Cells0
+      def dot
+        elements[0]
+      end
+
+      def space
+        elements[1]
+      end
+
+      def cell
+        elements[2]
+      end
+    end
+
+    module Cells1
+    end
+
+    module Cells2
+      def ignore
+        elements[1]
+      end
+    end
+
+    def _nt_cells
+      start_index = index
+      if node_cache[:cells].has_key?(index)
+        cached = node_cache[:cells][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0 = index
+      i1, s1 = index, []
+      s2, i2 = [], index
+      loop do
+        r3 = _nt_cell
+        if r3
+          s2 << r3
+        else
+          break
+        end
+      end
+      if s2.empty?
+        self.index = i2
+        r2 = nil
+      else
+        r2 = SyntaxNode.new(input, i2...index, s2)
+      end
+      s1 << r2
+      if r2
+        i4, s4 = index, []
+        r5 = _nt_dot
+        s4 << r5
+        if r5
+          r6 = _nt_space
+          s4 << r6
+          if r6
+            r7 = _nt_cell
+            s4 << r7
+          end
+        end
+        if s4.last
+          r4 = (SyntaxNode).new(input, i4...index, s4)
+          r4.extend(Cells0)
+        else
+          self.index = i4
+          r4 = nil
+        end
+        s1 << r4
+      end
+      if s1.last
+        r1 = (SyntaxNode).new(input, i1...index, s1)
+        r1.extend(Cells1)
+      else
+        self.index = i1
+        r1 = nil
+      end
+      if r1
+        r0 = r1
+      else
+        i8, s8 = index, []
+        s9, i9 = [], index
+        loop do
+          r10 = _nt_cell
+          if r10
+            s9 << r10
+          else
+            break
+          end
+        end
+        r9 = SyntaxNode.new(input, i9...index, s9)
+        s8 << r9
+        if r9
+          r11 = _nt_ignore
+          s8 << r11
+        end
+        if s8.last
+          r8 = (SyntaxNode).new(input, i8...index, s8)
+          r8.extend(Cells2)
+        else
+          self.index = i8
+          r8 = nil
+        end
+        if r8
+          r0 = r8
+        else
+          self.index = i0
+          r0 = nil
+        end
+      end
+
+      node_cache[:cells][start_index] = r0
 
       return r0
     end
@@ -838,6 +965,15 @@ module Heist
     module Identifier0
     end
 
+    module Identifier1
+    end
+
+    module Identifier2
+    end
+
+    module Identifier3
+    end
+
     def _nt_identifier
       start_index = index
       if node_cache[:identifier].has_key?(index)
@@ -846,46 +982,125 @@ module Heist
         return cached
       end
 
-      s0, i0 = [], index
-      loop do
-        i1, s1 = index, []
-        i2 = index
-        r3 = _nt_delimiter
-        if r3
-          r2 = nil
+      i0 = index
+      i1, s1 = index, []
+      i2, s2 = index, []
+      i3 = index
+      r4 = _nt_delimiter
+      if r4
+        r3 = nil
+      else
+        self.index = i3
+        r3 = SyntaxNode.new(input, index...index)
+      end
+      s2 << r3
+      if r3
+        if index < input_length
+          r5 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
         else
-          self.index = i2
-          r2 = SyntaxNode.new(input, index...index)
+          terminal_parse_failure("any character")
+          r5 = nil
         end
-        s1 << r2
-        if r2
+        s2 << r5
+      end
+      if s2.last
+        r2 = (SyntaxNode).new(input, i2...index, s2)
+        r2.extend(Identifier0)
+      else
+        self.index = i2
+        r2 = nil
+      end
+      s1 << r2
+      if r2
+        s6, i6 = [], index
+        loop do
+          i7, s7 = index, []
+          i8 = index
+          r9 = _nt_delimiter
+          if r9
+            r8 = nil
+          else
+            self.index = i8
+            r8 = SyntaxNode.new(input, index...index)
+          end
+          s7 << r8
+          if r8
+            if index < input_length
+              r10 = (SyntaxNode).new(input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure("any character")
+              r10 = nil
+            end
+            s7 << r10
+          end
+          if s7.last
+            r7 = (SyntaxNode).new(input, i7...index, s7)
+            r7.extend(Identifier1)
+          else
+            self.index = i7
+            r7 = nil
+          end
+          if r7
+            s6 << r7
+          else
+            break
+          end
+        end
+        if s6.empty?
+          self.index = i6
+          r6 = nil
+        else
+          r6 = SyntaxNode.new(input, i6...index, s6)
+        end
+        s1 << r6
+      end
+      if s1.last
+        r1 = (SyntaxNode).new(input, i1...index, s1)
+        r1.extend(Identifier2)
+      else
+        self.index = i1
+        r1 = nil
+      end
+      if r1
+        r0 = r1
+        r0.extend(Identifier)
+      else
+        i11, s11 = index, []
+        i12 = index
+        r13 = _nt_reserved
+        if r13
+          r12 = nil
+        else
+          self.index = i12
+          r12 = SyntaxNode.new(input, index...index)
+        end
+        s11 << r12
+        if r12
           if index < input_length
-            r4 = (SyntaxNode).new(input, index...(index + 1))
+            r14 = (SyntaxNode).new(input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure("any character")
-            r4 = nil
+            r14 = nil
           end
-          s1 << r4
+          s11 << r14
         end
-        if s1.last
-          r1 = (SyntaxNode).new(input, i1...index, s1)
-          r1.extend(Identifier0)
+        if s11.last
+          r11 = (SyntaxNode).new(input, i11...index, s11)
+          r11.extend(Identifier3)
         else
-          self.index = i1
-          r1 = nil
+          self.index = i11
+          r11 = nil
         end
-        if r1
-          s0 << r1
+        if r11
+          r0 = r11
+          r0.extend(Identifier)
         else
-          break
+          self.index = i0
+          r0 = nil
         end
-      end
-      if s0.empty?
-        self.index = i0
-        r0 = nil
-      else
-        r0 = Identifier.new(input, i0...index, s0)
       end
 
       node_cache[:identifier][start_index] = r0
@@ -913,6 +1128,33 @@ module Heist
       return r0
     end
 
+    def _nt_reserved
+      start_index = index
+      if node_cache[:reserved].has_key?(index)
+        cached = node_cache[:reserved][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0 = index
+      r1 = _nt_dot
+      if r1
+        r0 = r1
+      else
+        r2 = _nt_delimiter
+        if r2
+          r0 = r2
+        else
+          self.index = i0
+          r0 = nil
+        end
+      end
+
+      node_cache[:reserved][start_index] = r0
+
+      return r0
+    end
+
     def _nt_delimiter
       start_index = index
       if node_cache[:delimiter].has_key?(index)
@@ -922,25 +1164,45 @@ module Heist
       end
 
       i0 = index
-      if input.index(Regexp.new('[\\(\\)\\[\\]]'), index) == index
-        r1 = (SyntaxNode).new(input, index...(index + 1))
-        @index += 1
-      else
-        r1 = nil
-      end
+      r1 = _nt_quote
       if r1
         r0 = r1
       else
-        r2 = _nt_space
+        r2 = _nt_paren
         if r2
           r0 = r2
         else
-          self.index = i0
-          r0 = nil
+          r3 = _nt_space
+          if r3
+            r0 = r3
+          else
+            self.index = i0
+            r0 = nil
+          end
         end
       end
 
       node_cache[:delimiter][start_index] = r0
+
+      return r0
+    end
+
+    def _nt_paren
+      start_index = index
+      if node_cache[:paren].has_key?(index)
+        cached = node_cache[:paren][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      if input.index(Regexp.new('[\\(\\)\\[\\]]'), index) == index
+        r0 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        r0 = nil
+      end
+
+      node_cache[:paren][start_index] = r0
 
       return r0
     end

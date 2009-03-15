@@ -43,3 +43,6 @@
 (assert-raise SyntaxError ())
 (assert-raise SyntaxError (1 2 3))
 
+(assert-equal (cons 1 2) '(1 . 2))
+(assert-equal (cons 1 (cons 2 3)) '(1 2 . 3))
+

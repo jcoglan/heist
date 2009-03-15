@@ -114,8 +114,8 @@ module Heist
       end
       
       def keyword?(scope, expression, name)
-        expression == Identifier.new(name) &&
-            innermost_binding(name) == scope.innermost_binding(expression)
+        expression == name && innermost_binding(name) ==
+                              scope.innermost_binding(expression)
       end
       
       def load_path

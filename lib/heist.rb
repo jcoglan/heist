@@ -19,6 +19,12 @@ module Heist
   LOAD_PATH = [LIB_PATH]
   FILE_EXT  = ".scm"
   
+  QUOTE = Runtime::Identifier.new('quote')
+  ELSE  = Runtime::Identifier.new('else')
+  PIPE  = Runtime::Identifier.new('=>')
+  UNQ   = Runtime::Identifier.new('unquote')
+  UNQS  = Runtime::Identifier.new('unquote-splicing')
+  
   class HeistError            < StandardError; end
   class RuntimeError          < HeistError; end
   class UndefinedVariable     < RuntimeError; end
@@ -41,28 +47,17 @@ module Heist
           expression
     end
     
-    def quote(arg)
-      case arg
-      when Runtime::Cons then
-        Runtime::Cons.construct(arg) { |cell| quote(cell) }
-      when Runtime::Identifier then
-        arg.to_s.to_sym
-      else
-        arg
-      end
-    end
-    
     def quasiquote(arg, scope)
       case arg
-      when Runtime::Cons
-        if Runtime::Identifier === arg.car
-          name = arg.car.to_s
-          return evaluate(arg.cdr.car, scope) if name == 'unquote'
-          return Runtime::Cons.splice(arg.cdr.car, scope) if name == 'unquote-splicing'
-        end
-        Runtime::Cons.construct(arg) { |cell| quasiquote(cell, scope) }
-      else
-        quote(arg)
+        when Runtime::Cons
+          if Runtime::Identifier === arg.car
+            name = arg.car
+            return evaluate(arg.cdr.car, scope) if name == UNQ
+            return Runtime::Cons.splice(arg.cdr.car, scope) if name == UNQS
+          end
+          Runtime::Cons.construct(arg) { |cell| quasiquote(cell, scope) }
+        else
+          arg
       end
     end
     
