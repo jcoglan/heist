@@ -144,3 +144,22 @@
         (iter (cdr list) (+ 1 acc))))
   (iter object 0))
 
+;----------------------------------------------------------------
+
+; Control features
+
+; (map proc list1 list2 ...)
+; Returns a new list formed by applying proc to each member
+; (or set of members) of the given list(s).
+(define (map proc list1 . list2)
+  (if (null? list1)
+      list1
+      (if (null? list2)
+          (cons (proc (car list1))
+                (map proc (cdr list1)))
+          (let* ([all (cons list1 list2)]
+                 [args (map car all)]
+                 [rest (map cdr all)])
+            (cons (apply proc args)
+                  (apply map (cons proc rest)))))))
+

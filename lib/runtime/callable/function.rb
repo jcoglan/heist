@@ -22,13 +22,21 @@ module Heist
       end
       
       def call(scope, cells)
-        closure = Scope.new(@scope)
         params = cells.map do |arg|
           lazy? ? Binding.new(arg, scope) :
                   (@eager ? arg : Heist.evaluate(arg, scope))
         end
+        call_with_values(params)
+      end
+      
+      def apply(scope, cells)
+        params = Heist.evaluate(cells.car, scope).to_a
+        call_with_values(params)
+      end
+      
+      def call_with_values(params)
         return @body.call(*params) if primitive?
-        
+        closure = Scope.new(@scope)
         idx = 0
         @formals.each do |name|
           closure[name] = params[idx]

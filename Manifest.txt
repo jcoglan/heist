@@ -42,6 +42,7 @@ test/define_functions.scm
 test/define_values.scm
 test/delay.scm
 test/file_loading.scm
+test/functional.scm
 test/hygienic.scm
 test/let.scm
 test/lib.scm

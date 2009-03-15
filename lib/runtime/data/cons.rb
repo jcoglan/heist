@@ -123,8 +123,8 @@ module Heist
       def null?
         self == NULL; end
       
-      def to_a
-        map { |cell| Cons === cell ? cell.to_a : cell }
+      def to_a(deep = false)
+        map { |cell| deep && Cons === cell ? cell.to_a : cell }
       end
       
       def to_ruby

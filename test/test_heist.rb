@@ -34,6 +34,7 @@ Class.new(Test::Unit::TestCase) do
         define_values
         define_functions
         closures
+        functional
         let
         conditionals
         file_loading

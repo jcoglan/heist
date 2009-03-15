@@ -316,6 +316,6 @@ end
 # TODO take multiple argument values instead of a single list
 syntax('apply') do |scope, cells|
   func = cells.car.eval(scope)
-  func.call(scope, Heist.evaluate(cells.cdr.car, scope))
+  func.apply(scope, cells.cdr)
 end
 
