@@ -8,9 +8,8 @@ module Heist
       end
       
       def call(scope, cells)
-        filler = Heist.evaluate(cells.car, scope)
         stack = @stack.copy
-        stack.fill!(@target, filler)
+        stack.fill!(@target, cells.car)
         stack
       end
       
