@@ -138,6 +138,30 @@
         (iter (cdr list) (+ 1 acc))))
   (iter object 0))
 
+; (append list ...)
+; Returns a new list formed by concatenating the arguments.
+; The final argument is not copied and the return value of
+; (append) shares structure with it.
+(define (append first . rest)
+  (if (null? first)
+      (apply append rest)
+      (if (null? rest)
+          first
+          (let ([copy (apply list first)])
+            (do ([pair copy (cdr pair)])
+                ((null? (cdr pair))
+                  (set-cdr! pair (apply append rest))))
+            copy))))
+
+; (reverse list)
+; Returns a newly allocated list consisting of the
+; elements of list in reverse order.
+(define (reverse object)
+  (if (null? object)
+      object
+      (append (reverse (cdr object))
+              (list (car object)))))
+
 ;----------------------------------------------------------------
 
 ; Control features

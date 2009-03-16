@@ -46,3 +46,12 @@
 (assert-equal (cons 1 2) '(1 . 2))
 (assert-equal (cons 1 (cons 2 3)) '(1 2 . 3))
 
+(assert-equal '(x y)        (append '(x) '(y)))
+(assert-equal '(a b c d)    (append '(a) '(b c d)))
+(assert-equal '(a (b) (c))  (append '(a (b)) '((c))))
+(assert-equal '(a b c . d)  (append '(a b) '(c . d)))
+(assert-equal 'a            (append '() 'a))
+
+(assert-equal '(4 3 2 1) (reverse '(1 2 3 4)))
+(assert-equal '(4 (3 5) 2 1) (reverse '(1 2 (3 5) 4)))
+
