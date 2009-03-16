@@ -64,21 +64,15 @@
 
 ; (max arg1 arg2 ...)
 ; Returns the maximum value in the list of arguments
-(define (max first . rest)
-  (cond [(null? rest) first]
-        [else
-          (let* ([head (car rest)]
-                 [x (if (>= first head) first head)])
-            (apply max (cons x (cdr rest))))]))
+(define (max . values)
+  (reduce (lambda (a b) (if (>= a b) a b))
+          values))
 
 ; (min arg1 arg2 ...)
 ; Returns the minimum value in the list of arguments
-(define (min first . rest)
-  (cond [(null? rest) first]
-        [else
-          (let* ([head (car rest)]
-                 [x (if (<= first head) first head)])
-            (apply min (cons x (cdr rest))))]))
+(define (min . values)
+  (reduce (lambda (a b) (if (<= a b) a b))
+          values))
 
 ; (abs x)
 ; Returns the absolute value of a number
@@ -173,4 +167,17 @@
       ((null? pair) '())
     (apply proc (cons (car pair)
                       (map car others)))))
+
+; (reduce proc list)
+; Returns a new object by applying the given function
+; to the memo and each member of the list. The initial
+; value of the memo is the first member of the list.
+; The return value of the function becomes the memo for
+; the next invocation.
+(define (reduce proc list)
+  (let ([result (car list)])
+    (for-each (lambda (value)
+                (set! result (proc result value)))
+              (cdr list))
+    result))
 
