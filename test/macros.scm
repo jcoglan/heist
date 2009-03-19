@@ -193,6 +193,7 @@
   (syntax-rules ()
     [(swap (x y))
       (let ([temp x])
+        (set! x temp)   ; Force temp in lazy mode
         (set! x y)
         (set! y temp))]))
 

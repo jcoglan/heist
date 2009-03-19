@@ -7,7 +7,6 @@ lib/heist.rb
 lib/bin_spec.rb
 lib/repl.rb
 lib/builtin/primitives.rb
-lib/builtin/syntax.rb
 lib/builtin/syntax.scm
 lib/builtin/library.scm
 lib/parser/ruby.rb

@@ -26,10 +26,8 @@ module Heist
       @top_level = Scope.new(self)
       @stack = create_stack
       
-      syntax_type = lazy? ? 'rb' : 'scm'
-      
       run("#{ BUILTIN_PATH }primitives.rb")
-      run("#{ BUILTIN_PATH }syntax.#{syntax_type}")
+      run("#{ BUILTIN_PATH }syntax.scm")
       run("#{ BUILTIN_PATH }library.scm")
       
       @start_time = Time.now.to_f
