@@ -73,10 +73,6 @@ module Heist
       while code == code.gsub!(/\([^\(\)\[\]]*\)|\[[^\(\)\[\]]*\]/, ''); end
       calls = code.scan(/[\(\[](?:[^\(\)\[\]\s]*\s*)/).flatten
       
-      calls.pop while calls.size > 1 and
-                      SPECIAL.include?(calls.last[1..-1].strip) and
-                      SPECIAL.include?(calls[-2][1..-1].strip)
-      
       offsets  = calls.inject([]) do |list, call|
         index  = list.empty? ? 0 : list.last.last - @indent
         index  = @indent + (line.index(call, index) || 0)
