@@ -31,7 +31,7 @@ module Heist
         exit if input.nil?
         
         push(input)
-        tree = Heist.parse(@buffer * ' ')
+        tree = Heist.parse(@buffer * "\n")
         next if tree.nil?
         
         reset!
