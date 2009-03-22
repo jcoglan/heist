@@ -27,16 +27,13 @@
   [(case key) #f]
   [(case key (else expr1 expr2 ...))
     (begin expr1 expr2 ...)]
-  [(case key (() expr ...) clause ...)
-    (case key clause ...)]
   [(case key
-         ((datum1 datum2 ...) expr1 expr2 ...)
+         ((cell ...) expr1 expr2 ...)
          clause ...)
     (let ([temp key])
-      (if (equal? temp 'datum1)
+      (if (member temp '(cell ...))
           (begin expr1 expr2 ...)
           (case temp
-                ((datum2 ...) expr1 expr2 ...)
                 clause ...)))]))
 
 ;----------------------------------------------------------------
