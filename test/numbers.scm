@@ -3,14 +3,14 @@
 
 (assert (number? 42))
 (assert (not (number? #t)))
-;(assert (complex? 2+3i))
-;(assert (not (real? 2+3i)))
+(assert (complex? 2+3i))
+(assert (not (real? 2+3i)))
 (assert (real? 3.1416))
 (assert (real? 22/7))
 (assert (real? 42))
-;(assert (not (rational? 2+3i)))
-;(assert (not (rational? 3.1416)))
-;(assert (rational? 22/7))
+(assert (not (rational? 2+3i)))
+(assert (not (rational? 3.1416)))
+(assert (rational? 22/7))
 (assert (not (integer? 22/7)))
 (assert (integer? 42))
 
@@ -27,4 +27,12 @@
 
 (assert-equal 9 (max 8 2 7 3 9 5))
 (assert-equal 2 (min 8 2 7 3 9 5))
+
+(assert (exact? 8))
+(assert (exact? 4/3))
+(assert (exact? 5+3i))
+(assert (inexact? 8.5))
+(assert (inexact? 8.5+4i))
+
+(assert (rational? (/ 4 3)))
 

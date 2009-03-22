@@ -43,7 +43,7 @@ module Heist
     end
     
     rule complex
-      real "+" real "i" <Complex>
+      real:(real / integer) "+" imaginary:(real / integer) "i" <Complex>
     end
     
     rule real

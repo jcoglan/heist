@@ -1,3 +1,7 @@
+require 'forwardable'
+require 'rational'
+require 'complex'
+
 require 'rubygems'
 require 'treetop'
 
@@ -45,6 +49,14 @@ module Heist
       Runtime::Expression === expression ?
           expression.eval(scope) :
           expression
+    end
+    
+    def complex(real, imaginary)
+      Complex.new(real, imaginary)
+    end
+    
+    def rational(numerator, denominator)
+      Rational(numerator, denominator)
     end
     
     def quasiquote(arg, scope)

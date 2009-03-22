@@ -620,7 +620,7 @@ module Heist
         elements[0]
       end
 
-      def real
+      def imaginary
         elements[2]
       end
 
@@ -635,29 +635,53 @@ module Heist
       end
 
       i0, s0 = index, []
-      r1 = _nt_real
+      i1 = index
+      r2 = _nt_real
+      if r2
+        r1 = r2
+      else
+        r3 = _nt_integer
+        if r3
+          r1 = r3
+        else
+          self.index = i1
+          r1 = nil
+        end
+      end
       s0 << r1
       if r1
         if input.index("+", index) == index
-          r2 = (SyntaxNode).new(input, index...(index + 1))
+          r4 = (SyntaxNode).new(input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("+")
-          r2 = nil
+          r4 = nil
         end
-        s0 << r2
-        if r2
-          r3 = _nt_real
-          s0 << r3
-          if r3
+        s0 << r4
+        if r4
+          i5 = index
+          r6 = _nt_real
+          if r6
+            r5 = r6
+          else
+            r7 = _nt_integer
+            if r7
+              r5 = r7
+            else
+              self.index = i5
+              r5 = nil
+            end
+          end
+          s0 << r5
+          if r5
             if input.index("i", index) == index
-              r4 = (SyntaxNode).new(input, index...(index + 1))
+              r8 = (SyntaxNode).new(input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure("i")
-              r4 = nil
+              r8 = nil
             end
-            s0 << r4
+            s0 << r8
           end
         end
       end

@@ -64,25 +64,25 @@ module Heist
     
     class Complex < Treetop::Runtime::SyntaxNode
       def eval
-        # TODO
+        @value ||= Heist.complex(real.eval, imaginary.eval)
       end
     end
     
     class Real < Treetop::Runtime::SyntaxNode
       def eval
-        @value ||= Kernel.eval(text_value).to_f
+        @value ||= text_value.to_f
       end
     end
     
     class Rational < Treetop::Runtime::SyntaxNode
       def eval
-        @value ||= numerator.eval.to_f / denominator.eval
+        @value ||= Heist.rational(numerator.eval, denominator.eval)
       end
     end
     
     class Integer < Treetop::Runtime::SyntaxNode
       def eval
-        @value ||= Kernel.eval(text_value).to_i
+        @value ||= text_value.to_i
       end
     end
     

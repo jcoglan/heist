@@ -20,6 +20,14 @@
 (define (not x)
   (if x #f #t))
 
+; (negate x)
+; Returns a negated form of x, like (not) but also
+; works on functions
+(define (negate proc)
+  (if (procedure? proc)
+      (lambda args (not (apply proc args)))
+      (not proc)))
+
 ; Longhand aliases for boolean constants
 (define true #t)
 (define false #f)
@@ -36,6 +44,10 @@
 ; (number? x)
 ; Returns true iff x is any type of number
 (define number? complex?)
+
+; (inexact? x)
+; Returns true iff x is not an exact number
+(define inexact? (negate exact?))
 
 ; (zero? x)
 ; Returns true iff x is zero

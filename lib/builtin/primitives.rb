@@ -127,6 +127,14 @@ define('equal?') do |op1, op2|
   op1 == op2
 end
 
+# Returns true iff the given number is exact i.e. an integer, a
+# rational, or a complex made of integers
+define('exact?') do |value|
+  call('rational?', value) || (Complex === value &&
+                               call('rational?', value.real) &&
+                               call('rational?', value.imag))
+end
+
 # TODO raise an exception if they're not numeric
 # Returns true iff all arguments are numerically equal
 define('=') do |*args|
@@ -166,7 +174,7 @@ end
 # Type-checking predicates
 
 define('complex?') do |value|
-  call('real?', value) # || TODO
+  Complex === value || call('real?', value)
 end
 
 define('real?') do |value|
@@ -174,7 +182,7 @@ define('real?') do |value|
 end
 
 define('rational?') do |value|
-  call('integer?', value) || Float === value # TODO handle this properly
+  Rational === value || call('integer?', value)
 end
 
 define('integer?') do |value|
@@ -223,7 +231,10 @@ end
 # Returns the first argument divided by the second, or the
 # reciprocal of the first if only one argument is given
 define('/') do |op1, op2|
-  op2.nil? ? 1.0 / op1 : op1 / op2.to_f
+  op2.nil? ? 1.0 / op1 :
+             [op1, op2].all? { |value| Integer === value } ?
+                 Heist.rational(op1, op2) :
+                 op1.to_f / op2
 end
 
 # (quotient) and (remainder) satisfy
