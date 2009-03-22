@@ -42,42 +42,52 @@ is more advanced than some other toy Schemes I've seen.
 Currently implemented R5RS features include:
 
 * Boolean literals: #t and #f
-* Numeric literals for integers, reals and rationals (though rationals
-  are currently converted to floating point)
+* Numeric literals for integers, reals, rationals and complexes. The
+  latter two are mapped to Ruby's <tt>Rational</tt> and <tt>Complex</tt>
+  objects and Ruby handles all math procedures.
 * String and symbol literals
-* Proper lists and full (quasi)quoting with <tt>'</tt>, <tt>`</tt>,
-  <tt>,</tt>, <tt>,@</tt>
-* Macros: <tt>(syntax-rules)</tt>, <tt>(define-syntax)</tt>,
-  <tt>(let-syntax)</tt>, <tt>(letrec-syntax)</tt>. Supports keywords,
+* Proper and improper lists and full (quasi)quoting with <tt>'</tt>,
+  <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
+* Macros: <tt>sntax-rules</tt>, <tt>define-syntax</tt>,
+  <tt>let-syntax</tt>, <tt>letrec-syntax</tt>. Supports keywords,
   lists, pattern variables and ellipses down to arbitrary depth
-* Continuations: <tt>(call-with-current-continuation)</tt>, aliased
-  as <tt>(call/cc)</tt>
+* Continuations: <tt>call-with-current-continuation</tt>, aliased
+  as <tt>call/cc</tt>
 * Proper tail recursion
-* Variable assignment: <tt>(define)</tt> and <tt>(set!)</tt>
-* Lambda expressions: <tt>(lambda (x) body)</tt>, including lexical
-  scoping and closures (varargs are currently not supported)
-* Control flow: <tt>(begin)</tt>, <tt>(if)</tt>, <tt>(cond)</tt>,
-  <tt>(case)</tt>
-* Binding constructs: <tt>(let)</tt>, <tt>(let*)</tt>, <tt>(letrec)</tt>
-* Iteration: named <tt>(let)</tt>, <tt>(do)</tt>
-* Delayed evaluation: <tt>(delay)</tt> and <tt>(force)</tt>
-* Logical connectives: <tt>(and)</tt>, <tt>(or)</tt>, <tt>(not)</tt>
-* Type checking: <tt>(boolean?)</tt>, <tt>(number?)</tt>, <tt>(complex?)</tt>,
-  <tt>(real?)</tt>, <tt>(rational?)</tt>, <tt>(integer?)</tt>
-* Comparators: <tt>(eqv?)</tt>, <tt>(=)</tt>, <tt>(<)</tt>, <tt>(<=)</tt>,
-  <tt>(>)</tt>, <tt>(>=)</tt>
-* Numeric library: <tt>(max)</tt>, <tt>(min)</tt>, <tt>(+)</tt>,
-  <tt>(-)</tt>, <tt>(*)</tt>, <tt>(/)</tt>, <tt>(quotient)</tt>,
-  <tt>(remainder)</tt>, <tt>(modulo)</tt>, <tt>(floor)</tt>,
-  <tt>(ceiling)</tt>, <tt>(truncate)</tt>, <tt>(round)</tt>,
-  <tt>(exp)</tt>, <tt>(log)</tt>, <tt>(sin)</tt>, <tt>(cos)</tt>,
-  <tt>(tan)</tt>, <tt>(asin)</tt>, <tt>(acos)</tt>, <tt>(atan)</tt>,
-  <tt>(expt)</tt>, <tt>(sqrt)</tt>, <tt>(zero?)</tt>, <tt>(positive?)</tt>,
-  <tt>(negative?)</tt>, <tt>(odd?)</tt>, <tt>(even?)</tt>, <tt>(abs)</tt>,
-  <tt>(gcd)</tt>, <tt>(lcm)</tt>, <tt>(factorial)</tt>,
-  <tt>(number->string)</tt>
-* String library: <tt>(display)</tt>, <tt>(newline)</tt>,
-  <tt>(string->number)</tt>
+* Variable assignment: <tt>define</tt> and <tt>set!</tt>
+* Lambda expressions: <tt>(lambda (x ...) body ...)</tt>, including lexical
+  scoping and closures. Supports varargs using <tt>(lambda args body ...)</tt>
+  and <tt>(lambda (x y . rest) body ...)</tt> forms.
+* Control flow: <tt>begin</tt>, <tt>if</tt>, <tt>cond</tt>,
+  <tt>case</tt>
+* Binding constructs: <tt>let</tt>, <tt>let*</tt>, <tt>letrec</tt>
+* Iteration: named <tt>let</tt>, <tt>do</tt>
+* Delayed evaluation: <tt>delay</tt> and <tt>force</tt>
+* Logical connectives: <tt>and</tt>, <tt>or</tt>, <tt>not</tt>
+* Type checking: <tt>boolean?</tt>, <tt>number?</tt>, <tt>complex?</tt>,
+  <tt>real?</tt>, <tt>rational?</tt>, <tt>integer?</tt>, <tt>exact?</tt>,
+  <tt>inexact?</tt>, <tt>symbol?</tt>, <tt>string?</tt>, <tt>pair?</tt>,
+  <tt>list?</tt>, <tt>null?</tt>, <tt>procedure?</tt>
+* Comparators: <tt>eq?</tt>, <tt>eqv?</tt>, <tt>equal?</tt>, <tt>=</tt>,
+  <tt><</tt>, <tt><=</tt>, <tt>></tt>, <tt>>=</tt>
+* Numeric library: <tt>max</tt>, <tt>min</tt>, <tt>+</tt>, <tt>-</tt>,
+  <tt>*</tt>, <tt>/</tt>, <tt>quotient</tt>, <tt>remainder</tt>,
+  <tt>modulo</tt>, <tt>numerator</tt>, <tt>denominator</tt>, <tt>floor</tt>,
+  <tt>ceiling</tt>, <tt>truncate</tt>, <tt>round</tt>, <tt>exp</tt>,
+  <tt>log</tt>, <tt>sin</tt>, <tt>cos</tt>, <tt>tan</tt>, <tt>asin</tt>,
+  <tt>acos</tt>, <tt>atan</tt>, <tt>expt</tt>, <tt>sqrt</tt>,
+  <tt>zero?</tt>, <tt>positive?</tt>, <tt>negative?</tt>, <tt>odd?</tt>,
+  <tt>even?</tt>, <tt>abs</tt>, <tt>gcd</tt>, <tt>lcm</tt>,
+  <tt>make-rectangular</tt>, <tt>make-polar</tt>, <tt>real-part</tt>,
+  <tt>imag-part</tt>, <tt>magnitude</tt>, <tt>angle</tt>, <tt>factorial</tt>,
+  <tt>number->string</tt>
+* List library: <tt>cons</tt>, <tt>car</tt>, <tt>cdr</tt>, <tt>set-car!</tt>,
+  <tt>set-cdr!</tt>, <tt>c[ad]{1,4}r</tt>, <tt>list</tt>, <tt>length</tt>,
+  <tt>append</tt>, <tt>reverse</tt>, <tt>list-tail</tt>, <tt>list-ref</tt>,
+  <tt>memq</tt>, <tt>memv</tt>, <tt>member</tt>, <tt>assq</tt>, <tt>assv</tt>,
+  <tt>assoc</tt>
+* Control features: <tt>apply</tt>, <tt>map</tt>, <tt>for-each</tt>
+* String library: <tt>display</tt>, <tt>newline</tt>, <tt>string->number</tt>
 * File loading: <tt>(load "foo.scm")</tt>, paths are relative to the
   current file
 
@@ -183,13 +193,6 @@ characters that does not contain any spaces or parentheses and that
 is not a boolean literal, a number or a string is considered a valid
 symbol. This means that syntax that should be used for chars and
 vectors will currently parse as symbols.
-
-There are currently no list operations. This may seem like a
-staggering omission but my goal initially was to work through the
-early stages of SICP, for which Heist in its current form is
-adequate. Being something of a simpleton, I wrote the list representation
-using arrays and it will need gutting and converting to linked lists
-before list operations are implemented.
 
 Macros are slightly more liberal than R5RS, in that this is a valid
 macro:
