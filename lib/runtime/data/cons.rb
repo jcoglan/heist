@@ -36,6 +36,7 @@ module Heist
             last.cdr = pair if last
             last = pair.tail
           end
+          last.cdr = enum.tail.cdr if last and Cons === enum
           root || NULL
         end
         alias :[] :construct
