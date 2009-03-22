@@ -6,7 +6,7 @@ require 'rubygems'
 require 'treetop'
 
 module Heist
-  VERSION = '0.1.0'
+  VERSION = '0.2.0'
   
   ROOT_PATH    = File.expand_path(File.dirname(__FILE__))
   PARSER_PATH  = ROOT_PATH + '/parser/'
