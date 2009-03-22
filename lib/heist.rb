@@ -59,6 +59,12 @@ module Heist
       Rational(numerator, denominator)
     end
     
+    def divide(op1, op2)
+      [op1, op2].all? { |value| Integer === value } ?
+          Heist.rational(op1, op2) :
+          op1.to_f / op2
+    end
+    
     def quasiquote(arg, scope)
       case arg
         when Runtime::Cons

@@ -231,10 +231,7 @@ end
 # Returns the first argument divided by the second, or the
 # reciprocal of the first if only one argument is given
 define('/') do |op1, op2|
-  op2.nil? ? 1.0 / op1 :
-             [op1, op2].all? { |value| Integer === value } ?
-                 Heist.rational(op1, op2) :
-                 op1.to_f / op2
+  op2.nil? ? Heist.divide(1, op1) : Heist.divide(op1, op2)
 end
 
 # (quotient) and (remainder) satisfy

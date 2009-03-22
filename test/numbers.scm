@@ -35,4 +35,5 @@
 (assert (inexact? 8.5+4i))
 
 (assert (rational? (/ 4 3)))
+(assert (rational? (/ 4)))
 
