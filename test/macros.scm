@@ -83,6 +83,18 @@
 (assert-equal 3 (iffy 7 #f 3))
 
 
+; Test improper patterns
+(define-syntax rest (syntax-rules ()
+  [(_ foo bar . rest)
+    rest]))
+(assert-equal 10 (rest 4 5 + 3 7))
+(let-syntax ([foo (syntax-rules ()
+                    [(_ expr ...)
+                      (list expr ...)])])
+  (assert-equal '(1 2 3) (foo 1 2 3))
+  (assert-raise SyntaxError (foo 1 2 3 . 4)))
+
+
 ; Test input execution - example from R5RS
 
 (define-syntax my-or

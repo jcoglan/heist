@@ -9,13 +9,15 @@ module Heist
       
       class << self
         def pattern_vars(pattern, excluded = [], results = [])
+          return results if Cons::NULL == pattern
           case pattern
             when Identifier then
               name = pattern.to_s
               return if excluded.include?(name) or RESERVED.include?(name)
               results << name unless results.include?(name)
             when Cons then
-              pattern.each { |cell| pattern_vars(cell, excluded, results) }
+              tail = pattern.each { |cell| pattern_vars(cell, excluded, results) }
+              pattern_vars(tail.cdr, excluded, results)
           end
           results
         end
@@ -77,16 +79,17 @@ module Heist
         case pattern
         
           when Cons then
+            return (pattern == input ? matches : nil) if pattern.null?
             return nil unless Cons === input
             pattern_pair, input_pair = pattern, input
             
             skip = lambda { pattern_pair = pattern_pair.cdr }
             
-            while not pattern_pair.null?
+            while Cons === pattern_pair and not pattern_pair.null?
               token = pattern_pair.car
               skip[] and next if token == ELLIPSIS
               
-              followed_by_ellipsis = (pattern_pair.cdr.car == ELLIPSIS)
+              followed_by_ellipsis = (pattern_pair.cdr.car == ELLIPSIS rescue false)
               dx = followed_by_ellipsis ? 1 : 0
               
               matches.descend!(Macro.pattern_vars(token, @formals),
@@ -100,12 +103,14 @@ module Heist
                 skip[] and next
               end
               
-              input_pair = input_pair.cdr while not input_pair.null? and
-                                                followed_by_ellipsis and
+              input_pair = input_pair.cdr while followed_by_ellipsis and
+                                                Cons === input_pair and
+                                                not input_pair.null? and
                                                 consume[]
               skip[]
             end
-            return nil unless input_pair.null?
+            
+            return nil unless rule_matches(scope, pattern_pair, input_pair, matches, depth)
         
           when Identifier then
             if @formals.include?(pattern.to_s)
