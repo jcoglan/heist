@@ -61,7 +61,9 @@ end
 # (quote) treats its argument as a literal. Returns the given
 # portion of the parse tree as a list
 syntax('quote') do |scope, cells|
-  cells.car
+  node = cells.car
+  node.freeze! if node.respond_to?(:freeze!)
+  node
 end
 
 # (quasiquote) is similar to (quote), except that when it

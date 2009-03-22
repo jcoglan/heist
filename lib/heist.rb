@@ -36,6 +36,7 @@ module Heist
   class MacroError            < SyntaxError; end
   class MacroTemplateMismatch < MacroError; end
   class TypeError             < RuntimeError; end
+  class ImmutableError        < TypeError; end
   
   class << self
     def parse(source)

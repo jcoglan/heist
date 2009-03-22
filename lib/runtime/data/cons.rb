@@ -21,7 +21,7 @@ module Heist
       class Splice
         attr_reader :cons
         def initialize(value)
-          @cons = value
+          @cons = value.clone
         end
       end
       
@@ -61,11 +61,19 @@ module Heist
       end
       
       def car=(car)
+        raise ImmutableError.new("Cannot modify constant value") if frozen?
         @car = car.nil? ? NULL : car
       end
       
       def cdr=(cdr)
+        raise ImmutableError.new("Cannot modify constant value") if frozen?
         @cdr = cdr.nil? ? NULL : cdr
+      end
+      
+      def freeze!
+        return if null?
+        [@car, @cdr].each { |slot| slot.freeze! if slot.respond_to?(:freeze!) }
+        freeze
       end
       
       def hosts(value)

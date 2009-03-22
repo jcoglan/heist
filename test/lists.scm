@@ -40,6 +40,11 @@
 (assert (equal? '(27 64) my-pair))
 (assert-equal 2 (length my-pair))
 
+(define (f) (list 'not-a-constant-list))
+(define (g) '(constant-list))
+(assert-equal 3 (set-car! (f) 3))
+(assert-raise ImmutableError (set-car! (g) 3))
+
 (assert-raise SyntaxError ())
 (assert-raise SyntaxError (1 2 3))
 
