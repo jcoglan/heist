@@ -291,15 +291,9 @@ define('expt') do |op1, op2|
   op1 ** op2
 end
 
-# Generators for complex numbers
-
+# Returns a new complex number with the given real and
+# imaginary parts
 define('make-rectangular') do |real, imag|
-  Complex.new(real, imag)
-end
-
-define('make-polar') do |magnitude, angle|
-  real = magnitude * Math.cos(angle)
-  imag = magnitude * Math.sin(angle)
   Complex.new(real, imag)
 end
 

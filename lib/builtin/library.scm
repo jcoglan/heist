@@ -116,6 +116,14 @@
 
 (define ceiling ceil)
 
+; (make-polar magnitude angle)
+; Returns a new complex number with the given
+; magnitude and angle
+(define (make-polar magnitude angle)
+  (let ([re (* magnitude (cos angle))]
+        [im (* magnitude (sin angle))])
+    (make-rectangular re im)))
+
 ; (magnitude z)
 ; Returns the magnitude of a complex number
 (define (magnitude z)

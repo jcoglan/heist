@@ -37,3 +37,5 @@
 (assert (rational? (/ 4 3)))
 (assert (rational? (/ 4)))
 
+(assert-equal 1 (make-polar 1 0))
+
