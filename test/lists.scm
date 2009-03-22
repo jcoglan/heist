@@ -60,3 +60,19 @@
 (assert-equal '(4 3 2 1) (reverse '(1 2 3 4)))
 (assert-equal '(4 (3 5) 2 1) (reverse '(1 2 (3 5) 4)))
 
+(assert-equal '(3 4) (list-tail '(1 2 3 4) 2))
+
+(assert-equal '(a b c) (memq 'a '(a b c)))
+(assert-equal '(b c) (memq 'b '(a b c)))
+(assert-equal #f (memq 'a '(b c d)))
+(assert-equal #f       (memq   (list 'a) '(b (a) c)))
+(assert-equal '((a) c) (member (list 'a) '(b (a) c)))
+
+(define e '((a 1) (b 2) (c 3)))
+(assert-equal '(a 1) (assq 'a e))
+(assert-equal '(b 2) (assq 'b e))
+(assert-equal #f (assq 'd e))
+(assert-equal #f (assq (list 'a) '(((a)) ((b)) ((c)))))
+(assert-equal '((a)) (assoc (list 'a) '(((a)) ((b)) ((c)))))
+(assert-equal '(5 7) (assv 5 '((2 3) (5 7) (11 13))))
+
