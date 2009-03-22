@@ -257,6 +257,16 @@ define('modulo') do |op1, op2|
   op1.to_i % op2.to_i
 end
 
+# Returns the numerator of a number
+define('numerator') do |value|
+  Rational === value ? value.numerator : value
+end
+
+# Returns the denominator of a number
+define('denominator') do |value|
+  Rational === value ? value.denominator : 1
+end
+
 %w[floor ceil truncate round].each do |symbol|
   define(symbol) do |number|
     number.__send__(symbol)
@@ -277,6 +287,28 @@ end
 # power of the second
 define('expt') do |op1, op2|
   op1 ** op2
+end
+
+# Generators for complex numbers
+
+define('make-rectangular') do |real, imag|
+  Complex.new(real, imag)
+end
+
+define('make-polar') do |magnitude, angle|
+  real = magnitude * Math.cos(angle)
+  imag = magnitude * Math.sin(angle)
+  Complex.new(real, imag)
+end
+
+# Accessors for complex numbers
+
+define('real-part') do |value|
+  Complex === value ? value.real : value
+end
+
+define('imag-part') do |value|
+  Complex === value ? value.imag : 0
 end
 
 # Returns a random number in the range 0...max

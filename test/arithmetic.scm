@@ -10,7 +10,7 @@
 (assert-equal 8     (expt 2 3))
 (assert-equal 2     (expt 4 1/2))
 
-(define (sqrt x)
+(define (test-sqrt x)
   (define (square x)
     (* x x))
   (define (average x y)
@@ -25,7 +25,7 @@
         (sqrt-iter (improve guess))))
   (sqrt-iter 1.0))
 
-(assert (< (abs (- (sqrt 9) 3)) 0.0001))
+(assert (< (abs (- (test-sqrt 9) 3)) 0.0001))
 
 ; http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_idx_288
 (assert-equal 1 (modulo 13 4))
@@ -42,6 +42,10 @@
 (assert-equal 288 (lcm 32 -36))
 (assert-equal 288.0 (lcm 32.0 -36)) ; inexact
 
+(assert-equal 3 (numerator (/ 6 4)))
+(assert-equal 2 (denominator (/ 6 4)))
+; (assert-equal 2.0 (denominator (exact->inexact (/ 6 4))))
+
 (assert-equal -5.0 (floor -4.3))
 (assert-equal -4.0 (ceiling -4.3))
 (assert-equal -4.0 (truncate -4.3))
@@ -54,4 +58,9 @@
 
 (assert-equal 4 (round 7/2)) ; exact
 (assert-equal 7 (round 7))
+
+(assert-equal 4 (real-part 4+3i))
+(assert-equal 3 (imag-part 4+3i))
+(assert-equal 5 (magnitude 4+3i))
+(assert-equal 4 (magnitude 4))
 

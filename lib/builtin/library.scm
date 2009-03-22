@@ -112,6 +112,21 @@
 
 (define ceiling ceil)
 
+; (magnitude z)
+; Returns the magnitude of a complex number
+(define (magnitude z)
+  (let ([re (real-part z)]
+        [im (imag-part z)])
+    (sqrt (+ (* re re) (* im im)))))
+
+; (angle z)
+; Returns the angle a complex number makes with the
+; real axis when plotted in the complex plane
+(define (angle z)
+  (let ([re (real-part z)]
+        [im (imag-part z)])
+    (atan im re)))
+
 ; (factorial x)
 ; Returns factorial of x
 (define (factorial x)
