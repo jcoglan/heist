@@ -1,6 +1,3 @@
-(assert (eqv? 42 42))
-(assert (not (eqv? 42 #f)))
-(assert (not (eqv? 42 42.0)))
 (assert (= 42 42))
 (assert (= 42 42.0))
 

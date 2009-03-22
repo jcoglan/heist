@@ -30,6 +30,7 @@ Class.new(Test::Unit::TestCase) do
   %w[   booleans
         numbers
         lists
+        equivalence
         arithmetic
         define_values
         define_functions
