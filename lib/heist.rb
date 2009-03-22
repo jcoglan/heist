@@ -23,12 +23,6 @@ module Heist
   LOAD_PATH = [LIB_PATH]
   FILE_EXT  = ".scm"
   
-  QUOTE = Runtime::Identifier.new('quote')
-  ELSE  = Runtime::Identifier.new('else')
-  PIPE  = Runtime::Identifier.new('=>')
-  UNQ   = Runtime::Identifier.new('unquote')
-  UNQS  = Runtime::Identifier.new('unquote-splicing')
-  
   class HeistError            < StandardError; end
   class RuntimeError          < HeistError; end
   class UndefinedVariable     < RuntimeError; end

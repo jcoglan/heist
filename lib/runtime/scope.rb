@@ -113,11 +113,6 @@ module Heist
         name.to_s.downcase
       end
       
-      def keyword?(scope, expression, name)
-        expression == name && innermost_binding(name) ==
-                              scope.innermost_binding(expression)
-      end
-      
       def load_path
         paths, file = [], current_file
         paths << File.dirname(file) if file
