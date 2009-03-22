@@ -130,6 +130,9 @@ To start an REPL session:
 Both these commands accept a number of runtime configuration options;
 run <tt>heist -h</tt> for more information.
 
+
+=== Embed in your Ruby app
+
 To embed Heist in a Ruby application, you need to create an instance of
 the runtime:
 
@@ -160,6 +163,9 @@ To run a Scheme file using the runtime, just call:
 
   scheme.run("path/to/file.scm")
 
+
+=== Create Scheme functions using Ruby
+
 Every runtime gets its own copy of all the built-in functions. You can add
 your own functions written in Ruby and Heist will make them available as
 Scheme procedures. For example, for running tests I do this in my +setup+
@@ -173,6 +179,29 @@ method:
 This lets me write, for example, <tt>(assert-equal 7 (+ 3 4))</tt> in my
 tests. You can place arbitrary Ruby code in your functions, so this is
 an easy way to expose Ruby functionality to the Scheme environment.
+
+
+=== Run Ruby data as Scheme code
+
+Heist can interpret Scheme code provided as Ruby data, allowing you
+to write and manipulate Lisp-style expressions inline with Ruby code.
+For example, using our <tt>Heist::Runtime</tt> instance from above:
+
+  scheme.exec [:define, [:square, :x], [:*, :x, :x]]
+  
+  scheme.exec [:square, 9]
+  #=> 81
+
+Arrays map directly to Scheme lists, symbols map to identifiers, strings
+and numbers are treated as literals, and any other data is interpreted
+verbatim. So, you can use any piece of Ruby data in these expressions
+as long as the functions you're calling can operate on it.
+
+Due to syntactic limitations, some Scheme syntax cannot be used in this
+interface. Quoting is out, so the expression <tt>'(1 2 3)</tt> would
+need to be written <tt>[:quote, [1, 2, 3]]</tt>. Dotted pairs and
+improper lists are also not available, though you can work around
+this to some extent using <tt>:cons</tt>.
 
 
 == Notes

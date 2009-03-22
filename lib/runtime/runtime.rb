@@ -47,6 +47,13 @@ module Heist
       stackless? ? Stackless.new : Stack.new
     end
     
+    def to_s
+      "#<runtime: #{ stackless? ? 'call/cc disabled' : 'call/cc enabled'
+               }, #{ hygienic? ? 'hygienic' : 'unhygienic'
+               }, #{ lazy? ? 'lazy' : 'eager' }>"
+    end
+    alias :inspect :to_s
+    
   end
 end
 

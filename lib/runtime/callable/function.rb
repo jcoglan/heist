@@ -57,6 +57,7 @@ module Heist
       def to_s
         "#<procedure:#{ @name }>"
       end
+      alias :inspect :to_s
     end
     
     class Syntax < Function
