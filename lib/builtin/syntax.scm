@@ -150,3 +150,23 @@
               (set! forced #t)
               memo))))]))
 
+;----------------------------------------------------------------
+
+; Quasiquotation
+
+; (quasiquote) is similar to (quote), except that when it
+; encounters an (unquote) or (unquote-splicing) expression
+; it will evaluate it and insert the result into the
+; surrounding quoted list.
+(define-syntax quasiquote (syntax-rules (unquote unquote-splicing)
+  [(quasiquote (unquote expr))
+    expr]
+  [(quasiquote ((unquote-splicing expr)))
+    expr]
+  [(quasiquote ((unquote-splicing expr) . rest))
+    (append expr (quasiquote rest))]
+  [(quasiquote (first . rest))
+    (cons (quasiquote first) (quasiquote rest))]
+  [(quasiquote expr)
+    'expr]))
+

@@ -66,20 +66,6 @@ module Heist
           op1.to_f / op2
     end
     
-    def quasiquote(arg, scope)
-      case arg
-        when Runtime::Cons
-          if Runtime::Identifier === arg.car
-            name = arg.car
-            return evaluate(arg.cdr.car, scope) if name == UNQ
-            return Runtime::Cons.splice(arg.cdr.car, scope) if name == UNQS
-          end
-          Runtime::Cons.construct(arg) { |cell| quasiquote(cell, scope) }
-        else
-          arg
-      end
-    end
-    
     %w[list? pair? improper? null?].each do |symbol|
       define_method(symbol) do |object|
         Runtime::Cons === object and object.__send__(symbol)

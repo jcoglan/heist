@@ -27,6 +27,7 @@ module Heist
       
       class << self
         def construct(enum, linking = false, &block)
+          return NULL if enum.nil?
           root, last = nil, nil
           enum.each do |value|
             value = block.call(value) if block_given?

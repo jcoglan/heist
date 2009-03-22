@@ -91,15 +91,25 @@ Class.new(Test::Unit::TestCase) do
   end
   
   def test_quotes
-    assert_equal 7, @@env.eval("(+ 3 4)")
-    assert_equal [:+, 3, 4], @@env.eval("'(+ 3 4)").to_ruby
-    assert Heist::Runtime::Cons === @@env.eval("'(+ 3 4)")
-    assert_equal 7, @@env.eval("(+ '3 4)")
-    assert_equal [:+, [:-, 7, 9], 4], @@env.eval("'(+ (- 7 9) 4)").to_ruby
-    assert_equal [7, 9, 6], @@env.eval("`(7 ,(+ 4 5) 6)").to_ruby
-    assert Heist::Runtime::Cons === @@env.eval("`(7 ,(+ 4 5) 6)")
-    assert_equal [3, 7, 6, 2, 6, 9], @@env.eval("`(3 7 6 ,@((lambda () '(2 6))) 9)").to_ruby
-    assert_equal [:quote, []], @@env.eval("''()").to_ruby
+    cons = Heist::Runtime::Cons
+    c = cons.method(:new)
+    
+    assert_equal 7,                     @@env.eval("(+ 3 4)")
+    assert_equal [:+, 3, 4],            @@env.eval("'(+ 3 4)").to_ruby
+    assert cons === @@env.eval("'(+ 3 4)")
+    assert_equal 7,                     @@env.eval("(+ '3 4)")
+    assert_equal c[1,8],                @@env.eval("'(1 . 8)")
+    assert_equal c[1,8],                @@env.eval("`(1 . 8)")
+    assert_equal [:+, [:-, 7, 9], 4],   @@env.eval("'(+ (- 7 9) 4)").to_ruby
+    assert_equal [7, 9, 6],             @@env.eval("`(7 ,(+ 4 5) 6)").to_ruby
+    assert cons === @@env.eval("`(7 ,(+ 4 5) 6)")
+    assert_equal [3, 7, 6, 2, 6, 9],    @@env.eval("`(3 7 6 ,@((lambda () '(2 6))) 9)").to_ruby
+    assert_equal [1, 2, 10],            @@env.eval("`(1 2 ,(+ 4 6))").to_ruby
+    assert_equal [3, 2, 9, 8],          @@env.eval("`(,(/ 9 3) 2 ,@(list 9 8))").to_ruby
+    assert_equal [1, 2, 4, 9, 8, 5],    @@env.eval("`(,@(list 1 2) 4 ,@(list 9 8) 5)").to_ruby
+    assert_equal c[9,c[8,c[5,7]]],      @@env.eval("`(,@(list 9 8) 5 . 7)")
+    assert_equal c[9,c[8,24]],          @@env.eval("`(,@(list 9 8) . ,(* 4 6))")
+    assert_equal [:quote, []],          @@env.eval("''()").to_ruby
   end
   
   def test_birds

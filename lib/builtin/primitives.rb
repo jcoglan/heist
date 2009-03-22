@@ -66,14 +66,6 @@ syntax('quote') do |scope, cells|
   node
 end
 
-# (quasiquote) is similar to (quote), except that when it
-# encounters an (unquote) or (unquote-splicing) expression
-# it will evaluate it and insert the result into the
-# surrounding quoted list.
-syntax('quasiquote') do |scope, cells|
-  Heist.quasiquote(cells.car, scope)
-end
-
 #----------------------------------------------------------------
 
 # Control structures
