@@ -48,7 +48,7 @@ Currently implemented R5RS features include:
 * String and symbol literals
 * Proper and improper lists and full (quasi)quoting with <tt>'</tt>,
   <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
-* Macros: <tt>sntax-rules</tt>, <tt>define-syntax</tt>,
+* Macros: <tt>syntax-rules</tt>, <tt>define-syntax</tt>,
   <tt>let-syntax</tt>, <tt>letrec-syntax</tt>. Supports keywords,
   lists, pattern variables and ellipses down to arbitrary depth
 * Continuations: <tt>call-with-current-continuation</tt>, aliased
