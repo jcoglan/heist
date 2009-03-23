@@ -342,8 +342,7 @@ end
 
 # Calls a function using a list for the arguments
 # TODO take multiple argument values instead of a single list
-syntax('apply') do |scope, cells|
-  func = cells.car.eval(scope)
-  func.apply(scope, cells.cdr)
+define('apply') do |function, list|
+  function.apply(list.to_a)
 end
 

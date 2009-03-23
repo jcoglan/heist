@@ -1,9 +1,24 @@
 module Heist
   class Runtime
     
+    # +Scope+ is primarily used to represent symbol tables, though it also
+    # has a few other scope-related responsibilities such as defining
+    # functions (functions need to remember the scope they appear in) and
+    # loading files. Scheme uses lexical scope, which we model using a simple
+    # delegation system.
+    #
+    # Every +Scope+ has a hash (<tt>@symbols</tt>) in which it stores names
+    # of variables and their associated values, and a parent scope
+    # (<tt>@parent</tt>). If a variable cannot be found in one scope, the
+    # lookup is delegated to the parent until we get to the top level, at
+    # which point an exception is raised.
+    #
     class Scope
       attr_reader :runtime
       
+      # A +Scope+ is initialized using another +Scope+ to use as the parent.
+      # The parent may also be a +Runtime+ instance, indicating that the
+      # new +Scope+ is being used as the top level of a runtime environment.
       def initialize(parent = {})
         @symbols = {}
         is_runtime = (Runtime === parent)
@@ -11,6 +26,10 @@ module Heist
         @runtime = is_runtime ? parent : parent.runtime
       end
       
+      # Returns the value corresponding to the given variable name. If the
+      # name does not exist in the receiver, the call is delegated to its
+      # parent scope. If the name cannot be found in any scope an exception
+      # is raised.
       def [](name)
         name = to_name(name)
         bound = @symbols.has_key?(name)
@@ -23,17 +42,35 @@ module Heist
         value
       end
       
+      # Binds the given +value+ to the given +name+ in the receiving +Scope+.
+      # Note this always sets the variable in the receiver; see <tt>set!</tt>
+      # for a method corresponding to Scheme's <tt>(set!)</tt> function.
       def []=(name, value)
         @symbols[to_name(name)] = value
         value.name = name if Function === value
         value
       end
       
+      # Returns +true+ iff the given name is bound as a variable in the
+      # receiving scope or in any of its ancestor scopes.
       def defined?(name)
         @symbols.has_key?(to_name(name)) or
             (Scope === @parent and @parent.defined?(name))
       end
       
+      # Returns a +Scope+ object representing the innermost scope in which
+      # the given name is bound. This is used to find out whether two or
+      # more identifiers have the same binding.
+      #
+      #   outer = Scope.new
+      #   outer['foo'] = "a value"
+      #
+      #   inner = Scope.new(outer)
+      #   inner['bar'] = "something"
+      #
+      #   inner.innermost_binding('foo') #=> outer
+      #   inner.innermost_binding('bar') #=> inner
+      #
       def innermost_binding(name)
         name = to_name(name)
         @symbols.has_key?(name) ?
@@ -43,25 +80,67 @@ module Heist
             nil
       end
       
+      # Analogous to Scheme's <tt>(set!)</tt> procedure. Assigns the given
+      # +value+ to the given variable +name+ in the innermost region in
+      # which +name+ is bound. If the +name+ does not exist in the receiving
+      # scope, the assignment is delegated to the parent. If no visible
+      # binding exists for the given +name+ an exception is raised.
       def set!(name, value)
-        name = to_name(name)
-        bound = @symbols.has_key?(name)
-        
-        raise UndefinedVariable.new(
-          "Cannot set undefined variable '#{name}'") unless bound or Scope === @parent
-        
-        return @parent.set!(name, value) unless bound
-        self[name] = value
+        scope = innermost_binding(name)
+        raise UndefinedVariable.new("Cannot set undefined variable '#{name}'") if scope.nil?
+        scope[name] = value
       end
-      
+
+      # +define+ is used to define functions using either Scheme or Ruby
+      # code. Takes either a name and a Ruby block to represent the function,
+      # or a name, a list of formal arguments and a list of body expressions.
+      # The <tt>(define)</tt> primitive exposes this method to the Scheme
+      # environment. This method allows easy extension using Ruby, for
+      # example:
+      #
+      #   scope.define('+') |*args|
+      #     args.inject { |a,b| a + b }
+      #   end
+      #
+      # See +Function+ for more information.
+      #
       def define(name, *args, &block)
         self[name] = Function.new(self, *args, &block)
       end
       
-      def syntax(name, holes = [], &block)
-        self[name] = Syntax.new(self, holes,&block)
+      # +syntax+ is similar to +define+, but is used for defining syntactic
+      # forms. Heist's parser has no predefined syntax apart from generic
+      # Lisp paren syntax and Scheme data literals. All special forms are
+      # defined as special functions and stored in the symbol table, making
+      # them first-class objects that can be easily aliased and overridden.
+      #
+      # This method takes a name and a Ruby block. The block will be called
+      # with the calling +Scope+ object and a +Cons+ containing the section
+      # of the parse tree representing the parameters the form has been called
+      # with.
+      #
+      # It is not recommended that you write your own syntax using Ruby
+      # since it requires too much knowledge of the plumbing for features
+      # like tail calls and continuations. If you define new syntax using
+      # Scheme macros you get correct behaviour of these features for free.
+      #
+      # See +Syntax+ for more information.
+      #
+      def syntax(name, &block)
+        self[name] = Syntax.new(self, &block)
       end
+
+      # Parses and executes the given string of source code in the receiving
+      # +Scope+. Accepts strings of Scheme source and arrays of Ruby data to
+      # be interpreted as Scheme lists.
+      def eval(source)
+        source = Heist.parse(source)
+        source.eval(self)
+      end
+      alias :exec :eval
       
+      # Returns all the variable names visible in the receiving +Scope+ that
+      # match the given regex +pattern+. Used by the REPL for tab completion.
       def grep(pattern)
         base = (Scope === @parent) ? @parent.grep(pattern) : []
         @symbols.each do |key, value|
@@ -70,16 +149,10 @@ module Heist
         base.uniq
       end
       
-      # TODO: this isn't great, figure out a way for functions
-      # to transparently handle inter-primitive calls so Ruby can
-      # call Scheme code as well as other Ruby code
-      def call(name, *params)
-        self[name].body.call(*params)
-      end
-      
-      # Note that local vars in this method can cause block vars
-      # to become delocalized when running Ruby files under 1.8,
-      # so make sure we use 'obscure' names here.
+      # Runs the given Scheme or Ruby definition file in the receiving
+      # +Scope+. Note that local vars in this method can cause block vars
+      # to become delocalized when running Ruby files under 1.8, so make
+      # sure we use 'obscure' names here.
       def run(_path)
         return instance_eval(File.read(_path)) if File.extname(_path) == '.rb'
         _path   = _path + FILE_EXT unless File.file?(_path)
@@ -88,12 +161,11 @@ module Heist
         _source.eval(_scope)
       end
       
-      def eval(source)
-        source = Heist.parse(source)
-        source.eval(self)
-      end
-      alias :exec :eval
-      
+      # Loads the given Scheme file and executes it in the global scope.
+      # Paths are treated as relative to the current file. If no local file
+      # is found, the path is assumed to refer to a module from the Heist
+      # standard library. The <tt>(load)</tt> primitive is a wrapper
+      # around this method.
       def load(path)
         dir = load_path.find do |dir|
           File.file?("#{dir}/#{path}") or File.file?("#{dir}/#{path}#{FILE_EXT}")
@@ -103,16 +175,34 @@ module Heist
         true
       end
       
+      # Returns the path of the current file. The receiving scope must have
+      # a +FileScope+ as an ancestor, otherwise this method will return +nil+.
       def current_file
         @path || @parent.current_file rescue nil
       end
       
     private
       
+      # Calls the named primitive function with the given arguments, and
+      # returns the result of the call.
+      #
+      # TODO: this is currently hampered by the fact that Functions expect to
+      # be called with a +Scope+, but Ruby primitives are not given the
+      # current +scope+. Figure out something better.
+      def call(name, *params)
+        self[name].body.call(*params)
+      end
+
+      # Converts any Ruby object to a name string. All names are downcased
+      # as this Scheme is case-insensitive.
       def to_name(name)
         name.to_s.downcase
       end
       
+      # Returns the current set of directories in which to look for Scheme
+      # files to load. Includes the standard library path by default, and
+      # the directory of the current file if the receiving +Scope+ has a
+      # +FileScope+ as an ancestor.
       def load_path
         paths, file = [], current_file
         paths << File.dirname(file) if file
@@ -120,6 +210,11 @@ module Heist
       end
     end
     
+    # A +FileScope+ is a special kind of +Scope+ used to represent the region
+    # of a single file. It provides Scheme code with an awareness of its
+    # path so it can load local files. +FileScope+ instances delegate all
+    # variable assignments to their parent +Scope+ (this is typically the
+    # global scope) so that variables are visible across files.
     class FileScope < Scope
       extend Forwardable
       def_delegators(:@parent, :[]=)
