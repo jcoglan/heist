@@ -10,7 +10,7 @@ module Heist
     end
     
     def run
-      Heist.info(@runtime)
+      puts @runtime.info
       
       Readline.completion_append_character = nil
       Readline.completion_proc = lambda do |prefix|

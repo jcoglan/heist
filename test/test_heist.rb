@@ -13,7 +13,7 @@ Class.new(Test::Unit::TestCase) do
   def setup
     return @@env if @@env
     @@env = Heist::Runtime.new(Heist::BIN_SPEC.parse($args))
-    Heist.info(@@env)
+    puts @@env.info
     
     @@env.define('assert') do |value|
       assert(value)

@@ -24,7 +24,7 @@ module Heist
     #            / \\                      / \\
     #           3   ()                    3   4
     #
-    # +Cons+ objects are +Enumerable+, thought always keep in mind that a
+    # +Cons+ objects are +Enumerable+, though always keep in mind that a
     # +Cons+ does not 'contain' a whole list, it contains one value and a
     # pointer to the rest of the list. Iterating on a +Cons+ involves
     # walking this object graph.
@@ -196,10 +196,6 @@ module Heist
       # Returns +true+ iff the receiving +Cons+ is a valid pair.
       def pair?
         not null?; end
-      
-      # Returns +true+ iff the receiving +Cons+ is the head of an improper list.
-      def improper?
-        pair? and not list?; end
       
       # Returns +true+ iff the receiving +Cons+ is the empty list.
       def null?

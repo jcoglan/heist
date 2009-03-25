@@ -5,6 +5,9 @@ require 'complex'
 require 'rubygems'
 require 'treetop'
 
+# +Heist+ is the root module for all of Heist's components, and hosts a few
+# utility methods that don't belong anywhere else. See the README for an
+# overview of Heist's features.
 module Heist
   VERSION = '0.2.0'
   
@@ -33,6 +36,10 @@ module Heist
   class ImmutableError        < TypeError; end
   
   class << self
+    # Accepts either a string of Scheme code or an array of Ruby data and parses
+    # into a +Cons+ list structure. Scheme code is converted to a +Program+,
+    # while a Ruby array is converted to a single list expression. Returns +nil+
+    # if the input cannot be parsed successfully.
     def parse(source)
       @scheme ||= SchemeParser.new
       @ruby   ||= RubyParser.new
@@ -40,37 +47,31 @@ module Heist
       parser.parse(source)
     end
     
+    # Returns the result of evaluating the given +Expression+ in the given +Scope+.
+    # If the first argument is not an +Expression+ it will be returned unaltered.
     def evaluate(expression, scope)
       Runtime::Expression === expression ?
           expression.eval(scope) :
           expression
     end
     
+    # Returns a new complex number with the given +real+ and +imaginary+ parts.
     def complex(real, imaginary)
       Complex.new(real, imaginary)
     end
     
+    # Returns a new rational number with the given +numerator+ and +denominator+.
     def rational(numerator, denominator)
       Rational(numerator, denominator)
     end
     
+    # Returns the result of dividing the first argument by the second. If both
+    # arguments are integers, returns a rational rather than performing
+    # integer division as Ruby would normally do.
     def divide(op1, op2)
       [op1, op2].all? { |value| Integer === value } ?
-          Heist.rational(op1, op2) :
+          rational(op1, op2) :
           op1.to_f / op2
-    end
-    
-    %w[list? pair? improper? null?].each do |symbol|
-      define_method(symbol) do |object|
-        Runtime::Cons === object and object.__send__(symbol)
-      end
-    end
-    
-    def info(runtime)
-      puts "Heist Scheme interpreter v. #{ VERSION }"
-      puts "Evaluation mode: #{ runtime.lazy? ? 'LAZY' : 'EAGER' }"
-      puts "Continuations enabled? #{ runtime.stackless? ? 'NO' : 'YES' }"
-      puts "Macros: #{ runtime.hygienic? ? 'HYGIENIC' : 'UNHYGIENIC' }\n\n"
     end
   end
   

@@ -12,7 +12,7 @@ module Heist
   class Runtime
     
     %w[ data/expression     data/identifier   data/cons
-        callable/function   callable/macro    callable/continuation
+        callable/function   callable/syntax   callable/macro  callable/continuation
         frame               stack             stackless
         scope               binding
         
@@ -72,6 +72,14 @@ module Heist
                }, #{ lazy? ? 'lazy' : 'eager' }>"
     end
     alias :inspect :to_s
+    
+    def info
+      [ "Heist Scheme interpreter v. #{ VERSION }",
+        "Evaluation mode: #{ lazy? ? 'LAZY' : 'EAGER' }",
+        "Continuations enabled? #{ stackless? ? 'NO' : 'YES' }",
+        "Macros: #{ hygienic? ? 'HYGIENIC' : 'UNHYGIENIC' }\n\n"
+      ] * "\n"
+    end
     
   end
 end

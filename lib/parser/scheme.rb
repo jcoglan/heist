@@ -1,4 +1,4 @@
-module Heist #:nodoc:
+module Heist
   module Scheme #:nodoc:
     include Treetop::Runtime
 
