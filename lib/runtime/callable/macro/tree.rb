@@ -110,8 +110,7 @@ module Heist
         # read branch at the given +depth+. Returns zero if no branch exists at
         # the given indexes.
         def size(depth)
-          size = current(depth).size rescue 0
-          size
+          current(depth).size rescue 0
         end
         
       private

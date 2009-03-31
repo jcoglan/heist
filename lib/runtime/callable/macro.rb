@@ -161,23 +161,22 @@ module Heist
               # Set up a closure to consume input using the current
               # pattern expression. Calls +rule_matches+ with the
               # current scope, pattern, input, and +Matches+ object.
-              consume = lambda { rule_matches(scope, token, input_pair.car, matches, depth + dx) }
+              consume = lambda do
+                Cons === input_pair and not input_pair.null? and
+                rule_matches(scope, token, input_pair.car, matches, depth + dx)
+              end
               
               # If the next pattern token is not an ellipsis, fail
               # unless the pattern token matches the input token.
-              unless followed_by_ellipsis
-                return nil if input_pair.null? or not consume[]
-                input_pair = input_pair.cdr
-                skip[] and next
-              end
-              
+              #
               # If the next token is an ellipsis, consume input
               # using the current pattern until the pattern no
               # longer matches the current input
-              input_pair = input_pair.cdr while followed_by_ellipsis and
-                                                Cons === input_pair and
-                                                not input_pair.null? and
-                                                consume[]
+              #
+              return nil unless consume[] or followed_by_ellipsis
+              input_pair = input_pair.cdr
+              input_pair = input_pair.cdr while followed_by_ellipsis and consume[]
+              
               skip[]
             end
             

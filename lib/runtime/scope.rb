@@ -30,6 +30,12 @@ module Heist
       # name does not exist in the receiver, the call is delegated to its
       # parent scope. If the name cannot be found in any scope an exception
       # is raised.
+      #
+      # In lazy mode, +Binding+ objects are stored in the symbol table when
+      # functions are called; we do not evaluate the arguments to a function
+      # before calling it, but instead we force an argument's value if the
+      # function's body attempts to access it by name.
+      #
       def [](name)
         name = to_name(name)
         bound = @symbols.has_key?(name)
