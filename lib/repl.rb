@@ -27,22 +27,29 @@ module Heist
       end
       
       loop do
-        input  = Readline.readline(prompt)
-        exit if input.nil?
-        
-        push(input)
-        tree = Heist.parse(@buffer * "\n")
-        next if tree.nil?
-        
-        reset!
         begin
+          input  = Readline.readline(prompt)
+          exit if input.nil?
+          
+          push(input)
+          tree = Heist.parse(@buffer * "\n")
+          next if tree.nil?
+          
+          reset!
           result = @scope.eval(tree)
           puts "; => #{ result }\n\n" unless result.nil?
+          
         rescue Exception => ex
           return if SystemExit === ex
-          puts "; [error] #{ ex.message }\n\n"
-          puts "; backtrace: " + ex.backtrace.join("\n;            ") +
-            "\n\n" unless Heist::RuntimeError === ex
+          if Interrupt === ex
+            reset! and puts "\n\n"
+          else
+            puts "; [error] #{ ex.message }\n\n"
+          end
+          
+        # debugging
+        #  puts "; backtrace: " + ex.backtrace.join("\n;            ") +
+        #    "\n\n" unless Heist::RuntimeError === ex
         end
       end
     end
