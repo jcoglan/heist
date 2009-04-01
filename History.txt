@@ -1,3 +1,20 @@
+=== Version 0.2.0 (2009-04-01)
+
+The 'lists' release
+* Entirely revised to correctly support lists as linked pairs
+* Complete set of R5RS list functions
+* Syntax for dotted pairs and improper lists implemented
+* Rest-args for functions using dot notation
+* Almost-complete R5RS numeric library, including complexes and rationals
+* Some parser bugs regarding literals and quoting fixed
+* Many macro parsing and expansion bugs fixed, esp. concerning nested repeating patterns
+* Macro keywords and collisions with local variables now follow the spec
+* R6RS ellipsis escaping feature -- (... ...) -- implemented
+* All library syntax now implemented as macros, should all support call/cc
+* Ruby data can now be executed as Scheme code
+* Lots of inline documentation for the runtime
+
+
 === Version 0.1.0 (2009-02-25)
 
 First public release

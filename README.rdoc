@@ -33,11 +33,10 @@ languages.
 
 == Features
 
-Heist nominally targets R5RS and is still in the early stages of development
-(at time of writing it is about a month old). The priority at this stage
-is runtime support for features that cannot be directly expressed as
-Scheme functions. The library is therefore rather small but the runtime
-is more advanced than some other toy Schemes I've seen.
+Heist nominally targets R5RS (http://www.schemers.org/Documents/Standards/R5RS/HTML).
+It has good support for many Scheme runtime features such as tail call
+optimisation, macros and first-class continuations, as well as reasonably
+complete numeric and list libraries.
 
 Currently implemented R5RS features include:
 
@@ -50,7 +49,9 @@ Currently implemented R5RS features include:
   <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
 * Macros: <tt>syntax-rules</tt>, <tt>define-syntax</tt>,
   <tt>let-syntax</tt>, <tt>letrec-syntax</tt>. Supports keywords,
-  lists, pattern variables and ellipses down to arbitrary depth
+  lists, pattern variables and ellipses down to arbitrary depth, as
+  well as the R6RS ellipsis-escaping feature (<tt>(... ...)</tt>) to
+  better enable macro-writing macros
 * Continuations: <tt>call-with-current-continuation</tt>, aliased
   as <tt>call/cc</tt>
 * Proper tail recursion
@@ -85,8 +86,7 @@ Currently implemented R5RS features include:
   <tt>set-cdr!</tt>, <tt>c[ad]{1,4}r</tt>, <tt>list</tt>, <tt>length</tt>,
   <tt>append</tt>, <tt>reverse</tt>, <tt>list-tail</tt>, <tt>list-ref</tt>,
   <tt>memq</tt>, <tt>memv</tt>, <tt>member</tt>, <tt>assq</tt>, <tt>assv</tt>,
-  <tt>assoc</tt>
-* Control features: <tt>apply</tt>, <tt>map</tt>, <tt>for-each</tt>
+  <tt>assoc</tt>, <tt>apply</tt>, <tt>map</tt>, <tt>for-each</tt>
 * String library: <tt>display</tt>, <tt>newline</tt>, <tt>string->number</tt>
 * File loading: <tt>(load "foo.scm")</tt>, paths are relative to the
   current file

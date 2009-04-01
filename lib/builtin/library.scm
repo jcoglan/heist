@@ -81,14 +81,16 @@
 ; (max arg1 arg2 ...)
 ; Returns the maximum value in the list of arguments
 (define (max . values)
-  (reduce (lambda (a b) (if (>= a b) a b))
-          values))
+  (foldr (lambda (a b) (if (>= a b) a b))
+         (car values)
+         (cdr values)))
 
 ; (min arg1 arg2 ...)
 ; Returns the minimum value in the list of arguments
 (define (min . values)
-  (reduce (lambda (a b) (if (<= a b) a b))
-          values))
+  (foldr (lambda (a b) (if (<= a b) a b))
+         (car values)
+         (cdr values)))
 
 ; (abs x)
 ; Returns the absolute value of a number
@@ -256,10 +258,6 @@
 (define assv  (assoc-list-search eqv?))
 (define assoc (assoc-list-search equal?))
 
-;----------------------------------------------------------------
-
-; Control features
-
 ; (map proc list1 list2 ...)
 ; Returns a new list formed by applying proc to each member
 ; (or set of members) of the given list(s).
@@ -286,16 +284,10 @@
     (apply proc (cons (car pair)
                       (map car others)))))
 
-; (reduce proc list)
-; Returns a new object by applying the given function
-; to the memo and each member of the list. The initial
-; value of the memo is the first member of the list.
-; The return value of the function becomes the memo for
-; the next invocation.
-(define (reduce proc list)
-  (let ([result (car list)])
-    (for-each (lambda (value)
-                (set! result (proc result value)))
-              (cdr list))
-    result))
+; (foldr proc value list)
+(define (foldr proc value list)
+  (if (null? list)
+      value
+      (proc (car list)
+            (foldr proc value (cdr list)))))
 

@@ -1,9 +1,9 @@
 # Functions that create new functions
 
-# (define) binds values to names in the current scope.
-# If the first parameter is a list it creates a function,
-# otherwise it eval's the second parameter and binds it
-# to the name given by the first.
+# (define) binds values to names in the current scope. If the
+# first parameter is a list it creates a function, otherwise
+# it eval's the second parameter and binds it to the name
+# given by the first.
 syntax('define') do |scope, cells|
   name = cells.car
   Cons === name ?
@@ -11,9 +11,9 @@ syntax('define') do |scope, cells|
       scope[name] = Heist.evaluate(cells.cdr.car, scope)
 end
 
-# (lambda) returns an anonymous function whose arguments
-# are named by the first parameter and whose body is given
-# by the remaining parameters.
+# (lambda) returns an anonymous function whose arguments are
+# named by the first parameter and whose body is given by the
+# remaining parameters.
 syntax('lambda') do |scope, cells|
   Function.new(scope, cells.car, cells.cdr)
 end
@@ -48,6 +48,10 @@ end
 
 # Continuations
 
+# Creates a +Continuation+ encapsulating the current +Stack+
+# state, and returns the result of calling the second parameter
+# (which should evaluate to a +Function+) with the continuation
+# as the argument.
 syntax('call-with-current-continuation') do |scope, cells|
   continuation = Continuation.new(scope.runtime.stack)
   callback = Heist.evaluate(cells.car, scope)
@@ -86,24 +90,37 @@ end
 
 # Runtime utilities
 
+# (exit) causes the host Ruby process to quit
 define('exit') { exit }
 
+# (runtime) returns the amount of time the host +Runtime+ has
+# been alive, in microseconds. Not a standard function, but
+# used in SICP.
 syntax('runtime') do |scope, cells|
   scope.runtime.elapsed_time
 end
 
+# (eval) evaluates Scheme code and returns the result. The
+# argument can be a string or a list containing a valid
+# Scheme expression.
 syntax('eval') do |scope, cells|
   scope.eval(Heist.evaluate(cells.car, scope))
 end
 
+# (display) prints the given value to the console
 define('display') do |expression|
   print expression
 end
 
+# (load) loads a file containing Scheme code and executes its
+# contents. The path can be relative to the current file, or
+# it can be the name of a file in the Heist library.
 syntax('load') do |scope, cells|
   scope.load(cells.car)
 end
 
+# (error) raises an error with the given message. Additional
+# arguments are appended to the message.
 define('error') do |message, *args|
   raise RuntimeError.new("#{ message } :: #{ args * ', ' }")
 end
@@ -172,7 +189,7 @@ define('complex?') do |value|
 end
 
 define('real?') do |value|
-  call('rational?', value) || Float === value
+  Float === value || call('rational?', value)
 end
 
 define('rational?') do |value|
@@ -289,12 +306,13 @@ define('make-rectangular') do |real, imag|
   Complex.new(real, imag)
 end
 
-# Accessors for complex numbers
-
+# Returns the real part of a number
 define('real-part') do |value|
   Complex === value ? value.real : value
 end
 
+# Returns the imaginary part of a number, which is zero
+# unless the number is not real
 define('imag-part') do |value|
   Complex === value ? value.imag : 0
 end
@@ -304,10 +322,12 @@ define('random') do |max|
   rand(max)
 end
 
+# Casts a number to a string
 define('number->string') do |number, radix|
   number.to_s(radix || 10)
-end
 
+end
+# Casts a string to a number
 define('string->number') do |string, radix|
   radix.nil? ? string.to_f : string.to_i(radix)
 end

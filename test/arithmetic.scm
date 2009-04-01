@@ -44,7 +44,7 @@
 
 (assert-equal 3 (numerator (/ 6 4)))
 (assert-equal 2 (denominator (/ 6 4)))
-; (assert-equal 2.0 (denominator (exact->inexact (/ 6 4))))
+; (assert-equal 2.0 (denominator (exact->inexact (/ 6 4)))) TODO implement this
 
 (assert-equal -5.0 (floor -4.3))
 (assert-equal -4.0 (ceiling -4.3))
