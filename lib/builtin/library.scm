@@ -2,6 +2,17 @@
 ; in Scheme should go here. If at all possible, write
 ; builtins in Scheme rather than Ruby.
 
+; (begin) simply executes a series of expressions in the
+; current scope, which we can achieve using a function that
+; simply returns its last argument
+(define (begin . exprs)
+  (define (iter list)
+    (let ([rest (cdr list)])
+      (if (null? rest)
+          (car list)
+          (iter rest))))
+  (iter exprs))
+
 ; (newline)
 ; prints a new-line character
 (define (newline)

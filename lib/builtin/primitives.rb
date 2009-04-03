@@ -74,11 +74,6 @@ end
 
 # Control structures
 
-# (begin) simply executes a series of lists in the current scope.
-syntax('begin') do |scope, cells|
-  Body.new(cells, scope)
-end
-
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
 syntax('if') do |scope, cells|
