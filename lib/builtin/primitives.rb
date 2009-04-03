@@ -133,12 +133,6 @@ define('exact?') do |value|
                                call('rational?', value.imag))
 end
 
-# TODO raise an exception if they're not numeric
-# Returns true iff all arguments are numerically equal
-define('=') do |*args|
-  args.all? { |arg| arg == args.first }
-end
-
 # Returns true iff the arguments are monotonically decreasing
 define('>') do |*args|
   result = true
