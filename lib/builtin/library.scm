@@ -110,6 +110,37 @@
       (- x)
       x))
 
+; (quotient) and (remainder) satisfy
+; 
+; (= n1 (+ (* n2 (quotient n1 n2))
+;          (remainder n1 n2)))
+
+; (quotient x y)
+; Returns the quotient of two numbers, i.e. performs n1/n2
+; and rounds toward zero.
+(define (quotient x y)
+  (let ([result (/ x y)])
+    ((if (positive? result)
+         floor
+         ceiling)
+     result)))
+
+; (remainder x y)
+; Returns the remainder after dividing the first operand
+; by the second
+(define (remainder x y)
+  (- (round x)
+     (* (round y)
+        (quotient x y))))
+
+; (modulo x y)
+; Returns the first operand modulo the second
+(define (modulo x y)
+  (+ (remainder x y)
+     (if (negative? (* x y))
+         (round y)
+         0)))
+
 ; (gcd x y)
 ; Returns the greatest common divisor of two numbers
 ; http://en.wikipedia.org/wiki/Euclidean_algorithm

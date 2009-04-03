@@ -32,14 +32,6 @@ syntax('define-syntax') do |scope, cells|
   scope[cells.car] = Heist.evaluate(cells.cdr.car, scope)
 end
 
-syntax('let-syntax') do |*args|
-  call('let', *args)
-end
-
-syntax('letrec-syntax') do |*args|
-  call('letrec', *args)
-end
-
 syntax('syntax-rules') do |scope, cells|
   Macro.new(scope, cells.car, cells.cdr)
 end
@@ -214,8 +206,7 @@ end
 #----------------------------------------------------------------
 
 # Numerical functions
-# TODO implement exact?, inexact?, numerator, denominator, rationalize,
-#                complex functions, exact->inexact and vice versa
+# TODO implement rationalize, exact->inexact and vice versa
 
 # Returns the sum of all arguments passed
 define('+') do |*args|
@@ -238,29 +229,6 @@ end
 # reciprocal of the first if only one argument is given
 define('/') do |op1, op2|
   op2.nil? ? Heist.divide(1, op1) : Heist.divide(op1, op2)
-end
-
-# (quotient) and (remainder) satisfy
-# 
-# (= n1 (+ (* n2 (quotient n1 n2))
-#          (remainder n1 n2)))
-
-# Returns the quotient of two numbers, i.e. performs n1/n2
-# and rounds toward zero.
-define('quotient') do |op1, op2|
-  result = op1.to_i.to_f / op2.to_i
-  result > 0 ? result.floor : result.ceil
-end
-
-# Returns the remainder after dividing the first operand
-# by the second
-define('remainder') do |op1, op2|
-  op1.to_i - op2.to_i * call('quotient', op1, op2)
-end
-
-# Returns the first operand modulo the second
-define('modulo') do |op1, op2|
-  op1.to_i % op2.to_i
 end
 
 # Returns the numerator of a number
