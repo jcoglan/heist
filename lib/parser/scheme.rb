@@ -6,6 +6,9 @@ module Heist
       @root || :program
     end
 
+    module Program0 #:nodoc:
+    end
+
     def _nt_program
       start_index = index
       if node_cache[:program].has_key?(index)
@@ -14,18 +17,129 @@ module Heist
         return cached
       end
 
-      s0, i0 = [], index
+      i0, s0 = index, []
+      r2 = _nt_shebang
+      if r2
+        r1 = r2
+      else
+        r1 = SyntaxNode.new(input, index...index)
+      end
+      s0 << r1
+      if r1
+        s3, i3 = [], index
+        loop do
+          r4 = _nt_cell
+          if r4
+            s3 << r4
+          else
+            break
+          end
+        end
+        r3 = SyntaxNode.new(input, i3...index, s3)
+        s0 << r3
+      end
+      if s0.last
+        r0 = (Program).new(input, i0...index, s0)
+        r0.extend(Program0)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:program][start_index] = r0
+
+      return r0
+    end
+
+    module Shebang0 #:nodoc:
+    end
+
+    module Shebang1 #:nodoc:
+    end
+
+    def _nt_shebang
+      start_index = index
+      if node_cache[:shebang].has_key?(index)
+        cached = node_cache[:shebang][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      s1, i1 = [], index
       loop do
-        r1 = _nt_cell
-        if r1
-          s0 << r1
+        r2 = _nt_space
+        if r2
+          s1 << r2
         else
           break
         end
       end
-      r0 = Program.new(input, i0...index, s0)
+      r1 = SyntaxNode.new(input, i1...index, s1)
+      s0 << r1
+      if r1
+        if input.index("#!", index) == index
+          r3 = (SyntaxNode).new(input, index...(index + 2))
+          @index += 2
+        else
+          terminal_parse_failure("#!")
+          r3 = nil
+        end
+        s0 << r3
+        if r3
+          s4, i4 = [], index
+          loop do
+            i5, s5 = index, []
+            i6 = index
+            if input.index(Regexp.new('[\\n\\r]'), index) == index
+              r7 = (SyntaxNode).new(input, index...(index + 1))
+              @index += 1
+            else
+              r7 = nil
+            end
+            if r7
+              r6 = nil
+            else
+              self.index = i6
+              r6 = SyntaxNode.new(input, index...index)
+            end
+            s5 << r6
+            if r6
+              if index < input_length
+                r8 = (SyntaxNode).new(input, index...(index + 1))
+                @index += 1
+              else
+                terminal_parse_failure("any character")
+                r8 = nil
+              end
+              s5 << r8
+            end
+            if s5.last
+              r5 = (SyntaxNode).new(input, i5...index, s5)
+              r5.extend(Shebang0)
+            else
+              self.index = i5
+              r5 = nil
+            end
+            if r5
+              s4 << r5
+            else
+              break
+            end
+          end
+          r4 = SyntaxNode.new(input, i4...index, s4)
+          s0 << r4
+        end
+      end
+      if s0.last
+        r0 = (SyntaxNode).new(input, i0...index, s0)
+        r0.extend(Shebang1)
+      else
+        self.index = i0
+        r0 = nil
+      end
 
-      node_cache[:program][start_index] = r0
+      node_cache[:shebang][start_index] = r0
 
       return r0
     end

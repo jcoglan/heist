@@ -32,7 +32,7 @@ module Heist
       # and raw Ruby data ready for interpretation using a +Runtime+.
       def convert!
         return if @data
-        @data = Runtime::Cons.construct(elements, true) { |c| c.eval }
+        @data = Runtime::Cons.construct(elements[1].elements, true) { |c| c.eval }
       end
     end
     

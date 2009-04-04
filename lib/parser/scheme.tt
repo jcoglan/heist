@@ -1,7 +1,11 @@
 module Heist
   grammar Scheme
     rule program
-      cell* <Program>
+      shebang? cell* <Program>
+    end
+    
+    rule shebang
+      space* "#!" (![\n\r] .)*
     end
     
     rule cell
