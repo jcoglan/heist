@@ -1,14 +1,6 @@
-# Functions that create new functions
-
-# (define) binds values to names in the current scope. If the
-# first parameter is a list it creates a function, otherwise
-# it eval's the second parameter and binds it to the name
-# given by the first.
+# (define) binds values to names in the current scope.
 syntax('define') do |scope, cells|
-  name = cells.car
-  Cons === name ?
-      scope.define(name.car, name.cdr, cells.cdr) :
-      scope[name] = Heist.evaluate(cells.cdr.car, scope)
+  scope[cells.car] = Heist.evaluate(cells.cdr.car, scope)
 end
 
 # (lambda) returns an anonymous function whose arguments are
@@ -27,10 +19,6 @@ end
 #----------------------------------------------------------------
 
 # Macros
-
-syntax('define-syntax') do |scope, cells|
-  scope[cells.car] = Heist.evaluate(cells.cdr.car, scope)
-end
 
 syntax('syntax-rules') do |scope, cells|
   Macro.new(scope, cells.car, cells.cdr)

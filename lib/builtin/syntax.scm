@@ -1,3 +1,5 @@
+(define define-syntax define)
+
 ; Control structures
 
 ; (cond) goes through a list of tests, evaluating each one
@@ -169,4 +171,28 @@
     (cons (quasiquote first) (quasiquote rest))]
   [(quasiquote expr)
     'expr]))
+
+;----------------------------------------------------------------
+
+; Extras - stuff not in the spec
+
+; Convenience macro for overriding functions and macros while
+; retaining access to the original definition using an alias.
+(define-syntax override (syntax-rules (->)
+  [(override (name -> alias . args) body ...)
+    (override name -> alias (lambda args body ...))]
+  [(override name -> alias value)
+    (let ([alias name])
+      (set! name value))]))
+
+; Overload define to provide shorthand for defining functions.
+; The built-in define function binds names to values; if the
+; name given is a list, we expand it into a function definition
+; using the first member of the list as the function name and
+; the rest of the list as the arguments.
+(override define -> def (syntax-rules ()
+  [(define (name . args) body ...)
+    (def name (lambda args body ...))]
+  [(define name value)
+    (def name value)]))
 
