@@ -176,8 +176,9 @@ module Heist
               # using the current pattern until the pattern no
               # longer matches the current input
               #
-              return nil unless consume[] or followed_by_ellipsis
-              input_pair = input_pair.cdr
+              consumed = consume[]
+              return nil unless consumed or followed_by_ellipsis
+              input_pair = input_pair.cdr if consumed
               input_pair = input_pair.cdr while followed_by_ellipsis and consume[]
               
               skip[]
@@ -212,8 +213,9 @@ module Heist
                              matches, depth + dx)
               end
               
-              return nil unless consume[] or followed_by_ellipsis
-              input_index += 1
+              consumed = consume[]
+              return nil unless consumed or followed_by_ellipsis
+              input_index += 1 if consumed
               input_index += 1 while followed_by_ellipsis and consume[]
             end
             

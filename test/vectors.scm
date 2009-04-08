@@ -40,3 +40,18 @@
                             (vector-fill! v 23)
                             v))
 
+(define-syntax vector-mac (syntax-rules ()
+  ((_ #(a (b c) d ...))
+    c)
+  ((_ #(a b c))
+    a)))
+
+(assert-equal 3 (vector-mac #(3 8 7)))
+(assert-raise SyntaxError (vector-mac #(1 2)))
+(assert-raise SyntaxError (vector-mac #(1 2 3 4)))
+(assert-raise SyntaxError (vector-mac (1 2 3)))
+
+(assert-equal 5 (vector-mac #(3 (4 5))))
+(assert-equal 5 (vector-mac #(3 (4 5) 6)))
+(assert-equal 3 (vector-mac #(3 #(4 5) 6)))
+
