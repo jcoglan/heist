@@ -111,6 +111,29 @@ module Heist
               end
               result
           
+            # TODO this is very similar to how we handle lists -> refactor
+            when Vector then
+              result, repeater = Vector.new, nil
+              push = lambda { |value| result << value }
+              
+              template.each_with_index do |cell, template_index|
+                
+                followed_by_ellipsis = (template[template_index+1] == ELLIPSIS) && !ignoring_ellipses
+                dx = followed_by_ellipsis ? 1 : 0
+                
+                repeater = cell if followed_by_ellipsis
+                
+                if cell == ELLIPSIS and not ignoring_ellipses
+                  matches.expand!(repeater, depth + 1) do
+                    push[expand(repeater, matches, depth + 1)]
+                  end
+                else
+                  push[expand(cell, matches, depth + dx,
+                              ignoring_ellipses)] unless followed_by_ellipsis
+                end
+              end
+              result
+          
             when Identifier then
               # If the template is a pattern variable, return the current
               # match for that variable. See +Matches+ to see how repeated

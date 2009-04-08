@@ -48,6 +48,8 @@ module Heist
           when Cons then
             tail = pattern.each { |cell| pattern_vars(cell, excluded, results) }
             pattern_vars(tail.cdr, excluded, results)
+          when Vector then
+            pattern.each { |cell| pattern_vars(cell, excluded, results) }
         end
         results
       end
@@ -186,6 +188,36 @@ module Heist
             # the pattern is an improper list). Fail unless the remaining
             # input matches this object.
             return nil unless rule_matches(scope, pattern_pair, input_pair, matches, depth)
+        
+          when Vector then
+            # Fail if the pattern is a vector and the input is not
+            return nil unless Vector === input
+            
+            # Iterate over the pattern and input, consuming input cells
+            # as we go. This is very similar to how we handle lists, we
+            # should probably refactor this.
+            input_index = 0
+            pattern.each_with_index do |token, pattern_index|
+              next if token == ELLIPSIS
+              
+              followed_by_ellipsis = (pattern[pattern_index+1] == ELLIPSIS)
+              dx = followed_by_ellipsis ? 1 : 0
+              
+              matches.descend!(Macro.pattern_vars(token, @formals),
+                               depth + dx) if followed_by_ellipsis
+              
+              consume = lambda do
+                not input[input_index].nil? and
+                rule_matches(scope, token, input[input_index],
+                             matches, depth + dx)
+              end
+              
+              return nil unless consume[] or followed_by_ellipsis
+              input_index += 1
+              input_index += 1 while followed_by_ellipsis and consume[]
+            end
+            
+            return nil unless input_index == input.size
         
           # If the pattern is a formal keyword for the macro (a
           # 'literal identifier' in the terms of the spec), return
