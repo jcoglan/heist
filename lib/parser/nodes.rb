@@ -56,7 +56,7 @@ module Heist
     end
     
     # A +Vector+ is an array-like structure if integer-indexed cells
-    class Vector < Treetop::Runtime::SyntaxNode
+    module Vector
       def eval
         vector = Runtime::Vector.new(cells) { |cell| cell.eval }
         vector.freeze!

@@ -15,7 +15,7 @@
 (assert-equal #(1 4) (vector 1 4))
 (assert (not (equal? #(2 4) (vector 2 4 5))))
 
-(assert (not (equal? '(1 2) #(1 2))))
+(assert (not (equal? '(1 2) #[1 2])))
 (assert (equal? '(1 2) (vector->list #(1 2))))
 (assert (equal? (list->vector '(1 2)) #(1 2)))
 
@@ -27,7 +27,7 @@
 
 (assert-equal 8 (vector-ref '#(1 1 2 3 5 8 13 21) 5))
 
-(assert-equal 13 (vector-ref '#(1 1 2 3 5 8 13 21)
+(assert-equal 13 (vector-ref '#[1 1 2 3 5 8 13 21]
                              (round (* 2 (acos -1)))))
 
 (assert-equal #(0 ("Sue" "Sue") "Anna") (let ((vec (vector 0 '(2 2 2 2) "Anna")))

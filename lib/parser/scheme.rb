@@ -577,6 +577,17 @@ module Heist
 
     end
 
+    module Vector1 #:nodoc:
+      def hash
+        elements[0]
+      end
+
+      def ignore
+        elements[3]
+      end
+
+    end
+
     def _nt_vector
       start_index = index
       if node_cache[:vector].has_key?(index)
@@ -585,52 +596,112 @@ module Heist
         return cached
       end
 
-      i0, s0 = index, []
-      r1 = _nt_hash
-      s0 << r1
-      if r1
-        if input.index('(', index) == index
-          r2 = (SyntaxNode).new(input, index...(index + 1))
+      i0 = index
+      i1, s1 = index, []
+      r2 = _nt_hash
+      s1 << r2
+      if r2
+        if input.index("(", index) == index
+          r3 = (SyntaxNode).new(input, index...(index + 1))
           @index += 1
         else
-          terminal_parse_failure('(')
-          r2 = nil
+          terminal_parse_failure("(")
+          r3 = nil
         end
-        s0 << r2
-        if r2
-          s3, i3 = [], index
+        s1 << r3
+        if r3
+          s4, i4 = [], index
           loop do
-            r4 = _nt_cell
-            if r4
-              s3 << r4
+            r5 = _nt_cell
+            if r5
+              s4 << r5
             else
               break
             end
           end
-          r3 = SyntaxNode.new(input, i3...index, s3)
-          s0 << r3
-          if r3
-            r5 = _nt_ignore
-            s0 << r5
-            if r5
-              if input.index(')', index) == index
-                r6 = (SyntaxNode).new(input, index...(index + 1))
+          r4 = SyntaxNode.new(input, i4...index, s4)
+          s1 << r4
+          if r4
+            r6 = _nt_ignore
+            s1 << r6
+            if r6
+              if input.index(")", index) == index
+                r7 = (SyntaxNode).new(input, index...(index + 1))
                 @index += 1
               else
-                terminal_parse_failure(')')
-                r6 = nil
+                terminal_parse_failure(")")
+                r7 = nil
               end
-              s0 << r6
+              s1 << r7
             end
           end
         end
       end
-      if s0.last
-        r0 = (Vector).new(input, i0...index, s0)
-        r0.extend(Vector0)
+      if s1.last
+        r1 = (SyntaxNode).new(input, i1...index, s1)
+        r1.extend(Vector0)
       else
-        self.index = i0
-        r0 = nil
+        self.index = i1
+        r1 = nil
+      end
+      if r1
+        r0 = r1
+        r0.extend(Vector)
+      else
+        i8, s8 = index, []
+        r9 = _nt_hash
+        s8 << r9
+        if r9
+          if input.index("[", index) == index
+            r10 = (SyntaxNode).new(input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure("[")
+            r10 = nil
+          end
+          s8 << r10
+          if r10
+            s11, i11 = [], index
+            loop do
+              r12 = _nt_cell
+              if r12
+                s11 << r12
+              else
+                break
+              end
+            end
+            r11 = SyntaxNode.new(input, i11...index, s11)
+            s8 << r11
+            if r11
+              r13 = _nt_ignore
+              s8 << r13
+              if r13
+                if input.index("]", index) == index
+                  r14 = (SyntaxNode).new(input, index...(index + 1))
+                  @index += 1
+                else
+                  terminal_parse_failure("]")
+                  r14 = nil
+                end
+                s8 << r14
+              end
+            end
+          end
+        end
+        if s8.last
+          r8 = (SyntaxNode).new(input, i8...index, s8)
+          r8.extend(Vector1)
+        else
+          self.index = i8
+          r8 = nil
+        end
+        if r8
+          r0 = r8
+          r0.extend(Vector)
+        else
+          self.index = i0
+          r0 = nil
+        end
       end
 
       node_cache[:vector][start_index] = r0
