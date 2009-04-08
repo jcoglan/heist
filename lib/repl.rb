@@ -37,7 +37,7 @@ module Heist
           
           reset!
           result = @scope.eval(tree)
-          puts "; => #{ result }\n\n" unless result.nil?
+          puts "; => #{ result.inspect }\n\n" unless result.nil?
           
         rescue Exception => ex
           return if SystemExit === ex

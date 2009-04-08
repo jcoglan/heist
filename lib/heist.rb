@@ -33,6 +33,7 @@ module Heist
   class MacroError            < SyntaxError; end
   class MacroTemplateMismatch < MacroError; end
   class TypeError             < RuntimeError; end
+  class BadIndexError         < TypeError; end
   class ImmutableError        < TypeError; end
   
   class << self

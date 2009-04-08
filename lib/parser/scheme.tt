@@ -10,7 +10,7 @@ module Heist
     
     rule cell
       ignore quote cell <QuotedCell> /
-      ignore (list / atom) ignore <Cell>
+      ignore (list / vector / atom) ignore <Cell>
     end
     
     rule quote
@@ -19,6 +19,10 @@ module Heist
     
     rule dot
       "."
+    end
+    
+    rule hash
+      "#"
     end
     
     rule list
@@ -30,6 +34,10 @@ module Heist
       cell* ignore
     end
     
+    rule vector
+      hash '(' cell* ignore ')' <Vector>
+    end
+    
     rule atom
       datum / identifier
     end
@@ -39,7 +47,7 @@ module Heist
     end
     
     rule boolean
-      ("#t" / "#f") <Boolean>
+      hash [tf] <Boolean>
     end
     
     rule number
@@ -79,7 +87,7 @@ module Heist
     end
     
     rule delimiter
-      quote / paren / space
+      quote / hash / paren / space
     end
     
     rule paren
@@ -91,11 +99,11 @@ module Heist
     end
     
     rule ignore
-      space* comment?
+      space* (comment ignore)?
     end
     
     rule comment
-      ";" (![\n\r] .)* ignore
+      ";" (![\n\r] .)*
     end
   end
 end

@@ -38,6 +38,7 @@ module Heist
       def to_s
         "#<continuation>"
       end
+      alias :inspect :to_s
     end
     
   end

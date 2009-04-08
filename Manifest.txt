@@ -23,6 +23,7 @@ lib/runtime/callable/macro/expansion.rb
 lib/runtime/data/cons.rb
 lib/runtime/data/expression.rb
 lib/runtime/data/identifier.rb
+lib/runtime/data/vector.rb
 lib/runtime/binding.rb
 lib/runtime/frame.rb
 lib/runtime/runtime.rb

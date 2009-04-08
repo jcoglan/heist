@@ -55,6 +55,17 @@ module Heist
       end
     end
     
+    # A +Vector+ is an array-like structure if integer-indexed cells
+    class Vector < Treetop::Runtime::SyntaxNode
+      def eval
+        Runtime::Vector.new(cells) { |cell| cell.eval }
+      end
+      
+      def cells
+        @cells ||= elements[2].elements
+      end
+    end
+    
     # <tt>QuotedCell</tt> are generated using the quoting shorthands.
     class QuotedCell < Treetop::Runtime::SyntaxNode
       # Evaluating a +QuotedCell+ produces a +Cons+ that expresses a function
@@ -81,7 +92,7 @@ module Heist
       end
     end
     
-    module Boolean
+    class Boolean < Treetop::Runtime::SyntaxNode
       def eval
         @value ||= (text_value == "#t")
       end

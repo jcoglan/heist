@@ -207,18 +207,23 @@ module Heist
           if r8
             r7 = r8
           else
-            r9 = _nt_atom
+            r9 = _nt_vector
             if r9
               r7 = r9
             else
-              self.index = i7
-              r7 = nil
+              r10 = _nt_atom
+              if r10
+                r7 = r10
+              else
+                self.index = i7
+                r7 = nil
+              end
             end
           end
           s5 << r7
           if r7
-            r10 = _nt_ignore
-            s5 << r10
+            r11 = _nt_ignore
+            s5 << r11
           end
         end
         if s5.last
@@ -319,6 +324,27 @@ module Heist
       end
 
       node_cache[:dot][start_index] = r0
+
+      return r0
+    end
+
+    def _nt_hash
+      start_index = index
+      if node_cache[:hash].has_key?(index)
+        cached = node_cache[:hash][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      if input.index("#", index) == index
+        r0 = (SyntaxNode).new(input, index...(index + 1))
+        @index += 1
+      else
+        terminal_parse_failure("#")
+        r0 = nil
+      end
+
+      node_cache[:hash][start_index] = r0
 
       return r0
     end
@@ -540,6 +566,78 @@ module Heist
       return r0
     end
 
+    module Vector0 #:nodoc:
+      def hash
+        elements[0]
+      end
+
+      def ignore
+        elements[3]
+      end
+
+    end
+
+    def _nt_vector
+      start_index = index
+      if node_cache[:vector].has_key?(index)
+        cached = node_cache[:vector][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      r1 = _nt_hash
+      s0 << r1
+      if r1
+        if input.index('(', index) == index
+          r2 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
+        else
+          terminal_parse_failure('(')
+          r2 = nil
+        end
+        s0 << r2
+        if r2
+          s3, i3 = [], index
+          loop do
+            r4 = _nt_cell
+            if r4
+              s3 << r4
+            else
+              break
+            end
+          end
+          r3 = SyntaxNode.new(input, i3...index, s3)
+          s0 << r3
+          if r3
+            r5 = _nt_ignore
+            s0 << r5
+            if r5
+              if input.index(')', index) == index
+                r6 = (SyntaxNode).new(input, index...(index + 1))
+                @index += 1
+              else
+                terminal_parse_failure(')')
+                r6 = nil
+              end
+              s0 << r6
+            end
+          end
+        end
+      end
+      if s0.last
+        r0 = (Vector).new(input, i0...index, s0)
+        r0.extend(Vector0)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:vector][start_index] = r0
+
+      return r0
+    end
+
     def _nt_atom
       start_index = index
       if node_cache[:atom].has_key?(index)
@@ -651,6 +749,13 @@ module Heist
       return r0
     end
 
+    module Boolean0 #:nodoc:
+      def hash
+        elements[0]
+      end
+
+    end
+
     def _nt_boolean
       start_index = index
       if node_cache[:boolean].has_key?(index)
@@ -659,32 +764,24 @@ module Heist
         return cached
       end
 
-      i0 = index
-      if input.index("#t", index) == index
-        r1 = (SyntaxNode).new(input, index...(index + 2))
-        @index += 2
-      else
-        terminal_parse_failure("#t")
-        r1 = nil
-      end
+      i0, s0 = index, []
+      r1 = _nt_hash
+      s0 << r1
       if r1
-        r0 = r1
-        r0.extend(Boolean)
-      else
-        if input.index("#f", index) == index
-          r2 = (SyntaxNode).new(input, index...(index + 2))
-          @index += 2
+        if input.index(Regexp.new('[tf]'), index) == index
+          r2 = (SyntaxNode).new(input, index...(index + 1))
+          @index += 1
         else
-          terminal_parse_failure("#f")
           r2 = nil
         end
-        if r2
-          r0 = r2
-          r0.extend(Boolean)
-        else
-          self.index = i0
-          r0 = nil
-        end
+        s0 << r2
+      end
+      if s0.last
+        r0 = (Boolean).new(input, i0...index, s0)
+        r0.extend(Boolean0)
+      else
+        self.index = i0
+        r0 = nil
       end
 
       node_cache[:boolean][start_index] = r0
@@ -1306,16 +1403,21 @@ module Heist
       if r1
         r0 = r1
       else
-        r2 = _nt_paren
+        r2 = _nt_hash
         if r2
           r0 = r2
         else
-          r3 = _nt_space
+          r3 = _nt_paren
           if r3
             r0 = r3
           else
-            self.index = i0
-            r0 = nil
+            r4 = _nt_space
+            if r4
+              r0 = r4
+            else
+              self.index = i0
+              r0 = nil
+            end
           end
         end
       end
@@ -1366,6 +1468,16 @@ module Heist
     end
 
     module Ignore0 #:nodoc:
+      def comment
+        elements[0]
+      end
+
+      def ignore
+        elements[1]
+      end
+    end
+
+    module Ignore1 #:nodoc:
     end
 
     def _nt_ignore
@@ -1389,7 +1501,20 @@ module Heist
       r1 = SyntaxNode.new(input, i1...index, s1)
       s0 << r1
       if r1
-        r4 = _nt_comment
+        i4, s4 = index, []
+        r5 = _nt_comment
+        s4 << r5
+        if r5
+          r6 = _nt_ignore
+          s4 << r6
+        end
+        if s4.last
+          r4 = (SyntaxNode).new(input, i4...index, s4)
+          r4.extend(Ignore0)
+        else
+          self.index = i4
+          r4 = nil
+        end
         if r4
           r3 = r4
         else
@@ -1399,7 +1524,7 @@ module Heist
       end
       if s0.last
         r0 = (SyntaxNode).new(input, i0...index, s0)
-        r0.extend(Ignore0)
+        r0.extend(Ignore1)
       else
         self.index = i0
         r0 = nil
@@ -1414,9 +1539,6 @@ module Heist
     end
 
     module Comment1 #:nodoc:
-      def ignore
-        elements[2]
-      end
     end
 
     def _nt_comment
@@ -1479,10 +1601,6 @@ module Heist
         end
         r2 = SyntaxNode.new(input, i2...index, s2)
         s0 << r2
-        if r2
-          r7 = _nt_ignore
-          s0 << r7
-        end
       end
       if s0.last
         r0 = (SyntaxNode).new(input, i0...index, s0)

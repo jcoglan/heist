@@ -46,6 +46,7 @@ module Heist
       def to_s
         @expression.to_s
       end
+      alias :inspect :to_s
     end
     
   end

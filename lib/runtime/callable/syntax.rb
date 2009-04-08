@@ -37,6 +37,7 @@ module Heist
       def to_s
         "#<syntax:#{ @name }>"
       end
+      alias :inspect :to_s
     end
     
   end

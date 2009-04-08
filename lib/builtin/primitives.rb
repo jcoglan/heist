@@ -197,6 +197,10 @@ define('pair?') do |value|
   Cons === value and value.pair?
 end
 
+define('vector?') do |value|
+  Vector === value
+end
+
 #----------------------------------------------------------------
 
 # Numerical functions
@@ -311,6 +315,36 @@ define('set-car!') do |cons, value|
 end
 define('set-cdr!') do |cons, value|
   cons.cdr = value
+end
+
+#----------------------------------------------------------------
+
+# Vector functions
+
+# Returns a new vector of the given size, filled with the given
+# filler value (this defaults to the NULL list)
+define('make-vector') do |size, fill|
+  fill = Cons::NULL if fill.nil?
+  Vector.new(size, fill)
+end
+
+# Returns the length of the vector
+define('vector-length') do |vector|
+  vector.size
+end
+
+# Returns the kth element of a vector
+define('vector-ref') do |vector, k|
+  size = vector.size
+  raise BadIndexError.new("Cannot access index #{k} of vector of length #{size}") if k >= size
+  vector[k]
+end
+
+# Sets the kth element of a vector to object
+define('vector-set!') do |vector, k, object|
+  size = vector.size
+  raise BadIndexError.new("Cannot modify index #{k} of vector of length #{size}") if k >= size
+  vector[k] = object
 end
 
 #----------------------------------------------------------------

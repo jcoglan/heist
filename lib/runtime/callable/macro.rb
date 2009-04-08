@@ -68,6 +68,7 @@ module Heist
       def to_s
         "#<macro:#{ @name }>"
       end
+      alias :inspect :to_s
       
       # Takes a +Cons+ expression and a +Scope+ (required for determining
       # the binding of macro keywords), and returns a tuple containing an

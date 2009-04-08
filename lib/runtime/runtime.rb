@@ -11,7 +11,7 @@ module Heist
   #
   class Runtime
     
-    %w[ data/expression     data/identifier   data/cons
+    %w[ data/expression     data/identifier   data/cons       data/vector
         callable/function   callable/syntax   callable/macro  callable/continuation
         frame               stack             stackless
         scope               binding
