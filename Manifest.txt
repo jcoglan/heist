@@ -55,4 +55,5 @@ test/plt-macros.txt
 test/test_heist.rb
 test/unhygienic.scm
 test/vars.scm
+test/vectors.scm
 

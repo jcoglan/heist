@@ -7,6 +7,16 @@ module Heist
         args.first.each_with_index { |cell, i| self[i] = block.call(cell) }
       end
       
+      def freeze!
+        freeze
+        each { |slot| slot.freeze! if slot.respond_to?(:freeze!) }
+      end
+      
+      def []=(index, value)
+        raise ImmutableError.new("Cannot modify vector constant") if frozen?
+        super
+      end
+      
       def inspect
         '#(' + map { |cell| cell.inspect }.join(' ') + ')'
       end

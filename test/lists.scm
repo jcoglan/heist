@@ -1,9 +1,8 @@
-(assert (eqv? '() '()))
-(assert (not (eqv? '(5) '(5))))
-
 (assert (null? '()))
 (assert (list? '()))
 (assert (not (pair? '())))
+
+(assert (not (vector? '(1 2 3))))
 
 (define foo-list (list (+ 3 2) (* 4 5) 6))
 (assert (not (eqv? '(5 20 6) foo-list)))

@@ -107,14 +107,14 @@ module Heist
       # Sets the +car+ of the receiving +Cons+, unless it is frozen. If the
       # given value is +nil+, +NULL+ is used instead.
       def car=(car)
-        raise ImmutableError.new("Cannot modify constant value") if frozen?
+        raise ImmutableError.new("Cannot modify list constant") if frozen?
         @car = car.nil? ? NULL : car
       end
       
       # Sets the +cdr+ of the receiving +Cons+, unless it is frozen. If the
       # given value is +nil+, +NULL+ is used instead.
       def cdr=(cdr)
-        raise ImmutableError.new("Cannot modify constant value") if frozen?
+        raise ImmutableError.new("Cannot modify list constant") if frozen?
         @cdr = cdr.nil? ? NULL : cdr
       end
       

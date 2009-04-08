@@ -14,6 +14,9 @@
 (assert (not (eqv? '(1 2) '(1 2))))
 (assert (not (eqv? '() '(1 2))))
 
+(assert (not (eqv? #() #())))
+(assert (not (eqv? #(4) #(4))))
+
 (assert (eqv? ceil ceiling))
 
 
