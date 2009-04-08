@@ -58,9 +58,7 @@ module Heist
     # A +Vector+ is an array-like structure if integer-indexed cells
     module Vector
       def eval
-        vector = Runtime::Vector.new(cells) { |cell| cell.eval }
-        vector.freeze!
-        vector
+        Runtime::Vector.new(cells) { |cell| cell.eval }
       end
       
       def cells

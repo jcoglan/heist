@@ -163,10 +163,14 @@
     expr]
   [(quasiquote ((unquote-splicing expr)))
     expr]
-  [(quasiquote ((unquote-splicing expr) . rest))
-    (append expr (quasiquote rest))]
+  [(quasiquote ((unquote-splicing first) . rest))
+    (append first (quasiquote rest))]
   [(quasiquote (first . rest))
     (cons (quasiquote first) (quasiquote rest))]
+  [(quasiquote #((unquote-splicing first) rest ...))
+    (list->vector (quasiquote ((unquote-splicing first) rest ...)))]
+  [(quasiquote #(expr ...))
+    (list->vector (quasiquote (expr ...)))]
   [(quasiquote expr)
     'expr]))
 

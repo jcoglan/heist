@@ -35,6 +35,9 @@
                                           vec))
 
 (assert-raise ImmutableError (vector-set! '#(0 1 2) 1 "doe"))
+(assert-equal #(0 "doe" 2) (let ([v #(0 1 2)])
+                             (vector-set! v 1 "doe")
+                             v))
 
 (assert-equal #(23 23 23) (let ([v (vector 1 2 3)])
                             (vector-fill! v 23)
@@ -54,4 +57,13 @@
 (assert-equal 5 (vector-mac #(3 (4 5))))
 (assert-equal 5 (vector-mac #(3 (4 5) 6)))
 (assert-equal 3 (vector-mac #(3 #(4 5) 6)))
+
+(assert-equal #(1 2 3) '#(1 2 3))
+(assert-equal #(1 2 3) `#(1 2 3))
+(assert-equal #(1 (* 7 4) 3) `#(1 (* 7 4) 3))
+(assert-equal #(1 28 3) `#(1 ,(* 7 4) 3))
+(assert-equal #(1 28 9 5) `#(1 ,(* 7 4) ,@'(9 5)))
+(assert-equal #(1 28 9 5 8) `#(1 ,(* 7 4) ,@'(9 5) 8))
+(assert-equal #(9 5 8) `#(,@'(9 5) 8))
+(assert-equal #((9 5) 8) `#(,'(9 5) 8))
 
