@@ -239,10 +239,10 @@
 ; The final argument is not copied and the return value of
 ; (append) shares structure with it.
 (define (append first . rest)
-  (if (null? first)
-      (apply append rest)
-      (if (null? rest)
-          first
+  (if (null? rest)
+      first
+      (if (null? first)
+          (apply append rest)
           (let ([copy (apply list first)])
             (do ([pair copy (cdr pair)])
                 ((null? (cdr pair))
