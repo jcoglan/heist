@@ -140,7 +140,7 @@ module Heist
           return id unless @calling_scope.defined?(id)
           i = 1
           i += 1 while @calling_scope.defined?("#{id}#{i}")
-          Identifier.new("#{id}#{i}")
+          Identifier.new("#{id}#{i}", id)
         end
       end
       
