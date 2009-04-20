@@ -66,6 +66,12 @@ end
 
 # Control structures
 
+# (begin) simply executes a series of expressions in the
+# current scope and returns the value of the last one
+syntax('begin') do |scope, cells|
+  Body.new(cells, scope)
+end
+
 # (if) evaluates the consequent if the condition eval's to
 # true, otherwise it evaluates the alternative
 syntax('if') do |scope, cells|
