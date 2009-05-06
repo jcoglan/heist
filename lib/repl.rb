@@ -6,6 +6,10 @@ module Heist
     def initialize(options = {})
       @runtime = Runtime.new(options)
       @scope = Runtime::FileScope.new(@runtime.top_level, File.expand_path('.'))
+      @results = []
+      
+      @runtime.define('~') { |x| @results[-x] }
+      
       reset!
     end
     
@@ -37,7 +41,11 @@ module Heist
           
           reset!
           result = @scope.eval(tree)
-          puts "; => #{ result.inspect }\n\n" unless result.nil?
+          unless result.nil?
+            puts "; => #{ result.inspect }\n\n"
+            @results << result
+            @scope['^'] = result
+          end
           
         rescue Exception => ex
           return if SystemExit === ex
