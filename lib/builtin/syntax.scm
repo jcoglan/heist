@@ -159,18 +159,11 @@
 ; it will evaluate it and insert the result into the
 ; surrounding quoted list.
 (define-syntax quasiquote (syntax-rules (unquote unquote-splicing)
-  [(quasiquote (unquote expr))
-    expr]
-  [(quasiquote ((unquote-splicing expr)))
-    expr]
-  [(quasiquote ((unquote-splicing first) . rest))
-    (append first (quasiquote rest))]
-  [(quasiquote (first . rest))
-    (cons (quasiquote first) (quasiquote rest))]
-  [(quasiquote #((unquote-splicing first) rest ...))
-    (list->vector (quasiquote ((unquote-splicing first) rest ...)))]
-  [(quasiquote #(expr ...))
-    (list->vector (quasiquote (expr ...)))]
-  [(quasiquote expr)
-    'expr]))
+  [`,expr                 expr                                ]
+  [`(,@expr)              expr                                ]
+  [`(,@first . rest)      (append first `rest)                ]
+  [`(first . rest)        (cons `first `rest)                 ]
+  [`#(,@first rest ...)   (list->vector `(,@first rest ...))  ]
+  [`#(expr ...)           (list->vector `(expr ...))          ]
+  [`expr                  'expr                               ]))
 
