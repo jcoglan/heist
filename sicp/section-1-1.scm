@@ -19,9 +19,9 @@
         ((and (< y x) (< y z)) (+ (* x x) (* z z)))
         (else                  (+ (* x x) (* y y)))))
 
-(output "(sum-squares-largest-two 2 9 5)")
-(output "(sum-squares-largest-two 4 3 1)")
-(output "(sum-squares-largest-two 7 3 4)")
+(output '(sum-squares-largest-two 2 9 5))
+(output '(sum-squares-largest-two 4 3 1))
+(output '(sum-squares-largest-two 7 3 4))
 
 
 (exercise "1.5")
@@ -69,7 +69,7 @@
 (define (sqrt x)
   (sqrt-iter 0.1 1.0 x))
 
-(output "(sqrt 40000)")
+(output '(sqrt 40000))
 
 
 (exercise "1.8")
@@ -86,6 +86,6 @@
 (define (cube-root x)
   (cube-root-iter 0.1 1.0 x))
 
-(output "(cube-root 27)")
-(output "(cube-root 64)")
+(output '(cube-root 27))
+(output '(cube-root 64))
 

@@ -64,7 +64,7 @@
 ; (A 0 (A 0 256))
 ; (A 0 512)
 ; 1024
-(output "(A 1 10)")
+(output '(A 1 10))
 
 ; (A 2 4)
 ; (A 1 (A 2 3))
@@ -81,7 +81,7 @@
 ; (A 1 16)
 ; (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 (A 0 2)))))))))))))))
 ; 65536
-(output "(A 2 4)")
+(output '(A 2 4))
 
 ; (A 3 3)
 ; (A 2 (A 3 2))
@@ -93,7 +93,7 @@
 ; (A 2 (A 0 2))
 ; (A 2 4)
 ; 65536
-(output "(A 3 3)")
+(output '(A 3 3))
 
 
 (exercise "1.11")
@@ -110,7 +110,7 @@
         (* 2 (f (- n 2)))
         (* 3 (f (- n 3))))))
 
-(output "(f 6)")
+(output '(f 6))
 
 ; Iterative solution
 (define (f n)
@@ -122,7 +122,7 @@
               (+ z (* 2 y) (* 3 x)))))
   (iter n 0 1 2))
 
-(output "(f 6)")
+(output '(f 6))
 
 
 (exercise "1.12")
@@ -134,7 +134,7 @@
       (+ (pascal (- line 1) (- n 1))
          (pascal (- line 1) n))))
 
-(output "(pascal 5 3)")
+(output '(pascal 5 3))
 
 
 (exercise "1.14")
@@ -156,8 +156,8 @@
         ((= coin-type 4) 25)
         ((= coin-type 5) 50)))
 
-; (output "(count-change 100)")
-(output "(count-change 11)")
+; (output '(count-change 100))
+(output '(count-change 11))
 
 ; Tree:
 ;   (count-change 11)
@@ -237,8 +237,8 @@
           (else (expt-iter b (- n 1) (* b a)))))
   (expt-iter b n 1))
 
-(output "(expt 5 13)")
-(output "(fast-expt 5 13)")
+(output '(expt 5 13))
+(output '(fast-expt 5 13))
 
 
 (exercise "1.17")
@@ -253,8 +253,8 @@
         ((even? y) (double (mult x (halve y))))
         (else (+ x (mult x (- y 1))))))
 
-(output "(mult 3 7)")
-(output "(mult 5 4)")
+(output '(mult 3 7))
+(output '(mult 5 4))
 
 
 (exercise "1.18")
@@ -268,8 +268,8 @@
           (else (mult-iter x (- y 1) (+ y x)))))
   (mult-iter x y 1))
 
-(output "(mult 3 7)")
-(output "(mult 5 4)")
+(output '(mult 3 7))
+(output '(mult 5 4))
 
 
 (exercise "1.19")
@@ -311,14 +311,14 @@
                         q
                         (- count 1)))))
 
-(output "(fib 1)")
-(output "(fib 2)")
-(output "(fib 3)")
-(output "(fib 4)")
-(output "(fib 5)")
-(output "(fib 6)")
-(output "(fib 7)")
-(output "(fib 8)")
+(output '(fib 1))
+(output '(fib 2))
+(output '(fib 3))
+(output '(fib 4))
+(output '(fib 5))
+(output '(fib 6))
+(output '(fib 7))
+(output '(fib 8))
 
 
 (exercise "1.20")
@@ -386,9 +386,9 @@
         ((fermat-test n) (fast-prime? n (- times 1)))
         (else false)))
 
-(output "(smallest-divisor 199)")
-(output "(smallest-divisor 1999)")
-(output "(smallest-divisor 19999)")
+(output '(smallest-divisor 199))
+(output '(smallest-divisor 1999))
+(output '(smallest-divisor 19999))
 
 
 (exercise "1.22")

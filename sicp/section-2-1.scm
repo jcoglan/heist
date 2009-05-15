@@ -113,8 +113,8 @@
 (define rect (make-rect (make-segment (make-point 3 1)
                                       (make-point 7 4))
                         9))
-(output "(perim-rect rect)")
-(output "(area-rect rect)")
+(output '(perim-rect rect))
+(output '(area-rect rect))
 
 
 (exercise "2.4")
@@ -148,8 +148,8 @@
      (log 3)))
 
 (define z-pair (z-cons 37 24))
-(output "(z-car z-pair)")
-(output "(z-cdr z-pair)")
+(output '(z-car z-pair))
+(output '(z-cdr z-pair))
 
 
 (exercise "2.6")
@@ -193,9 +193,9 @@
 ; (lambda (f) (lambda (x) (f (f (f x)))))
 ; = three
 (define three (add one two))
-(output "((three inc) 0)")
+(output '((three inc) 0))
 (define three (add one (add (add one zero) one)))
-(output "((three inc) 0)")
+(output '((three inc) 0))
 
 
 ; Functions for extended exercise
