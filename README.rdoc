@@ -1,5 +1,7 @@
 = Heist
 
+http://github.com/jcoglan/heist
+
 Heist is a Scheme interpreter written in Ruby. It provides an executable
 for running Scheme code directly, and also allows the interpreter to be
 easily embedded in, and extended using, Ruby applications. It nominally
