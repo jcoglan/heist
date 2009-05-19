@@ -21,6 +21,7 @@ module Heist
   require PARSER_PATH + 'scheme'
   require PARSER_PATH + 'nodes'
   require RUNTIME_PATH + 'runtime'
+  require ROOT_PATH + '/trie'
   require ROOT_PATH + '/repl'
   
   LOAD_PATH = [LIB_PATH]

@@ -20,7 +20,7 @@ module Heist
       # The parent may also be a +Runtime+ instance, indicating that the
       # new +Scope+ is being used as the top level of a runtime environment.
       def initialize(parent = {})
-        @symbols = {}
+        @symbols = Trie.new
         is_runtime = (Runtime === parent)
         @parent = is_runtime ? {} : parent
         @runtime = is_runtime ? parent : parent.runtime
@@ -145,14 +145,10 @@ module Heist
       end
       alias :exec :eval
       
-      # Returns all the variable names visible in the receiving +Scope+ that
-      # match the given regex +pattern+. Used by the REPL for tab completion.
-      def grep(pattern)
-        base = (Scope === @parent) ? @parent.grep(pattern) : []
-        @symbols.each do |key, value|
-          base << key if key =~ pattern
-        end
-        base.uniq
+      # Returns the longest shared prefix match for the given variable name
+      # stub, used to support autocompletion in the REPL.
+      def longest_prefix(name)
+        @symbols.longest_prefix(to_name(name))
       end
       
       # Runs the given Scheme or Ruby definition file in the receiving
