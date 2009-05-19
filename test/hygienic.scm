@@ -37,3 +37,10 @@
 (set! plus -)
 (assert-equal -1 (dyn-plus-call))
 
+(let-syntax ([ok? (syntax-rules ()
+                    [(_ expr)
+                     (cond [expr 'ok]
+                           [else 'no])])])
+  (let ([else #t])
+    (assert-equal 'no (ok? #f))))
+

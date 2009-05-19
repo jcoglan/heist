@@ -2,16 +2,6 @@
 ; in Scheme should go here. If at all possible, write
 ; builtins in Scheme rather than Ruby.
 
-; (begin) simply executes a series of expressions in the
-; current scope, which we can achieve using a function that
-; simply returns its last argument
-(define (begin . exprs)
-  (define (iter list)
-    (let ([rest (cdr list)])
-      (if (null? rest)
-          (car list)
-          (iter rest))))
-  (iter exprs))
 
 ; (newline)
 ; prints a new-line character
@@ -239,10 +229,10 @@
 ; The final argument is not copied and the return value of
 ; (append) shares structure with it.
 (define (append first . rest)
-  (if (null? first)
-      (apply append rest)
-      (if (null? rest)
-          first
+  (if (null? rest)
+      first
+      (if (null? first)
+          (apply append rest)
           (let ([copy (apply list first)])
             (do ([pair copy (cdr pair)])
                 ((null? (cdr pair))
