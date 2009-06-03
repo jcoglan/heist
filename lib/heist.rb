@@ -59,7 +59,8 @@ module Heist
     
     # Returns a new complex number with the given +real+ and +imaginary+ parts.
     def complex(real, imaginary)
-      Complex.new(real, imaginary)
+      Complex.respond_to?(:new) ? Complex.new(real, imaginary) :
+                                  Complex(real, imaginary)
     end
     
     # Returns a new rational number with the given +numerator+ and +denominator+.

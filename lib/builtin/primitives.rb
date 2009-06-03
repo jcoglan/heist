@@ -270,7 +270,7 @@ end
 # Returns a new complex number with the given real and
 # imaginary parts
 define('make-rectangular') do |real, imag|
-  Complex.new(real, imag)
+  Heist.complex(real, imag)
 end
 
 # Returns the real part of a number
