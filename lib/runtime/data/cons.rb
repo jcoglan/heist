@@ -45,6 +45,7 @@ module Heist
 
       # +NULL+ is only equal to itself.
       def NULL.==(other); equal?(other); end
+      def NULL.to_xml(indent = 0); "#{ " " * (4 * indent) }<list />"; end
       NULL.freeze
       
       cadr_combos = (1..4).map { |n|
@@ -217,7 +218,10 @@ module Heist
       # turnkey N-tier web architecture deployments, possibly also solutions.
       def to_xml(indent = 0)
         s = " " * (4 * indent)
-        "#{s}<list>\n" + map { |cell| Heist.to_xml(cell, indent + 1) } * "\n" + "\n#{s}</list>"
+        "#{s}<pair>\n" +
+        Heist.to_xml(@car, indent + 1) + "\n" +
+        Heist.to_xml(@cdr, indent + 1) + "\n" +
+        "#{s}</pair>"
       end
       
       # Returns a Scheme-style string representation of the list.
