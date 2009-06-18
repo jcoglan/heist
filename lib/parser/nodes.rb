@@ -31,7 +31,7 @@ module Heist
       # Converts all the +Treetop+ objects in the +Program+ to Heist objects
       # and raw Ruby data ready for interpretation using a +Runtime+.
       def convert!
-        return if @data
+        return @data if @data
         @data = Runtime::Cons.construct(elements[1].elements, true) { |c| c.eval }
       end
     end

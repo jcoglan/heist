@@ -76,7 +76,47 @@ module Heist
           rational(op1, op2) :
           op1.to_f / op2
     end
+    
+    # Without this, nobody's ever going to use Heist for anything serious.
+    # Consult http://github.com/tenderlove/enterprise for your Ruby XML solutions.
+    def to_xml(expr, indent = 0)
+      return expr.to_xml(indent) if expr.respond_to?(:to_xml)
+      s = " " * (4 * indent)
+      t = " " * (4 * (indent + 1))
+      case expr
+      
+      when Complex then
+        "#{s}<literal type=\"complex\">\n" +
+        "#{t}<real>\n" +
+        to_xml(expr.real, indent + 2) + "\n" +
+        "#{t}</real>\n" +
+        "#{t}<imaginary>\n" +
+        to_xml(expr.imag, indent + 2) + "\n" +
+        "#{t}</imaginary>\n" +
+        "#{s}</literal>"
+        
+      when Rational then
+        "#{s}<literal type=\"rational\">\n" +
+        "#{t}<numerator>\n" +
+        to_xml(expr.numerator, indent + 2) + "\n" +
+        "#{t}</numerator>\n" +
+        "#{t}<denominator>\n" +
+        to_xml(expr.denominator, indent + 2) + "\n" +
+        "#{t}</denominator>\n" +
+        "#{s}</literal>"
+        
+      else
+        tag = case expr
+              when Runtime::Identifier, Symbol  then  'symbol'
+              when String                       then  'string'
+              when Float                        then  'real'
+              when Integer                      then  'integer'
+              when TrueClass, FalseClass        then  'boolean'
+              end
+        "#{s}<literal type=\"#{ tag }\" value=\"#{ expr }\" />"
+      end
+    end
+    
   end
-  
 end
 
