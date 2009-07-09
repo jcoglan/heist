@@ -63,6 +63,13 @@ module Heist
             stack = @scope.runtime.stack
             stack << Frame.new(@current.car, @scope)
         
+          # If it's a Vector (it will be unquoted if it has arrived here, copy
+          # it and return it. We cannot freeze it for fear of breaking macros,
+          # and we must copy it so that vector-set! cannot modify the parse tree.
+          when Vector then
+            @complete = true
+            @expression.dup
+        
           # If the expression is an +Identifier+, just look it up.
           when Identifier then
             @complete = true

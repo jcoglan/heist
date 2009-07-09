@@ -43,6 +43,20 @@
                             (vector-fill! v 23)
                             v))
 
+(define (create-unquoted-vector)
+  #(1 2 3))
+
+(let ([a (create-unquoted-vector)])
+  (vector-set! a 1 7)
+  (assert-equal #(1 2 3) (create-unquoted-vector))
+  (assert-equal '#(1 7 3) a))
+
+(define (create-quoted-vector)
+  '#(1 2 3))
+
+(let ([a (create-quoted-vector)])
+  (assert-raise ImmutableError (vector-set! a 1 7)))
+
 (define-syntax vector-mac (syntax-rules ()
   ((_ #(a (b c) d ...))
     c)

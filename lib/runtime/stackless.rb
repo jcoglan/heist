@@ -68,6 +68,13 @@ module Heist
             expression.replace(value.expression)
             return Frame.new(value.expression, scope)
         
+          # If the expression is a Vector (unquoted if found here), duplicate
+          # it and return it. We don't want to freeze unquoted vectors as this
+          # stops macros working, but also we don't want to allow procedures
+          # such as vector-set! to modify the parse tree.
+          when Vector then
+            expression.dup
+        
           # If the expression is an identifier, look up its value in
           # the current scope
           when Identifier then
