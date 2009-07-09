@@ -1,3 +1,10 @@
+=== Version 0.2.1 (2009-05-19)
+
+* Fixed a bug in (append) where '() is the last argument
+* Implemented (begin) in Ruby rather than Scheme for performance reasons
+* Fixed a macro bug relating to binding of macro keywords
+
+
 === Version 0.2.0 (2009-04-01)
 
 The 'lists' release
