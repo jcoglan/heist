@@ -325,6 +325,20 @@ end
 
 #----------------------------------------------------------------
 
+# Symbol functions
+
+# Returns a new string by casting the given symbol to a string
+define('symbol->string') do |symbol|
+  symbol.to_s
+end
+
+# Returns the symbol whose name is the given string
+define('string->symbol') do |string|
+  Identifier.new(string)
+end
+
+#----------------------------------------------------------------
+
 # Vector functions
 
 # Returns a new vector of the given size, filled with the given

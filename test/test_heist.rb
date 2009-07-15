@@ -31,6 +31,7 @@ Class.new(Test::Unit::TestCase) do
         numbers
         lists
         vectors
+        strings
         equivalence
         arithmetic
         define_values
