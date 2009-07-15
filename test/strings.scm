@@ -23,3 +23,20 @@
 (assert (char=? #\A (char-upcase #\a)))
 (assert (char=? #\h (char-downcase #\H)))
 
+(assert (char-alphabetic? #\A))
+(assert (char-alphabetic? #\Z))
+(assert (char-alphabetic? #\a))
+(assert (char-alphabetic? #\z))
+(assert (not (char-alphabetic? #\0)))
+(assert (not (char-alphabetic? #\[)))
+
+(assert (char-numeric? #\0))
+(assert (char-numeric? #\9))
+(assert (not (char-numeric? #\k)))
+
+(assert (char-whitespace? #\ ))
+(assert (char-whitespace? #\tab))
+(assert (char-whitespace? #\newline))
+(assert (char-whitespace? #\space))
+(assert (not (char-whitespace? #\s)))
+

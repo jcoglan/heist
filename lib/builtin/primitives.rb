@@ -376,16 +376,6 @@ define('char->integer') do |char|
   char.char_code
 end
 
-# Returns an uppercase copy of the character
-define('char-upcase') do |char|
-  char.upcase
-end
-
-# Returns an lowercase copy of the character
-define('char-downcase') do |char|
-  char.downcase
-end
-
 #----------------------------------------------------------------
 
 # Vector functions
