@@ -395,6 +395,17 @@
         (integer->char (+ code 32))
         (integer->char code))))
 
+(define (char-compare-ci operator)
+  (lambda (x y)
+    (operator (char-downcase x)
+              (char-downcase y))))
+
+(define char-ci=?  (char-compare-ci char=?))
+(define char-ci<?  (char-compare-ci char<?))
+(define char-ci>?  (char-compare-ci char>?))
+(define char-ci<=? (char-compare-ci char<=?))
+(define char-ci>=? (char-compare-ci char>=?))
+
 ;----------------------------------------------------------------
 
 ; Vector functions

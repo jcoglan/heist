@@ -40,3 +40,6 @@
 (assert (char-whitespace? #\space))
 (assert (not (char-whitespace? #\s)))
 
+(assert (char-ci=? #\A #\a))
+(assert (not (char-ci=? #\A #\b)))
+
