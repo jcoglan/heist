@@ -187,6 +187,10 @@ define('integer?') do |value|
   Integer === value
 end
 
+define('char?') do |value|
+  Character === value
+end
+
 define('string?') do |value|
   String === value
 end

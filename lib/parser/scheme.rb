@@ -760,52 +760,57 @@ module Heist
         if r3
           r1 = r3
         else
-          r4 = _nt_string
+          r4 = _nt_character
           if r4
             r1 = r4
           else
-            self.index = i1
-            r1 = nil
+            r5 = _nt_string
+            if r5
+              r1 = r5
+            else
+              self.index = i1
+              r1 = nil
+            end
           end
         end
       end
       s0 << r1
       if r1
-        i5 = index
-        i6, s6 = index, []
-        i7 = index
-        r8 = _nt_delimiter
-        if r8
-          r7 = nil
+        i6 = index
+        i7, s7 = index, []
+        i8 = index
+        r9 = _nt_delimiter
+        if r9
+          r8 = nil
         else
-          self.index = i7
-          r7 = instantiate_node(SyntaxNode,input, index...index)
+          self.index = i8
+          r8 = instantiate_node(SyntaxNode,input, index...index)
         end
-        s6 << r7
-        if r7
+        s7 << r8
+        if r8
           if index < input_length
-            r9 = instantiate_node(SyntaxNode,input, index...(index + 1))
+            r10 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure("any character")
-            r9 = nil
+            r10 = nil
           end
-          s6 << r9
+          s7 << r10
         end
-        if s6.last
-          r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
-          r6.extend(Datum0)
+        if s7.last
+          r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+          r7.extend(Datum0)
+        else
+          self.index = i7
+          r7 = nil
+        end
+        if r7
+          r6 = nil
         else
           self.index = i6
-          r6 = nil
+          r6 = instantiate_node(SyntaxNode,input, index...index)
         end
-        if r6
-          r5 = nil
-        else
-          self.index = i5
-          r5 = instantiate_node(SyntaxNode,input, index...index)
-        end
-        s0 << r5
+        s0 << r6
       end
       if s0.last
         r0 = instantiate_node(Datum,input, i0...index, s0)
@@ -1185,6 +1190,64 @@ module Heist
       end
 
       node_cache[:integer][start_index] = r0
+
+      return r0
+    end
+
+    module Character0
+      def glyph
+        elements[1]
+      end
+    end
+
+    def _nt_character
+      start_index = index
+      if node_cache[:character].has_key?(index)
+        cached = node_cache[:character][index]
+        @index = cached.interval.end if cached
+        return cached
+      end
+
+      i0, s0 = index, []
+      if input.index("#\\", index) == index
+        r1 = instantiate_node(SyntaxNode,input, index...(index + 2))
+        @index += 2
+      else
+        terminal_parse_failure("#\\")
+        r1 = nil
+      end
+      s0 << r1
+      if r1
+        i2 = index
+        r3 = _nt_identifier
+        if r3
+          r2 = r3
+        else
+          if index < input_length
+            r4 = instantiate_node(SyntaxNode,input, index...(index + 1))
+            @index += 1
+          else
+            terminal_parse_failure("any character")
+            r4 = nil
+          end
+          if r4
+            r2 = r4
+          else
+            self.index = i2
+            r2 = nil
+          end
+        end
+        s0 << r2
+      end
+      if s0.last
+        r0 = instantiate_node(Character,input, i0...index, s0)
+        r0.extend(Character0)
+      else
+        self.index = i0
+        r0 = nil
+      end
+
+      node_cache[:character][start_index] = r0
 
       return r0
     end

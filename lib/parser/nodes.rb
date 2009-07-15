@@ -122,6 +122,12 @@ module Heist
       end
     end
     
+    class Character < Treetop::Runtime::SyntaxNode
+      def eval
+        Runtime::Character.new(glyph.text_value)
+      end
+    end
+    
     class String < Treetop::Runtime::SyntaxNode
       def eval
         @value ||= Kernel.eval(text_value)

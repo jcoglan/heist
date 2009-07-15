@@ -43,7 +43,7 @@ module Heist
     end
     
     rule datum
-      (boolean / number / string) !(!delimiter .) <Datum>
+      (boolean / number / character / string) !(!delimiter .) <Datum>
     end
     
     rule boolean
@@ -68,6 +68,10 @@ module Heist
     
     rule integer
       "-"? ("0" / [1-9] digit*) <Integer>
+    end
+    
+    rule character
+      "#\\" glyph:(identifier / .) <Character>
     end
     
     rule string
