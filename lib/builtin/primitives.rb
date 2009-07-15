@@ -343,6 +343,51 @@ end
 
 #----------------------------------------------------------------
 
+# Character functions
+
+# Returns true iff the two characters are equal
+define('char=?') do |op1, op2|
+  Character === op1 and op1 == op2
+end
+
+define('char<?') do |op1, op2|
+  Character === op1 and Character === op2 and op1 < op2
+end
+
+define('char>?') do |op1, op2|
+  Character === op1 and Character === op2 and op1 > op2
+end
+
+define('char<=?') do |op1, op2|
+  Character === op1 and Character === op2 and op1 <= op2
+end
+
+define('char>=?') do |op1, op2|
+  Character === op1 and Character === op2 and op1 >= op2
+end
+
+# Returns a new character from an ASCII code
+define('integer->char') do |code|
+  Character.new(code.chr)
+end
+
+# Returns the ASCII code for a character
+define('char->integer') do |char|
+  char.char_code
+end
+
+# Returns an uppercase copy of the character
+define('char-upcase') do |char|
+  char.upcase
+end
+
+# Returns an lowercase copy of the character
+define('char-downcase') do |char|
+  char.downcase
+end
+
+#----------------------------------------------------------------
+
 # Vector functions
 
 # Returns a new vector of the given size, filled with the given
