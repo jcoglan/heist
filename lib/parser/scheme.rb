@@ -1,12 +1,12 @@
 module Heist
-  module Scheme #:nodoc:
+  module Scheme
     include Treetop::Runtime
 
     def root
       @root || :program
     end
 
-    module Program0 #:nodoc:
+    module Program0
     end
 
     def _nt_program
@@ -22,7 +22,7 @@ module Heist
       if r2
         r1 = r2
       else
-        r1 = SyntaxNode.new(input, index...index)
+        r1 = instantiate_node(SyntaxNode,input, index...index)
       end
       s0 << r1
       if r1
@@ -35,11 +35,11 @@ module Heist
             break
           end
         end
-        r3 = SyntaxNode.new(input, i3...index, s3)
+        r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
         s0 << r3
       end
       if s0.last
-        r0 = (Program).new(input, i0...index, s0)
+        r0 = instantiate_node(Program,input, i0...index, s0)
         r0.extend(Program0)
       else
         self.index = i0
@@ -51,10 +51,10 @@ module Heist
       return r0
     end
 
-    module Shebang0 #:nodoc:
+    module Shebang0
     end
 
-    module Shebang1 #:nodoc:
+    module Shebang1
     end
 
     def _nt_shebang
@@ -75,11 +75,11 @@ module Heist
           break
         end
       end
-      r1 = SyntaxNode.new(input, i1...index, s1)
+      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
       s0 << r1
       if r1
         if input.index("#!", index) == index
-          r3 = (SyntaxNode).new(input, index...(index + 2))
+          r3 = instantiate_node(SyntaxNode,input, index...(index + 2))
           @index += 2
         else
           terminal_parse_failure("#!")
@@ -92,7 +92,7 @@ module Heist
             i5, s5 = index, []
             i6 = index
             if input.index(Regexp.new('[\\n\\r]'), index) == index
-              r7 = (SyntaxNode).new(input, index...(index + 1))
+              r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               r7 = nil
@@ -101,12 +101,12 @@ module Heist
               r6 = nil
             else
               self.index = i6
-              r6 = SyntaxNode.new(input, index...index)
+              r6 = instantiate_node(SyntaxNode,input, index...index)
             end
             s5 << r6
             if r6
               if index < input_length
-                r8 = (SyntaxNode).new(input, index...(index + 1))
+                r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
                 @index += 1
               else
                 terminal_parse_failure("any character")
@@ -115,7 +115,7 @@ module Heist
               s5 << r8
             end
             if s5.last
-              r5 = (SyntaxNode).new(input, i5...index, s5)
+              r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
               r5.extend(Shebang0)
             else
               self.index = i5
@@ -127,12 +127,12 @@ module Heist
               break
             end
           end
-          r4 = SyntaxNode.new(input, i4...index, s4)
+          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
           s0 << r4
         end
       end
       if s0.last
-        r0 = (SyntaxNode).new(input, i0...index, s0)
+        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
         r0.extend(Shebang1)
       else
         self.index = i0
@@ -144,7 +144,7 @@ module Heist
       return r0
     end
 
-    module Cell0 #:nodoc:
+    module Cell0
       def ignore
         elements[0]
       end
@@ -158,7 +158,7 @@ module Heist
       end
     end
 
-    module Cell1 #:nodoc:
+    module Cell1
       def ignore
         elements[0]
       end
@@ -189,7 +189,7 @@ module Heist
         end
       end
       if s1.last
-        r1 = (QuotedCell).new(input, i1...index, s1)
+        r1 = instantiate_node(QuotedCell,input, i1...index, s1)
         r1.extend(Cell0)
       else
         self.index = i1
@@ -227,7 +227,7 @@ module Heist
           end
         end
         if s5.last
-          r5 = (Cell).new(input, i5...index, s5)
+          r5 = instantiate_node(Cell,input, i5...index, s5)
           r5.extend(Cell1)
         else
           self.index = i5
@@ -256,7 +256,7 @@ module Heist
 
       i0 = index
       if input.index("'", index) == index
-        r1 = (SyntaxNode).new(input, index...(index + 1))
+        r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure("'")
@@ -266,7 +266,7 @@ module Heist
         r0 = r1
       else
         if input.index("`", index) == index
-          r2 = (SyntaxNode).new(input, index...(index + 1))
+          r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("`")
@@ -276,7 +276,7 @@ module Heist
           r0 = r2
         else
           if input.index(",@", index) == index
-            r3 = (SyntaxNode).new(input, index...(index + 2))
+            r3 = instantiate_node(SyntaxNode,input, index...(index + 2))
             @index += 2
           else
             terminal_parse_failure(",@")
@@ -286,7 +286,7 @@ module Heist
             r0 = r3
           else
             if input.index(",", index) == index
-              r4 = (SyntaxNode).new(input, index...(index + 1))
+              r4 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure(",")
@@ -316,7 +316,7 @@ module Heist
       end
 
       if input.index(".", index) == index
-        r0 = (SyntaxNode).new(input, index...(index + 1))
+        r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure(".")
@@ -337,7 +337,7 @@ module Heist
       end
 
       if input.index("#", index) == index
-        r0 = (SyntaxNode).new(input, index...(index + 1))
+        r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure("#")
@@ -349,14 +349,14 @@ module Heist
       return r0
     end
 
-    module List0 #:nodoc:
+    module List0
       def cells
         elements[1]
       end
 
     end
 
-    module List1 #:nodoc:
+    module List1
       def cells
         elements[1]
       end
@@ -374,7 +374,7 @@ module Heist
       i0 = index
       i1, s1 = index, []
       if input.index("(", index) == index
-        r2 = (SyntaxNode).new(input, index...(index + 1))
+        r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure("(")
@@ -386,7 +386,7 @@ module Heist
         s1 << r3
         if r3
           if input.index(")", index) == index
-            r4 = (SyntaxNode).new(input, index...(index + 1))
+            r4 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure(")")
@@ -396,7 +396,7 @@ module Heist
         end
       end
       if s1.last
-        r1 = (SyntaxNode).new(input, i1...index, s1)
+        r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
         r1.extend(List0)
       else
         self.index = i1
@@ -408,7 +408,7 @@ module Heist
       else
         i5, s5 = index, []
         if input.index("[", index) == index
-          r6 = (SyntaxNode).new(input, index...(index + 1))
+          r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("[")
@@ -420,7 +420,7 @@ module Heist
           s5 << r7
           if r7
             if input.index("]", index) == index
-              r8 = (SyntaxNode).new(input, index...(index + 1))
+              r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure("]")
@@ -430,7 +430,7 @@ module Heist
           end
         end
         if s5.last
-          r5 = (SyntaxNode).new(input, i5...index, s5)
+          r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
           r5.extend(List1)
         else
           self.index = i5
@@ -450,7 +450,7 @@ module Heist
       return r0
     end
 
-    module Cells0 #:nodoc:
+    module Cells0
       def dot
         elements[0]
       end
@@ -464,10 +464,10 @@ module Heist
       end
     end
 
-    module Cells1 #:nodoc:
+    module Cells1
     end
 
-    module Cells2 #:nodoc:
+    module Cells2
       def ignore
         elements[1]
       end
@@ -496,7 +496,7 @@ module Heist
         self.index = i2
         r2 = nil
       else
-        r2 = SyntaxNode.new(input, i2...index, s2)
+        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
       end
       s1 << r2
       if r2
@@ -512,7 +512,7 @@ module Heist
           end
         end
         if s4.last
-          r4 = (SyntaxNode).new(input, i4...index, s4)
+          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
           r4.extend(Cells0)
         else
           self.index = i4
@@ -521,7 +521,7 @@ module Heist
         s1 << r4
       end
       if s1.last
-        r1 = (SyntaxNode).new(input, i1...index, s1)
+        r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
         r1.extend(Cells1)
       else
         self.index = i1
@@ -540,14 +540,14 @@ module Heist
             break
           end
         end
-        r9 = SyntaxNode.new(input, i9...index, s9)
+        r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
         s8 << r9
         if r9
           r11 = _nt_ignore
           s8 << r11
         end
         if s8.last
-          r8 = (SyntaxNode).new(input, i8...index, s8)
+          r8 = instantiate_node(SyntaxNode,input, i8...index, s8)
           r8.extend(Cells2)
         else
           self.index = i8
@@ -566,7 +566,7 @@ module Heist
       return r0
     end
 
-    module Vector0 #:nodoc:
+    module Vector0
       def hash
         elements[0]
       end
@@ -577,7 +577,7 @@ module Heist
 
     end
 
-    module Vector1 #:nodoc:
+    module Vector1
       def hash
         elements[0]
       end
@@ -602,7 +602,7 @@ module Heist
       s1 << r2
       if r2
         if input.index("(", index) == index
-          r3 = (SyntaxNode).new(input, index...(index + 1))
+          r3 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("(")
@@ -619,14 +619,14 @@ module Heist
               break
             end
           end
-          r4 = SyntaxNode.new(input, i4...index, s4)
+          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
           s1 << r4
           if r4
             r6 = _nt_ignore
             s1 << r6
             if r6
               if input.index(")", index) == index
-                r7 = (SyntaxNode).new(input, index...(index + 1))
+                r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
                 @index += 1
               else
                 terminal_parse_failure(")")
@@ -638,7 +638,7 @@ module Heist
         end
       end
       if s1.last
-        r1 = (SyntaxNode).new(input, i1...index, s1)
+        r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
         r1.extend(Vector0)
       else
         self.index = i1
@@ -653,7 +653,7 @@ module Heist
         s8 << r9
         if r9
           if input.index("[", index) == index
-            r10 = (SyntaxNode).new(input, index...(index + 1))
+            r10 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure("[")
@@ -670,14 +670,14 @@ module Heist
                 break
               end
             end
-            r11 = SyntaxNode.new(input, i11...index, s11)
+            r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
             s8 << r11
             if r11
               r13 = _nt_ignore
               s8 << r13
               if r13
                 if input.index("]", index) == index
-                  r14 = (SyntaxNode).new(input, index...(index + 1))
+                  r14 = instantiate_node(SyntaxNode,input, index...(index + 1))
                   @index += 1
                 else
                   terminal_parse_failure("]")
@@ -689,7 +689,7 @@ module Heist
           end
         end
         if s8.last
-          r8 = (SyntaxNode).new(input, i8...index, s8)
+          r8 = instantiate_node(SyntaxNode,input, i8...index, s8)
           r8.extend(Vector1)
         else
           self.index = i8
@@ -736,10 +736,10 @@ module Heist
       return r0
     end
 
-    module Datum0 #:nodoc:
+    module Datum0
     end
 
-    module Datum1 #:nodoc:
+    module Datum1
     end
 
     def _nt_datum
@@ -779,12 +779,12 @@ module Heist
           r7 = nil
         else
           self.index = i7
-          r7 = SyntaxNode.new(input, index...index)
+          r7 = instantiate_node(SyntaxNode,input, index...index)
         end
         s6 << r7
         if r7
           if index < input_length
-            r9 = (SyntaxNode).new(input, index...(index + 1))
+            r9 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure("any character")
@@ -793,7 +793,7 @@ module Heist
           s6 << r9
         end
         if s6.last
-          r6 = (SyntaxNode).new(input, i6...index, s6)
+          r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
           r6.extend(Datum0)
         else
           self.index = i6
@@ -803,12 +803,12 @@ module Heist
           r5 = nil
         else
           self.index = i5
-          r5 = SyntaxNode.new(input, index...index)
+          r5 = instantiate_node(SyntaxNode,input, index...index)
         end
         s0 << r5
       end
       if s0.last
-        r0 = (Datum).new(input, i0...index, s0)
+        r0 = instantiate_node(Datum,input, i0...index, s0)
         r0.extend(Datum1)
       else
         self.index = i0
@@ -820,7 +820,7 @@ module Heist
       return r0
     end
 
-    module Boolean0 #:nodoc:
+    module Boolean0
       def hash
         elements[0]
       end
@@ -840,7 +840,7 @@ module Heist
       s0 << r1
       if r1
         if input.index(Regexp.new('[tf]'), index) == index
-          r2 = (SyntaxNode).new(input, index...(index + 1))
+          r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           r2 = nil
@@ -848,7 +848,7 @@ module Heist
         s0 << r2
       end
       if s0.last
-        r0 = (Boolean).new(input, i0...index, s0)
+        r0 = instantiate_node(Boolean,input, i0...index, s0)
         r0.extend(Boolean0)
       else
         self.index = i0
@@ -897,7 +897,7 @@ module Heist
       return r0
     end
 
-    module Complex0 #:nodoc:
+    module Complex0
       def real
         elements[0]
       end
@@ -933,7 +933,7 @@ module Heist
       s0 << r1
       if r1
         if input.index("+", index) == index
-          r4 = (SyntaxNode).new(input, index...(index + 1))
+          r4 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("+")
@@ -957,7 +957,7 @@ module Heist
           s0 << r5
           if r5
             if input.index("i", index) == index
-              r8 = (SyntaxNode).new(input, index...(index + 1))
+              r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure("i")
@@ -968,7 +968,7 @@ module Heist
         end
       end
       if s0.last
-        r0 = (Complex).new(input, i0...index, s0)
+        r0 = instantiate_node(Complex,input, i0...index, s0)
         r0.extend(Complex0)
       else
         self.index = i0
@@ -980,10 +980,10 @@ module Heist
       return r0
     end
 
-    module Real0 #:nodoc:
+    module Real0
     end
 
-    module Real1 #:nodoc:
+    module Real1
       def integer
         elements[0]
       end
@@ -1004,7 +1004,7 @@ module Heist
       if r1
         i2, s2 = index, []
         if input.index(".", index) == index
-          r3 = (SyntaxNode).new(input, index...(index + 1))
+          r3 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure(".")
@@ -1025,12 +1025,12 @@ module Heist
             self.index = i4
             r4 = nil
           else
-            r4 = SyntaxNode.new(input, i4...index, s4)
+            r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
           end
           s2 << r4
         end
         if s2.last
-          r2 = (SyntaxNode).new(input, i2...index, s2)
+          r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
           r2.extend(Real0)
         else
           self.index = i2
@@ -1039,7 +1039,7 @@ module Heist
         s0 << r2
       end
       if s0.last
-        r0 = (Real).new(input, i0...index, s0)
+        r0 = instantiate_node(Real,input, i0...index, s0)
         r0.extend(Real1)
       else
         self.index = i0
@@ -1051,7 +1051,7 @@ module Heist
       return r0
     end
 
-    module Rational0 #:nodoc:
+    module Rational0
       def numerator
         elements[0]
       end
@@ -1074,7 +1074,7 @@ module Heist
       s0 << r1
       if r1
         if input.index("/", index) == index
-          r2 = (SyntaxNode).new(input, index...(index + 1))
+          r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("/")
@@ -1087,7 +1087,7 @@ module Heist
         end
       end
       if s0.last
-        r0 = (Rational).new(input, i0...index, s0)
+        r0 = instantiate_node(Rational,input, i0...index, s0)
         r0.extend(Rational0)
       else
         self.index = i0
@@ -1099,10 +1099,10 @@ module Heist
       return r0
     end
 
-    module Integer0 #:nodoc:
+    module Integer0
     end
 
-    module Integer1 #:nodoc:
+    module Integer1
     end
 
     def _nt_integer
@@ -1115,7 +1115,7 @@ module Heist
 
       i0, s0 = index, []
       if input.index("-", index) == index
-        r2 = (SyntaxNode).new(input, index...(index + 1))
+        r2 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure("-")
@@ -1124,13 +1124,13 @@ module Heist
       if r2
         r1 = r2
       else
-        r1 = SyntaxNode.new(input, index...index)
+        r1 = instantiate_node(SyntaxNode,input, index...index)
       end
       s0 << r1
       if r1
         i3 = index
         if input.index("0", index) == index
-          r4 = (SyntaxNode).new(input, index...(index + 1))
+          r4 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("0")
@@ -1141,7 +1141,7 @@ module Heist
         else
           i5, s5 = index, []
           if input.index(Regexp.new('[1-9]'), index) == index
-            r6 = (SyntaxNode).new(input, index...(index + 1))
+            r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             r6 = nil
@@ -1157,11 +1157,11 @@ module Heist
                 break
               end
             end
-            r7 = SyntaxNode.new(input, i7...index, s7)
+            r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
             s5 << r7
           end
           if s5.last
-            r5 = (SyntaxNode).new(input, i5...index, s5)
+            r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
             r5.extend(Integer0)
           else
             self.index = i5
@@ -1177,7 +1177,7 @@ module Heist
         s0 << r3
       end
       if s0.last
-        r0 = (Integer).new(input, i0...index, s0)
+        r0 = instantiate_node(Integer,input, i0...index, s0)
         r0.extend(Integer1)
       else
         self.index = i0
@@ -1189,7 +1189,7 @@ module Heist
       return r0
     end
 
-    module String0 #:nodoc:
+    module String0
     end
 
     def _nt_string
@@ -1202,7 +1202,7 @@ module Heist
 
       i0, s0 = index, []
       if input.index('"', index) == index
-        r1 = (SyntaxNode).new(input, index...(index + 1))
+        r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure('"')
@@ -1214,7 +1214,7 @@ module Heist
         loop do
           i3 = index
           if input.index('\\"', index) == index
-            r4 = (SyntaxNode).new(input, index...(index + 2))
+            r4 = instantiate_node(SyntaxNode,input, index...(index + 2))
             @index += 2
           else
             terminal_parse_failure('\\"')
@@ -1224,7 +1224,7 @@ module Heist
             r3 = r4
           else
             if input.index(Regexp.new('[^"]'), index) == index
-              r5 = (SyntaxNode).new(input, index...(index + 1))
+              r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               r5 = nil
@@ -1242,11 +1242,11 @@ module Heist
             break
           end
         end
-        r2 = SyntaxNode.new(input, i2...index, s2)
+        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
         s0 << r2
         if r2
           if input.index('"', index) == index
-            r6 = (SyntaxNode).new(input, index...(index + 1))
+            r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure('"')
@@ -1256,7 +1256,7 @@ module Heist
         end
       end
       if s0.last
-        r0 = (String).new(input, i0...index, s0)
+        r0 = instantiate_node(String,input, i0...index, s0)
         r0.extend(String0)
       else
         self.index = i0
@@ -1268,16 +1268,16 @@ module Heist
       return r0
     end
 
-    module Identifier0 #:nodoc:
+    module Identifier0
     end
 
-    module Identifier1 #:nodoc:
+    module Identifier1
     end
 
-    module Identifier2 #:nodoc:
+    module Identifier2
     end
 
-    module Identifier3 #:nodoc:
+    module Identifier3
     end
 
     def _nt_identifier
@@ -1297,12 +1297,12 @@ module Heist
         r3 = nil
       else
         self.index = i3
-        r3 = SyntaxNode.new(input, index...index)
+        r3 = instantiate_node(SyntaxNode,input, index...index)
       end
       s2 << r3
       if r3
         if index < input_length
-          r5 = (SyntaxNode).new(input, index...(index + 1))
+          r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
           @index += 1
         else
           terminal_parse_failure("any character")
@@ -1311,7 +1311,7 @@ module Heist
         s2 << r5
       end
       if s2.last
-        r2 = (SyntaxNode).new(input, i2...index, s2)
+        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
         r2.extend(Identifier0)
       else
         self.index = i2
@@ -1328,12 +1328,12 @@ module Heist
             r8 = nil
           else
             self.index = i8
-            r8 = SyntaxNode.new(input, index...index)
+            r8 = instantiate_node(SyntaxNode,input, index...index)
           end
           s7 << r8
           if r8
             if index < input_length
-              r10 = (SyntaxNode).new(input, index...(index + 1))
+              r10 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure("any character")
@@ -1342,7 +1342,7 @@ module Heist
             s7 << r10
           end
           if s7.last
-            r7 = (SyntaxNode).new(input, i7...index, s7)
+            r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
             r7.extend(Identifier1)
           else
             self.index = i7
@@ -1358,12 +1358,12 @@ module Heist
           self.index = i6
           r6 = nil
         else
-          r6 = SyntaxNode.new(input, i6...index, s6)
+          r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
         end
         s1 << r6
       end
       if s1.last
-        r1 = (SyntaxNode).new(input, i1...index, s1)
+        r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
         r1.extend(Identifier2)
       else
         self.index = i1
@@ -1380,12 +1380,12 @@ module Heist
           r12 = nil
         else
           self.index = i12
-          r12 = SyntaxNode.new(input, index...index)
+          r12 = instantiate_node(SyntaxNode,input, index...index)
         end
         s11 << r12
         if r12
           if index < input_length
-            r14 = (SyntaxNode).new(input, index...(index + 1))
+            r14 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             terminal_parse_failure("any character")
@@ -1394,7 +1394,7 @@ module Heist
           s11 << r14
         end
         if s11.last
-          r11 = (SyntaxNode).new(input, i11...index, s11)
+          r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
           r11.extend(Identifier3)
         else
           self.index = i11
@@ -1423,7 +1423,7 @@ module Heist
       end
 
       if input.index(Regexp.new('[0-9]'), index) == index
-        r0 = (SyntaxNode).new(input, index...(index + 1))
+        r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         r0 = nil
@@ -1507,7 +1507,7 @@ module Heist
       end
 
       if input.index(Regexp.new('[\\(\\)\\[\\]]'), index) == index
-        r0 = (SyntaxNode).new(input, index...(index + 1))
+        r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         r0 = nil
@@ -1527,7 +1527,7 @@ module Heist
       end
 
       if input.index(Regexp.new('[\\s\\n\\r\\t]'), index) == index
-        r0 = (SyntaxNode).new(input, index...(index + 1))
+        r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         r0 = nil
@@ -1538,7 +1538,7 @@ module Heist
       return r0
     end
 
-    module Ignore0 #:nodoc:
+    module Ignore0
       def comment
         elements[0]
       end
@@ -1548,7 +1548,7 @@ module Heist
       end
     end
 
-    module Ignore1 #:nodoc:
+    module Ignore1
     end
 
     def _nt_ignore
@@ -1569,7 +1569,7 @@ module Heist
           break
         end
       end
-      r1 = SyntaxNode.new(input, i1...index, s1)
+      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
       s0 << r1
       if r1
         i4, s4 = index, []
@@ -1580,7 +1580,7 @@ module Heist
           s4 << r6
         end
         if s4.last
-          r4 = (SyntaxNode).new(input, i4...index, s4)
+          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
           r4.extend(Ignore0)
         else
           self.index = i4
@@ -1589,12 +1589,12 @@ module Heist
         if r4
           r3 = r4
         else
-          r3 = SyntaxNode.new(input, index...index)
+          r3 = instantiate_node(SyntaxNode,input, index...index)
         end
         s0 << r3
       end
       if s0.last
-        r0 = (SyntaxNode).new(input, i0...index, s0)
+        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
         r0.extend(Ignore1)
       else
         self.index = i0
@@ -1606,10 +1606,10 @@ module Heist
       return r0
     end
 
-    module Comment0 #:nodoc:
+    module Comment0
     end
 
-    module Comment1 #:nodoc:
+    module Comment1
     end
 
     def _nt_comment
@@ -1622,7 +1622,7 @@ module Heist
 
       i0, s0 = index, []
       if input.index(";", index) == index
-        r1 = (SyntaxNode).new(input, index...(index + 1))
+        r1 = instantiate_node(SyntaxNode,input, index...(index + 1))
         @index += 1
       else
         terminal_parse_failure(";")
@@ -1635,7 +1635,7 @@ module Heist
           i3, s3 = index, []
           i4 = index
           if input.index(Regexp.new('[\\n\\r]'), index) == index
-            r5 = (SyntaxNode).new(input, index...(index + 1))
+            r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
             @index += 1
           else
             r5 = nil
@@ -1644,12 +1644,12 @@ module Heist
             r4 = nil
           else
             self.index = i4
-            r4 = SyntaxNode.new(input, index...index)
+            r4 = instantiate_node(SyntaxNode,input, index...index)
           end
           s3 << r4
           if r4
             if index < input_length
-              r6 = (SyntaxNode).new(input, index...(index + 1))
+              r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
               @index += 1
             else
               terminal_parse_failure("any character")
@@ -1658,7 +1658,7 @@ module Heist
             s3 << r6
           end
           if s3.last
-            r3 = (SyntaxNode).new(input, i3...index, s3)
+            r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
             r3.extend(Comment0)
           else
             self.index = i3
@@ -1670,11 +1670,11 @@ module Heist
             break
           end
         end
-        r2 = SyntaxNode.new(input, i2...index, s2)
+        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
         s0 << r2
       end
       if s0.last
-        r0 = (SyntaxNode).new(input, i0...index, s0)
+        r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
         r0.extend(Comment1)
       else
         self.index = i0
