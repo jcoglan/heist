@@ -408,6 +408,65 @@
 
 ;----------------------------------------------------------------
 
+; String functions
+
+; (string char ...)
+; Returns a new string formed by combining the given characters
+(define (string . chars) (list->string chars))
+
+; (substring string start end)
+; Returns a string composed of the characters from start (inclusive)
+; to end (exclusive) in string
+(define (substring string start end)
+  (let ([size (string-length string)])
+    (cond [(< start 0)   (error "start index must be positive")]
+          [(> end size)  (error "end index must be <= the length of string")]
+          [(> start end) (error "start must be <= end index")]
+          [else
+            (let* ([subsize (- end start)]
+                   [substr (make-string subsize)])
+              (do ([i 0 (+ i 1)])
+                  ((= i subsize) substr)
+                (string-set! substr i (string-ref string (+ start i)))))])))
+
+; (list->string chars)
+; Returns a new string formed by combining the list
+(define (list->string chars)
+  (let* ([size (length chars)]
+         [str (make-string size)])
+    (do ([list chars (cdr list)]
+         [i 0 (+ i 1)])
+        ((= i size) str)
+      (string-set! str i (car list)))))
+
+; (string->list string)
+; Returns a newly allocated list of the characters in the string
+(define (string->list string)
+  (let ([size (string-length string)])
+    (do ([i size (- i 1)]
+         [list '() (cons (string-ref string (- i 1)) list)])
+        ((zero? i) list))))
+
+; (string-copy string)
+; Returns a newly allocated copy of the string
+(define (string-copy string)
+  (list->string (string->list string)))
+
+; (string-fill! string char)
+; Replaces every character of string with char
+(define (string-fill! string char)
+  (let ([size (string-length string)])
+    (do ([i size (- i 1)])
+        ((zero? i) string)
+      (string-set! string (- i 1) char))))
+
+; (string-append string ...)
+; Returns a new string formed by concatenating the arguments
+(define (string-append . strings)
+  (list->string (apply append (map string->list strings))))
+
+;----------------------------------------------------------------
+
 ; Vector functions
 
 ; (vector object ...)

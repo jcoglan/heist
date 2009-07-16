@@ -57,5 +57,20 @@
 
 (let ([s "saLMON"])
   (string-set! s 4 #\k)
-  (assert-equal "saLMkN" s))
+  (assert-equal "saLMkN" s)
+  (assert (eqv? s s))
+  (assert (not (eqv? (string-copy s) s)))
+  (assert (equal? (string-copy s) s))
+  (string-fill! s #\G)
+  (assert-equal "GGGGGG" s))
+
+(assert-equal "alm" (substring "salmon" 1 4))
+
+(assert-equal "foo" (string #\f #\o #\o))
+(assert-equal "" (string))
+
+(assert-equal '(#\f #\o #\o) (string->list "foo"))
+(assert-equal "foo" (list->string '(#\f #\o #\o)))
+
+(assert-equal "foo bar baz" (string-append "foo " "ba" "r baz" ""))
 
