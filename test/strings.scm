@@ -43,3 +43,19 @@
 (assert (char-ci=? #\A #\a))
 (assert (not (char-ci=? #\A #\b)))
 
+(assert (string? "foo"))
+(assert (not (string? 'foo)))
+(assert (not (string? #\a)))
+(assert (not (string? 9)))
+
+(assert-equal "    " (make-string 4))
+(assert-equal ")))))))" (make-string 7 #\)))
+
+(assert-equal 13 (string-length "smoked salmon"))
+(assert-equal #\o (string-ref "salmon" 4))
+(assert-raise BadIndexError (string-ref "salmon" 7))
+
+(let ([s "saLMON"])
+  (string-set! s 4 #\k)
+  (assert-equal "saLMkN" s))
+

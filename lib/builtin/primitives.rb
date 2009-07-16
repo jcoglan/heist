@@ -131,14 +131,6 @@ define('equal?') do |op1, op2|
   op1 == op2
 end
 
-# Returns true iff the given number is exact i.e. an integer, a
-# rational, or a complex made of integers
-define('exact?') do |value|
-  call('rational?', value) || (Complex === value &&
-                               call('rational?', value.real) &&
-                               call('rational?', value.imag))
-end
-
 # Returns true iff the arguments are monotonically decreasing
 define('>') do |*args|
   result = true
@@ -215,6 +207,15 @@ end
 
 # Numerical functions
 # TODO implement rationalize, exact->inexact and vice versa
+
+# Returns true iff the given number is exact i.e. an integer, a
+# rational, or a complex made of integers
+define('exact?') do |value|
+  call('rational?', value) or
+  ( Complex === value and
+    call('rational?', value.real) and
+    call('rational?', value.imag) )
+end
 
 # Returns the sum of all arguments passed
 define('+') do |*args|
@@ -374,6 +375,37 @@ end
 # Returns the ASCII code for a character
 define('char->integer') do |char|
   char.char_code
+end
+
+#----------------------------------------------------------------
+
+# String functions
+
+# Returns a new string of the given size, filled with the given
+# character. If no character is given, a space is used.
+define('make-string') do |size, char|
+  char = " " if char.nil?
+  char.to_s * size
+end
+
+# Returns the length of the string
+define('string-length') do |string|
+  string.length
+end
+
+# Returns the kth character in the string
+define('string-ref') do |string, k|
+  size = string.length
+  raise BadIndexError.new("Cannot access index #{k} in string \"#{string}\"") if k >= size
+  char = string[k]
+  char = char.chr if Numeric === char
+  Character.new(char)
+end
+
+# Sets the kth character in string equal to char
+define('string-set!') do |string, k, char|
+  string[k] = char.to_s
+  string
 end
 
 #----------------------------------------------------------------

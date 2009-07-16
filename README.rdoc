@@ -101,7 +101,8 @@ Currently implemented R5RS features include:
   <tt>char-numeric?</tt>, <tt>char-whitespace?</tt>, <tt>char-upcase</tt>,
   <tt>char-downcase</tt>, <tt>char->integer</tt>, <tt>integer->char</tt>
 * String library: <tt>display</tt>, <tt>newline</tt>, <tt>string->number</tt>,
-  <tt>string->symbol</tt>, <tt>symbol->string</tt>
+  <tt>string->symbol</tt>, <tt>symbol->string</tt>, <tt>make-string</tt>,
+  <tt>string-length</tt>, <tt>string-ref</tt>, <tt>string-set!</tt>
 * File loading: <tt>(load "foo.scm")</tt>, paths are relative to the
   current file
 
