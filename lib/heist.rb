@@ -57,23 +57,12 @@ module Heist
           expression
     end
     
-    # Returns a new complex number with the given +real+ and +imaginary+ parts.
-    def complex(real, imaginary)
-      Complex.respond_to?(:new) ? Complex.new(real, imaginary) :
-                                  Complex(real, imaginary)
-    end
-    
-    # Returns a new rational number with the given +numerator+ and +denominator+.
-    def rational(numerator, denominator)
-      Rational(numerator, denominator)
-    end
-    
     # Returns the result of dividing the first argument by the second. If both
     # arguments are integers, returns a rational rather than performing
     # integer division as Ruby would normally do.
     def divide(op1, op2)
       [op1, op2].all? { |value| Integer === value } ?
-          rational(op1, op2) :
+          Rational(op1, op2) :
           op1.to_f / op2
     end
     
