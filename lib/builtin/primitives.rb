@@ -124,7 +124,8 @@ end
 
 # TODO write a more exact implementation, and implement (eq?)
 define('eqv?') do |op1, op2|
-  (Identifier === op1 and op1 == op2) or op1.equal?(op2)
+  ([Identifier, Character].any? { |type| type === op1 } and op1 == op2) or
+  op1.equal?(op2)
 end
 
 define('equal?') do |op1, op2|

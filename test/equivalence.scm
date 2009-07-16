@@ -10,6 +10,10 @@
 (assert (not (eqv? 42 #f)))
 (assert (not (eqv? 42 42.0)))
 
+(assert (eqv? #\A #\A))
+(assert (not (eqv? #\A #\B)))
+(assert (not (eqv? #\A #\a)))
+
 (assert (eqv? '() '()))
 (assert (not (eqv? '(1 2) '(1 2))))
 (assert (not (eqv? '() '(1 2))))
