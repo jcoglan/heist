@@ -46,14 +46,15 @@ Currently implemented R5RS features include:
 * Numeric literals for integers, reals, rationals and complexes. The
   latter two are mapped to Ruby's <tt>Rational</tt> and <tt>Complex</tt>
   objects and Ruby handles all math procedures.
-* String and symbol literals
+* Character, string and symbol literals
 * Proper and improper lists and full (quasi)quoting with <tt>'</tt>,
   <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
+* Vector literals, also with quasiquoting support
 * Macros: <tt>syntax-rules</tt>, <tt>define-syntax</tt>,
   <tt>let-syntax</tt>, <tt>letrec-syntax</tt>. Supports keywords,
-  lists, pattern variables and ellipses down to arbitrary depth, as
-  well as the R6RS ellipsis-escaping feature (<tt>(... ...)</tt>) to
-  better enable macro-writing macros
+  proper and improper lists, vectors, pattern variables and ellipses down
+  to arbitrary depth, as well as the R6RS ellipsis-escaping feature
+  (<tt>(... ...)</tt>) to better enable macro-writing macros
 * Continuations: <tt>call-with-current-continuation</tt>, aliased
   as <tt>call/cc</tt>
 * Proper tail recursion
@@ -69,8 +70,9 @@ Currently implemented R5RS features include:
 * Logical connectives: <tt>and</tt>, <tt>or</tt>, <tt>not</tt>
 * Type checking: <tt>boolean?</tt>, <tt>number?</tt>, <tt>complex?</tt>,
   <tt>real?</tt>, <tt>rational?</tt>, <tt>integer?</tt>, <tt>exact?</tt>,
-  <tt>inexact?</tt>, <tt>symbol?</tt>, <tt>string?</tt>, <tt>pair?</tt>,
-  <tt>list?</tt>, <tt>null?</tt>, <tt>procedure?</tt>
+  <tt>inexact?</tt>, <tt>symbol?</tt>, <tt>char?</tt>, <tt>string?</tt>,
+  <tt>pair?</tt>, <tt>list?</tt>, <tt>null?</tt>, <tt>vector?</tt>,
+  <tt>procedure?</tt>
 * Comparators: <tt>eq?</tt>, <tt>eqv?</tt>, <tt>equal?</tt>, <tt>=</tt>,
   <tt><</tt>, <tt><=</tt>, <tt>></tt>, <tt>>=</tt>
 * Numeric library: <tt>max</tt>, <tt>min</tt>, <tt>+</tt>, <tt>-</tt>,
@@ -89,7 +91,17 @@ Currently implemented R5RS features include:
   <tt>append</tt>, <tt>reverse</tt>, <tt>list-tail</tt>, <tt>list-ref</tt>,
   <tt>memq</tt>, <tt>memv</tt>, <tt>member</tt>, <tt>assq</tt>, <tt>assv</tt>,
   <tt>assoc</tt>, <tt>apply</tt>, <tt>map</tt>, <tt>for-each</tt>
-* String library: <tt>display</tt>, <tt>newline</tt>, <tt>string->number</tt>
+* Vector library: <tt>vector</tt>, <tt>make-vector</tt>, <tt>vector-length</tt>,
+  <tt>vector-ref</tt>, <tt>vector-set!</tt>, <tt>list->vector</tt>,
+  <tt>vector->list</tt>, <tt>vector-fill!</tt>
+* Character library: <tt>char=?</tt>, <tt>char<?</tt>, <tt>char>?</tt>,
+  <tt>char<=?</tt>, <tt>char>=?</tt>, <tt>char-ci=?</tt>, <tt>char-ci<?</tt>,
+  <tt>char-ci>?</tt>, <tt>char-ci<=?</tt>, <tt>char-ci>=?</tt>,
+  <tt>char-alphabetic?</tt>, <tt>char-upper-case?</tt>, <tt>char-lower-case?</tt>,
+  <tt>char-numeric?</tt>, <tt>char-whitespace?</tt>, <tt>char-upcase</tt>,
+  <tt>char-downcase</tt>, <tt>char->integer</tt>, <tt>integer->char</tt>
+* String library: <tt>display</tt>, <tt>newline</tt>, <tt>string->number</tt>,
+  <tt>string->symbol</tt>, <tt>symbol->string</tt>
 * File loading: <tt>(load "foo.scm")</tt>, paths are relative to the
   current file
 
@@ -194,16 +206,17 @@ For example, using our <tt>Heist::Runtime</tt> instance from above:
   scheme.exec [:square, 9]
   #=> 81
 
-Arrays map directly to Scheme lists, symbols map to identifiers, strings
-and numbers are treated as literals, and any other data is interpreted
-verbatim. So, you can use any piece of Ruby data in these expressions
-as long as the functions you're calling can operate on it.
+Arrays map directly to Scheme lists, symbols map to identifiers, strings,
+numbers and booleans are treated as literals, and any other data is
+interpreted verbatim. So, you can use any piece of Ruby data in these
+expressions as long as the functions you're calling can operate on it.
 
-Due to syntactic limitations, some Scheme syntax cannot be used in this
-interface. Quoting is out, so the expression <tt>'(1 2 3)</tt> would
-need to be written <tt>[:quote, [1, 2, 3]]</tt>. Dotted pairs and
-improper lists are also not available, though you can work around
-this to some extent using <tt>:cons</tt>.
+Due to syntactic limitations, some Scheme constructs cannot be used in this
+interface. Quoting syntax is out, so the expression <tt>'(1 2 3)</tt> would
+need to be written <tt>[:quote, [1, 2, 3]]</tt>. Dotted pairs and improper
+lists are also not available, though you can work around this to some extent
+using <tt>:cons</tt>. Vectors should be written as <tt>[:vector, 1, 2, 3]</tt>
+for example. Characters are not supported at all.
 
 
 == Notes
@@ -217,7 +230,9 @@ and can be assumed to be reasonably stable.
 I have not documented how to write your own syntax using Ruby because
 it requires far too much knowledge of Heist's plumbing at present (I
 suspect this may be unavoidable). Besides, we have macros so if you
-want new syntax we've got you covered.
+want new syntax we've got you covered. In fact, writing syntax using
+macros makes sure that new syntactic forms support continuations
+correctly, and Heist itself eschews Ruby-based syntax where possible.
 
 Heist is extremely liberal as regards symbols. Any sequence of
 characters that does not contain any spaces or parentheses and that

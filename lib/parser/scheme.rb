@@ -1,12 +1,12 @@
 module Heist
-  module Scheme
+  module Scheme #:nodoc:
     include Treetop::Runtime
 
     def root
       @root || :program
     end
 
-    module Program0
+    module Program0 #:nodoc:
     end
 
     def _nt_program
@@ -51,10 +51,10 @@ module Heist
       return r0
     end
 
-    module Shebang0
+    module Shebang0 #:nodoc:
     end
 
-    module Shebang1
+    module Shebang1 #:nodoc:
     end
 
     def _nt_shebang
@@ -144,7 +144,7 @@ module Heist
       return r0
     end
 
-    module Cell0
+    module Cell0 #:nodoc:
       def ignore
         elements[0]
       end
@@ -158,7 +158,7 @@ module Heist
       end
     end
 
-    module Cell1
+    module Cell1 #:nodoc:
       def ignore
         elements[0]
       end
@@ -349,14 +349,14 @@ module Heist
       return r0
     end
 
-    module List0
+    module List0 #:nodoc:
       def cells
         elements[1]
       end
 
     end
 
-    module List1
+    module List1 #:nodoc:
       def cells
         elements[1]
       end
@@ -450,7 +450,7 @@ module Heist
       return r0
     end
 
-    module Cells0
+    module Cells0 #:nodoc:
       def dot
         elements[0]
       end
@@ -464,10 +464,10 @@ module Heist
       end
     end
 
-    module Cells1
+    module Cells1 #:nodoc:
     end
 
-    module Cells2
+    module Cells2 #:nodoc:
       def ignore
         elements[1]
       end
@@ -566,7 +566,7 @@ module Heist
       return r0
     end
 
-    module Vector0
+    module Vector0 #:nodoc:
       def hash
         elements[0]
       end
@@ -577,7 +577,7 @@ module Heist
 
     end
 
-    module Vector1
+    module Vector1 #:nodoc:
       def hash
         elements[0]
       end
@@ -736,10 +736,10 @@ module Heist
       return r0
     end
 
-    module Datum0
+    module Datum0 #:nodoc:
     end
 
-    module Datum1
+    module Datum1 #:nodoc:
     end
 
     def _nt_datum
@@ -825,7 +825,7 @@ module Heist
       return r0
     end
 
-    module Boolean0
+    module Boolean0 #:nodoc:
       def hash
         elements[0]
       end
@@ -902,7 +902,7 @@ module Heist
       return r0
     end
 
-    module Complex0
+    module Complex0 #:nodoc:
       def real
         elements[0]
       end
@@ -985,10 +985,10 @@ module Heist
       return r0
     end
 
-    module Real0
+    module Real0 #:nodoc:
     end
 
-    module Real1
+    module Real1 #:nodoc:
       def integer
         elements[0]
       end
@@ -1056,7 +1056,7 @@ module Heist
       return r0
     end
 
-    module Rational0
+    module Rational0 #:nodoc:
       def numerator
         elements[0]
       end
@@ -1104,10 +1104,10 @@ module Heist
       return r0
     end
 
-    module Integer0
+    module Integer0 #:nodoc:
     end
 
-    module Integer1
+    module Integer1 #:nodoc:
     end
 
     def _nt_integer
@@ -1194,7 +1194,7 @@ module Heist
       return r0
     end
 
-    module Character0
+    module Character0 #:nodoc:
       def glyph
         elements[1]
       end
@@ -1252,7 +1252,7 @@ module Heist
       return r0
     end
 
-    module String0
+    module String0 #:nodoc:
     end
 
     def _nt_string
@@ -1331,16 +1331,16 @@ module Heist
       return r0
     end
 
-    module Identifier0
+    module Identifier0 #:nodoc:
     end
 
-    module Identifier1
+    module Identifier1 #:nodoc:
     end
 
-    module Identifier2
+    module Identifier2 #:nodoc:
     end
 
-    module Identifier3
+    module Identifier3 #:nodoc:
     end
 
     def _nt_identifier
@@ -1601,7 +1601,7 @@ module Heist
       return r0
     end
 
-    module Ignore0
+    module Ignore0 #:nodoc:
       def comment
         elements[0]
       end
@@ -1611,7 +1611,7 @@ module Heist
       end
     end
 
-    module Ignore1
+    module Ignore1 #:nodoc:
     end
 
     def _nt_ignore
@@ -1669,10 +1669,10 @@ module Heist
       return r0
     end
 
-    module Comment0
+    module Comment0 #:nodoc:
     end
 
-    module Comment1
+    module Comment1 #:nodoc:
     end
 
     def _nt_comment
