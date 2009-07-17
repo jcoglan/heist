@@ -414,6 +414,29 @@
 ; Returns a new string formed by combining the given characters
 (define (string . chars) (list->string chars))
 
+; (string=? x y)
+; Returns true iff x and y are equal strings
+(define (string=? x y)
+  (string-equal? x y char=?))
+
+; (string-ci=? x y)
+; Returns true iff x and y are equal strings, ignoring case
+(define (string-ci=? x y)
+  (string-equal? x y char-ci=?))
+
+(define (string-equal? x y comparator)
+  (and (string? x)
+       (string? y)
+       (let ([l1 (string-length x)]
+             [l2 (string-length y)])
+         (and (= l1 l2)
+              (do ([i 0 (+ i 1)]
+                   [result #t (comparator (string-ref x i)
+                                          (string-ref y i))])
+                  ((or (= i l1)
+                       (not result))
+                   result))))))
+
 ; (substring string start end)
 ; Returns a string composed of the characters from start (inclusive)
 ; to end (exclusive) in string

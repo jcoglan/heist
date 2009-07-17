@@ -78,3 +78,10 @@
 
 (assert-equal "foo bar baz" (string-append "foo " "ba" "r baz" ""))
 
+(assert (string=? "foo" "foo"))
+(assert (not (string=? "foo" "Foo")))
+(assert (not (string=? "foo" "food")))
+(assert (not (string=? "food" "foo")))
+(assert (string-ci=? "foo" "Foo"))
+(assert (not (string-ci=? "food" "Fool")))
+
