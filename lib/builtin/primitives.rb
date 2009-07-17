@@ -405,6 +405,7 @@ end
 
 # Sets the kth character in string equal to char
 define('string-set!') do |string, k, char|
+  raise ImmutableError.new("Cannot modify string constant") if string.frozen?
   string[k] = char.to_s
   string
 end

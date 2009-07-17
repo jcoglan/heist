@@ -51,11 +51,15 @@
 (assert-equal "    " (make-string 4))
 (assert-equal ")))))))" (make-string 7 #\)))
 
+(let ([g (lambda () "***")])
+  (assert-raise ImmutableError (string-set! (g) 0 #\?))
+  (assert-equal "***" (g)))
+
 (assert-equal 13 (string-length "smoked salmon"))
 (assert-equal #\o (string-ref "salmon" 4))
 (assert-raise BadIndexError (string-ref "salmon" 7))
 
-(let ([s "saLMON"])
+(let ([s (string-copy "saLMON")])
   (string-set! s 4 #\k)
   (assert-equal "saLMkN" s)
   (assert (eqv? s s))

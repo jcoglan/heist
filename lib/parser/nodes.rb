@@ -130,7 +130,10 @@ module Heist
     
     class String < Treetop::Runtime::SyntaxNode
       def eval
-        @value ||= Kernel.eval(text_value)
+        return @value if @value
+        @value = Kernel.eval(text_value)
+        @value.freeze
+        @value
       end
     end
     
