@@ -31,7 +31,7 @@ module Heist
           reset!
           result = @scope.eval(tree)
           unless result.nil?
-            puts "; => #{ result.inspect }\n\n"
+            puts "; => #{ text(result) }\n\n"
             @results << result
             @scope['^'] = result
           end
@@ -62,6 +62,16 @@ module Heist
       @buffer = []
       @open   = []
       @indent = 0
+    end
+    
+    def text(object)
+      case object
+      when Rational   then "#{ object.numerator }/#{ object.denominator }"
+      when Complex    then "#{ object.real }+#{ object.imag }i"
+      when TrueClass  then "#t"
+      when FalseClass then "#f"
+      else object.inspect
+      end
     end
     
     def push(line)
