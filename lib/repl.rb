@@ -66,11 +66,10 @@ module Heist
     
     def text(object)
       case object
-      when Rational   then "#{ object.numerator }/#{ object.denominator }"
-      when Complex    then "#{ object.real }+#{ object.imag }i"
-      when TrueClass  then "#t"
-      when FalseClass then "#f"
-      else object.inspect
+      when Runtime::Character, String then object.inspect
+      when TrueClass  then '#t'
+      when FalseClass then '#f'
+      else object.to_s
       end
     end
     
