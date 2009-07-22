@@ -61,11 +61,11 @@
 ; for several nested (let)s. Variables may refer to those that
 ; preceed them but not vice versa.
 (define-syntax let* (syntax-rules ()
-  [(let* ([name expression]) body ...)
-    (let ([name expression]) body ...)]
-  [(let* ([n1 e1] [n2 e2] ...) body ...)
+  [(let* ([n1 e1] [n2 e2] [n3 e3] ...) body ...)  ; 2 or more bindings
     (let ([n1 e1])
-      (let* ([n2 e2] ...) body ...))]))
+      (let* ([n2 e2] [n3 e3] ...) body ...))]
+  [(let* ([name expression] ...) body ...)        ; 0 or 1 binding
+    (let ([name expression] ...) body ...)]))
 
 ; (letrec) evaluates values in the inner scope, so lambdas are
 ; able to refer to other values assigned using the (letrec).

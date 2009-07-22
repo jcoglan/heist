@@ -40,3 +40,16 @@
 
 (assert-equal 720 (do-factorial 6))
 
+
+; R5RS compliance test -- http://okmij.org/ftp/Scheme/lambda-derived.txt
+(assert-equal '(1 1 1 1 1 1 1)
+              (let ((foo (lambda (x) x)))
+                (list
+                  (foo ((lambda () (define a 1) a)))
+                  (foo (let ()  (define a 1) a))
+                  (foo (let* ()  (define a 1) a))
+                  (foo (letrec ()  (define a 1) a))
+                  (foo (letrec ()  (define (b) (define a 1) a) (b)))
+                  (foo (let-syntax () (define a 1) a))
+                  (foo (letrec-syntax () (define a 1) a)))))
+
