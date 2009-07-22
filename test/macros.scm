@@ -88,11 +88,25 @@
   [(_ foo bar . rest)
     rest]))
 (assert-equal 10 (rest 4 5 + 3 7))
+
 (let-syntax ([foo (syntax-rules ()
                     [(_ expr ...)
                       (list expr ...)])])
   (assert-equal '(1 2 3) (foo 1 2 3))
   (assert-raise SyntaxError (foo 1 2 3 . 4)))
+
+(let-syntax ([foo (syntax-rules ()
+    [(_ bindings body ...)
+      '(defun (proc . bindings) body ...)])])
+  
+  (assert-equal '(defun (proc x y) (display x) y)
+                (foo (x y) (display x) y))
+  
+  (assert-equal '(defun (proc x y . z) z)
+                (foo (x y . z) z))
+  
+  (assert-equal '(defun (proc . z) z)
+                (foo z z)))
 
 
 ; Test input execution - example from R5RS

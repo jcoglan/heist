@@ -60,6 +60,9 @@ module Heist
           case template
           
             when Cons then
+              # Return NULL if the template is an empty list
+              return Cons::NULL if template.null?
+              
               # If the template is a list opening with an ellipsis, expand
               # the rest of the list, transcribing ellipses verbatim
               return expand(template.cdr.car,
@@ -81,13 +84,16 @@ module Heist
               end
               
               # Iterate over the template, inserting matches as we go
-              while not template_pair.null?
+              while Cons === template_pair and not template_pair.null?
                 cell = template_pair.car
                 
                 # Increment the repetition depth if the current subtemplate
                 # is followed by an ellipsis and we are not treating ellipses
                 # as literals
-                followed_by_ellipsis = (template_pair.cdr.car == ELLIPSIS) && !ignoring_ellipses
+                followed_by_ellipsis = ( Cons === template_pair.cdr &&
+                                         template_pair.cdr.car == ELLIPSIS) &&
+                                       !ignoring_ellipses
+                
                 dx = followed_by_ellipsis ? 1 : 0
                 
                 repeater = cell if followed_by_ellipsis
@@ -109,6 +115,9 @@ module Heist
                 
                 template_pair = template_pair.cdr
               end
+              
+              # Handle the tail of improper list templates
+              last.cdr = expand(template_pair, matches, depth, ignoring_ellipses) unless last.nil?
               result
           
             # TODO this is very similar to how we handle lists -> refactor
