@@ -45,7 +45,6 @@ module Heist
 
       # +NULL+ is only equal to itself.
       def NULL.==(other); equal?(other); end
-      def NULL.to_xml(indent = 0); "#{ " " * (4 * indent) }<list />"; end
       NULL.freeze
       
       cadr_combos = (1..4).map { |n|
@@ -212,16 +211,6 @@ module Heist
       # specific objects converted to basic Ruby equivalents.
       def to_ruby
         map { |cell| cell.respond_to?(:to_ruby) ? cell.to_ruby : cell }
-      end
-      
-      # Returns an XML representation of the list, suitable for enterprise-class
-      # turnkey N-tier web architecture deployments, possibly also solutions.
-      def to_xml(indent = 0)
-        s = " " * (4 * indent)
-        "#{s}<pair>\n" +
-        Heist.to_xml(@car, indent + 1) + "\n" +
-        Heist.to_xml(@cdr, indent + 1) + "\n" +
-        "#{s}</pair>"
       end
       
       # Returns a Scheme-style string representation of the list.

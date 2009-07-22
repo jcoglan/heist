@@ -17,11 +17,6 @@ module Heist
         super
       end
       
-      def to_xml(indent = 0)
-        s = " " * (4 * indent)
-        "#{s}<vector>\n" + map { |cell| Heist.to_xml(cell, indent + 1) } * "\n" + "\n#{s}</vector>"
-      end
-      
       def inspect
         '#(' + map { |cell| cell.inspect }.join(' ') + ')'
       end
