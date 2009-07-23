@@ -16,19 +16,23 @@ module Heist
     #
     #   Proper list: (1 2 3)    Improper list: (1 2 3 . 4)
     #
-    #         #                         #                    # = cons
-    #        / \\                      / \\                  / = car
-    #       1   #                     1   #                 \\ = cdr
-    #          / \\                      / \\               () = NULL
-    #         2   #                     2   #
-    #            / \\                      / \\
-    #           3   ()                    3   4
+    #         .                         .                    . = cons
+    #        / \                       / \                   / = car
+    #       1   .                     1   .                  \ = cdr
+    #          / \                       / \                () = NULL
+    #         2   .                     2   .
+    #            / \                       / \ 
+    #           3  ()                     3   4
+    #
+    # This also illustrates the relationship between dotted pairs and +Cons+
+    # cells; <tt>'(a . b)</tt> is equivalent to <tt>(cons 'a 'b)</tt>, and the
+    # list <tt>(1 2 3)</tt> is more fully written as <tt>(1 . (2 . (3 . ())))</tt>.
     #
     # +Cons+ objects are +Enumerable+, though always keep in mind that a
     # +Cons+ does not 'contain' a whole list, it contains one value and a
     # pointer to the rest of the list. Iterating on a +Cons+ involves
     # walking this object graph.
-
+    #
     class Cons
       include Enumerable
       include Expression
