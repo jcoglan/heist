@@ -415,19 +415,22 @@
 (define (string . chars) (list->string chars))
 
 (define (string-compare string1 string2 char-less-than? char-greater-than?)
-  (let ([list1 (string->list string1)]
-        [list2 (string->list string2)])
-    (do ([pair1 list1 (cdr pair1)]
-         [pair2 list2 (cdr pair2)]
-         [diff '()])
-        ((integer? diff) diff)
-      (cond [(null? pair1) (set! diff (if (null? pair2) 0 -1))]
-            [(null? pair2) (set! diff 1)]
-            [else (let ([char1 (car pair1)]
-                        [char2 (car pair2)])
-                    (set! diff (cond [(char-less-than?    char1 char2) -1]
-                                     [(char-greater-than? char1 char2)  1]
-                                     [else '()])))]))))
+  (if (or (not (string? string1))
+          (not (string? string2)))
+      #f
+      (let ([list1 (string->list string1)]
+            [list2 (string->list string2)])
+        (do ([pair1 list1 (cdr pair1)]
+             [pair2 list2 (cdr pair2)]
+             [diff '()])
+            ((integer? diff) diff)
+          (set! diff (cond [(null? pair1) (if (null? pair2) 0 -1)]
+                           [(null? pair2) 1]
+                           [else (let ([char1 (car pair1)]
+                                       [char2 (car pair2)])
+                                   (cond [(char-less-than?    char1 char2) -1]
+                                         [(char-greater-than? char1 char2)  1]
+                                         [else '()]))]))))))
 
 ; (string=? string1 string2)
 ; Returns true iff string1 and string2 are equal strings
