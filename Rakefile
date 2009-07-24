@@ -28,7 +28,7 @@ namespace :spec do
     scope = Heist::Runtime.new.top_level
     procedures.each do |proc|
       message = scope.defined?(proc) ? scope.exec(proc) : 'MISSING'
-      puts "%32s %48s" % [proc, message]
+      puts "    %-32s %-48s" % [proc, message]
     end
   end
 end

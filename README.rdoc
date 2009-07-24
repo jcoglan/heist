@@ -50,64 +50,59 @@ Currently implemented R5RS features include:
 * Proper and improper lists and full (quasi)quoting with <tt>'</tt>,
   <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
 * Vector literals, also with quasiquoting support
-* Macros: <tt>syntax-rules</tt>, <tt>define-syntax</tt>,
-  <tt>let-syntax</tt>, <tt>letrec-syntax</tt>. Supports keywords,
-  proper and improper lists, vectors, pattern variables and ellipses down
-  to arbitrary depth, as well as the R6RS ellipsis-escaping feature
-  (<tt>(... ...)</tt>) to better enable macro-writing macros
-* Continuations: <tt>call-with-current-continuation</tt>, aliased
-  as <tt>call/cc</tt>
-* Proper tail recursion
-* Variable assignment: <tt>define</tt> and <tt>set!</tt>
-* Lambda expressions: <tt>(lambda (x ...) body ...)</tt>, including lexical
-  scoping and closures. Supports varargs using <tt>(lambda args body ...)</tt>
-  and <tt>(lambda (x y . rest) body ...)</tt> forms.
-* Control flow: <tt>begin</tt>, <tt>if</tt>, <tt>cond</tt>,
-  <tt>case</tt>
-* Binding constructs: <tt>let</tt>, <tt>let*</tt>, <tt>letrec</tt>
+* Definition and assignment: <tt>define</tt>, <tt>set!</tt>
+* Lambdas: <tt>(lambda (x y) body ...)</tt>, <tt>(lambda args body ...)</tt>,
+  <tt>(lambda (x y . rest) body ...)</tt>
+* Conditionals: <tt>if</tt>, <tt>cond</tt>, <tt>case</tt>
+* Binding constructs: <tt>let</tt>, <tt>let*</tt>, <tt>letrec</tt>, <tt>begin</tt>
 * Iteration: named <tt>let</tt>, <tt>do</tt>
+* Quoting: <tt>quote</tt>, <tt>quasiquote</tt> and shorthands <tt>'</tt>,
+  <tt>`</tt>, <tt>,</tt>, <tt>,@</tt>
+* Macros: <tt>let-syntax</tt>, <tt>letrec-syntax</tt>, <tt>define-syntax</tt>,
+  <tt>syntax-rules</tt>
 * Delayed evaluation: <tt>delay</tt> and <tt>force</tt>
-* Logical connectives: <tt>and</tt>, <tt>or</tt>, <tt>not</tt>
-* Type checking: <tt>boolean?</tt>, <tt>number?</tt>, <tt>complex?</tt>,
-  <tt>real?</tt>, <tt>rational?</tt>, <tt>integer?</tt>, <tt>exact?</tt>,
-  <tt>inexact?</tt>, <tt>symbol?</tt>, <tt>char?</tt>, <tt>string?</tt>,
-  <tt>pair?</tt>, <tt>list?</tt>, <tt>null?</tt>, <tt>vector?</tt>,
-  <tt>procedure?</tt>
-* Comparators: <tt>eq?</tt>, <tt>eqv?</tt>, <tt>equal?</tt>, <tt>=</tt>,
-  <tt><</tt>, <tt><=</tt>, <tt>></tt>, <tt>>=</tt>
-* Numeric library: <tt>max</tt>, <tt>min</tt>, <tt>+</tt>, <tt>-</tt>,
-  <tt>*</tt>, <tt>/</tt>, <tt>quotient</tt>, <tt>remainder</tt>,
-  <tt>modulo</tt>, <tt>numerator</tt>, <tt>denominator</tt>, <tt>floor</tt>,
-  <tt>ceiling</tt>, <tt>truncate</tt>, <tt>round</tt>, <tt>exp</tt>,
-  <tt>log</tt>, <tt>sin</tt>, <tt>cos</tt>, <tt>tan</tt>, <tt>asin</tt>,
-  <tt>acos</tt>, <tt>atan</tt>, <tt>expt</tt>, <tt>sqrt</tt>,
-  <tt>zero?</tt>, <tt>positive?</tt>, <tt>negative?</tt>, <tt>odd?</tt>,
-  <tt>even?</tt>, <tt>abs</tt>, <tt>gcd</tt>, <tt>lcm</tt>,
+* Continuations: <tt>call-with-current-continuation</tt>, aliased as <tt>call/cc</tt>
+* Equivalance predicates: <tt>eqv?</tt>, <tt>eq?</tt>, <tt>equal?</tt>
+* Numeric library: <tt>number?</tt>, <tt>complex?</tt>, <tt>real?</tt>,
+  <tt>rational?</tt>, <tt>integer?</tt>, <tt>exact?</tt>, <tt>inexact?</tt>,
+  <tt>=</tt>, <tt><</tt>, <tt>></tt>, <tt><=</tt>, <tt>>=</tt>, <tt>zero?</tt>,
+  <tt>positive?</tt>, <tt>negative?</tt>, <tt>odd?</tt>, <tt>even?</tt>,
+  <tt>max</tt>, <tt>min</tt>, <tt>+</tt>, <tt>*</tt>, <tt>-</tt>, <tt>/</tt>,
+  <tt>abs</tt>, <tt>quotient</tt>, <tt>remainder</tt>, <tt>modulo</tt>,
+  <tt>gcd</tt>, <tt>lcm</tt>, <tt>numerator</tt>, <tt>denominator</tt>,
+  <tt>floor</tt>, <tt>ceiling</tt>, <tt>truncate</tt>, <tt>round</tt>,
+  <tt>exp</tt>, <tt>log</tt>, <tt>sin</tt>, <tt>cos</tt>, <tt>tan</tt>,
+  <tt>asin</tt>, <tt>acos</tt>, <tt>atan</tt>, <tt>sqrt</tt>, <tt>expt</tt>,
   <tt>make-rectangular</tt>, <tt>make-polar</tt>, <tt>real-part</tt>,
-  <tt>imag-part</tt>, <tt>magnitude</tt>, <tt>angle</tt>, <tt>factorial</tt>,
-  <tt>number->string</tt>
-* List library: <tt>cons</tt>, <tt>car</tt>, <tt>cdr</tt>, <tt>set-car!</tt>,
-  <tt>set-cdr!</tt>, <tt>c[ad]{1,4}r</tt>, <tt>list</tt>, <tt>length</tt>,
-  <tt>append</tt>, <tt>reverse</tt>, <tt>list-tail</tt>, <tt>list-ref</tt>,
-  <tt>memq</tt>, <tt>memv</tt>, <tt>member</tt>, <tt>assq</tt>, <tt>assv</tt>,
-  <tt>assoc</tt>, <tt>apply</tt>, <tt>map</tt>, <tt>for-each</tt>
-* Vector library: <tt>vector</tt>, <tt>make-vector</tt>, <tt>vector-length</tt>,
-  <tt>vector-ref</tt>, <tt>vector-set!</tt>, <tt>list->vector</tt>,
-  <tt>vector->list</tt>, <tt>vector-fill!</tt>
-* Character library: <tt>char=?</tt>, <tt>char<?</tt>, <tt>char>?</tt>,
-  <tt>char<=?</tt>, <tt>char>=?</tt>, <tt>char-ci=?</tt>, <tt>char-ci<?</tt>,
-  <tt>char-ci>?</tt>, <tt>char-ci<=?</tt>, <tt>char-ci>=?</tt>,
-  <tt>char-alphabetic?</tt>, <tt>char-upper-case?</tt>, <tt>char-lower-case?</tt>,
-  <tt>char-numeric?</tt>, <tt>char-whitespace?</tt>, <tt>char-upcase</tt>,
-  <tt>char-downcase</tt>, <tt>char->integer</tt>, <tt>integer->char</tt>
-* String library: <tt>display</tt>, <tt>newline</tt>, <tt>string->number</tt>,
-  <tt>string->symbol</tt>, <tt>symbol->string</tt>, <tt>string</tt>,
-  <tt>make-string</tt>, <tt>string-length</tt>, <tt>string-ref</tt>,
-  <tt>string-set!</tt>, <tt>substring</tt>, <tt>list->string</tt>,
-  <tt>string->list</tt>, <tt>string-copy</tt>, <tt>string-fill!</tt>,
-  <tt>string-append</tt>
-* File loading: <tt>(load "foo.scm")</tt>, paths are relative to the
-  current file
+  <tt>imag-part</tt>, <tt>magnitude</tt>, <tt>angle</tt>, <tt>number->string</tt>,
+  <tt>string->number</tt>
+* Boolean library: <tt>and</tt>, <tt>or</tt>, <tt>not</tt>, <tt>boolean?</tt>
+* List library: <tt>pair?</tt>, <tt>cons</tt>, <tt>car</tt>, <tt>cdr</tt>,
+  <tt>set-car!</tt>, <tt>set-cdr!</tt>, <tt>caar</tt>, <tt>cadr</tt> ...
+  <tt>cdddar</tt>, <tt>cddddr</tt>, <tt>null?</tt>, <tt>list?</tt>, <tt>list</tt>,
+  <tt>length</tt>, <tt>append</tt>, <tt>reverse</tt>, <tt>list-tail</tt>,
+  <tt>list-ref</tt>, <tt>memq</tt>, <tt>memv</tt>, <tt>member</tt>, <tt>assq</tt>,
+  <tt>assv</tt>, <tt>assoc</tt>
+* Symbol library: <tt>symbol?</tt>, <tt>symbol->string</tt>, <tt>string->symbol</tt>
+* Character library: <tt>char?</tt>, <tt>char=?</tt>, <tt>char<?</tt>,
+  <tt>char>?</tt>, <tt>char<=?</tt>, <tt>char>=?</tt>, <tt>char-ci=?</tt>,
+  <tt>char-ci<?</tt>, <tt>char-ci>?</tt>, <tt>char-ci<=?</tt>, <tt>char-ci>=?</tt>,
+  <tt>char-alphabetic?</tt>, <tt>char-numeric?</tt>, <tt>char-whitespace?</tt>,
+  <tt>char-upper-case?</tt>, <tt>char-lower-case?</tt>, <tt>char->integer</tt>,
+  <tt>integer->char</tt>, <tt>char-upcase</tt>, <tt>char-downcase</tt>
+* String library: <tt>string?</tt>, <tt>make-string</tt>, <tt>string</tt>,
+  <tt>string-length</tt>, <tt>string-ref</tt>, <tt>string-set!</tt>,
+  <tt>string=?</tt>, <tt>string-ci=?</tt>, <tt>string<?</tt>, <tt>string>?</tt>,
+  <tt>string<=?</tt>, <tt>string>=?</tt>, <tt>string-ci<?</tt>, <tt>string-ci>?</tt>,
+  <tt>string-ci<=?</tt>, <tt>string-ci>=?</tt>, <tt>substring</tt>,
+  <tt>string-append</tt>, <tt>string->list</tt>, <tt>list->string</tt>,
+  <tt>string-copy</tt>, <tt>string-fill!</tt>
+* Vector library: <tt>vector?</tt>, <tt>make-vector</tt>, <tt>vector</tt>,
+  <tt>vector-length</tt>, <tt>vector-ref</tt>, <tt>vector-set!</tt>,
+  <tt>vector->list</tt>, <tt>list->vector</tt>, <tt>vector-fill!</tt>
+* Control features: <tt>procedure?</tt>, <tt>apply</tt>, <tt>map</tt>,
+  <tt>for-each</tt>, <tt>eval</tt>, <tt>load</tt>
+* Input/output: <tt>display</tt>, <tt>newline</tt>
 
 In addition to the above R5RS features, the following are provided. Heist
 allows the behaviour of some of these features to be configured on a
