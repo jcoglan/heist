@@ -414,28 +414,76 @@
 ; Returns a new string formed by combining the given characters
 (define (string . chars) (list->string chars))
 
-; (string=? x y)
-; Returns true iff x and y are equal strings
-(define (string=? x y)
-  (string-equal? x y char=?))
+(define (string-compare string1 string2 char-less-than? char-greater-than?)
+  (let ([list1 (string->list string1)]
+        [list2 (string->list string2)])
+    (do ([pair1 list1 (cdr pair1)]
+         [pair2 list2 (cdr pair2)]
+         [diff '()])
+        ((integer? diff) diff)
+      (cond [(null? pair1) (set! diff (if (null? pair2) 0 -1))]
+            [(null? pair2) (set! diff 1)]
+            [else (let ([char1 (car pair1)]
+                        [char2 (car pair2)])
+                    (set! diff (cond [(char-less-than?    char1 char2) -1]
+                                     [(char-greater-than? char1 char2)  1]
+                                     [else '()])))]))))
 
-; (string-ci=? x y)
-; Returns true iff x and y are equal strings, ignoring case
-(define (string-ci=? x y)
-  (string-equal? x y char-ci=?))
+; (string=? string1 string2)
+; Returns true iff string1 and string2 are equal strings
+(define (string=? string1 string2)
+  (zero? (string-compare string1 string2 char<? char>?)))
 
-(define (string-equal? x y comparator)
-  (and (string? x)
-       (string? y)
-       (let ([l1 (string-length x)]
-             [l2 (string-length y)])
-         (and (= l1 l2)
-              (do ([i 0 (+ i 1)]
-                   [result #t (comparator (string-ref x i)
-                                          (string-ref y i))])
-                  ((or (= i l1)
-                       (not result))
-                   result))))))
+; (string-ci=? string1 string2)
+; Returns true iff string1 and string2 are equal strings, ignoring case
+(define (string-ci=? string1 string2)
+  (zero? (string-compare string1 string2 char-ci<? char-ci>?)))
+
+; (string<? string1 string2)
+; Returns true iff string1 is lexicographically less than string2
+(define (string<? string1 string2)
+  (= (string-compare string1 string2 char<? char>?) -1))
+
+; (string>? string1 string2)
+; Returns true iff string1 is lexicographically greater than string2
+(define (string>? string1 string2)
+  (= (string-compare string1 string2 char<? char>?) 1))
+
+; (string<=? string1 string2)
+; Returns true iff string1 is lexicographically less than or equal
+; to string2
+(define (string<=? string1 string2)
+  (not (string>? string1 string2)))
+
+; (string>=? string1 string2)
+; Returns true iff string1 is lexicographically greater than or equal
+; to string2
+(define (string>=? string1 string2)
+  (not (string<? string1 string2)))
+
+; (string-ci<? string1 string2)
+; Returns true iff string1 is lexicographically less than string2,
+; ignoring differences in case
+(define (string-ci<? string1 string2)
+  (= (string-compare string1 string2 char-ci<? char-ci>?) -1))
+
+; (string-ci>? string1 string2)
+; Returns true iff string1 is lexicographically greater than string2,
+; ignoring differences in case
+(define (string-ci>? string1 string2)
+  (= (string-compare string1 string2 char-ci<? char-ci>?) 1))
+
+; (string-ci<=? string1 string2)
+; Returns true iff string1 is lexicographically less than or equal
+; to string2, ignoring differences in case
+(define (string-ci<=? string1 string2)
+  (not (string-ci>? string1 string2)))
+
+; (string-ci>=? string1 string2)
+; Returns true iff string1 is lexicographically greater than or equal
+; to string2, ignoring differences in case
+(define (string-ci>=? string1 string2)
+  (not (string-ci<? string1 string2)))
 
 ; (substring string start end)
 ; Returns a string composed of the characters from start (inclusive)

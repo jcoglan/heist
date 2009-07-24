@@ -85,3 +85,26 @@
 (assert (string-ci=? "foo" "Foo"))
 (assert (not (string-ci=? "food" "Fool")))
 
+(assert (string<? "abacus" "badger"))
+(assert (string<? "badger" "badges"))
+(assert (string<? "string" "stringify"))
+(assert (not (string<? "stringify" "string")))
+(assert (not (string<? "badger" "badger")))
+(assert (not (string<? "badges" "badger")))
+
+(assert (not (string>? "abacus" "badger")))
+(assert (not (string>? "badger" "badges")))
+(assert (not (string>? "string" "stringify")))
+(assert (string>? "stringify" "string"))
+(assert (not (string>? "badger" "badger")))
+(assert (string>? "badges" "badger"))
+
+(assert (string<=? "foo" "foo"))
+(assert (string<=? "foo" "goo"))
+(assert (string<=? "Foo" "foo"))
+(assert (not (string<=? "foo" "Foo")))
+
+(assert (string-ci<=? "foo" "Foo"))
+(assert (not (string-ci>=? "abacus" "Badger")))
+(assert (string>? "abacus" "Badger"))
+
