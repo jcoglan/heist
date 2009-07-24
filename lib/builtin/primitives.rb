@@ -209,15 +209,6 @@ end
 # Numerical functions
 # TODO implement rationalize, exact->inexact and vice versa
 
-# Returns true iff the given number is exact i.e. an integer, a
-# rational, or a complex made of integers
-define('exact?') do |value|
-  call('rational?', value) or
-  ( Complex === value and
-    call('rational?', value.real) and
-    call('rational?', value.imag) )
-end
-
 # Returns the sum of all arguments passed
 define('+') do |*args|
   args.any? { |arg| String === arg } ?
