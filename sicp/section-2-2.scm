@@ -439,3 +439,117 @@
 
 (output '(reverse (list 1 2 3)))
 
+
+; Procedures for nested mappings
+
+(define (enumerate-interval low high)
+  (if (> low high)
+      nil
+      (cons low (enumerate-interval (+ low 1) high))))
+
+(define (flatmap proc seq)
+  (accumulate append nil (map proc seq)))
+
+(define (prime-sum? pair)
+  (prime? (+ (car pair) (cadr pair))))
+
+(define (make-pair-sum pair)
+  (list (car pair) (cadr pair) (+ (car pair) (cadr pair))))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum?
+               (flatmap
+                (lambda (i)
+                  (map (lambda (j) (list i j))
+                       (enumerate-interval 1 (- i 1))))
+                (enumerate-interval 1 n)))))
+
+
+(exercise "2.40")
+; Generate lists of unique pairs
+
+(define (unique-pairs n)
+  (flatmap (lambda (i)
+             (map (lambda (j) (list i j))
+                  (enumerate-interval 1 (- i 1))))
+           (enumerate-interval 1 n)))
+
+(output '(unique-pairs 5))
+
+(define (prime-sum-pairs n)
+  (map make-pair-sum
+       (filter prime-sum?
+               (unique-pairs n))))
+
+(output '(prime-sum-pairs 5))
+
+
+(exercise "2.41")
+; Write a procedure to find all ordered triples of distinct
+; positive integers i, j, and k less than or equal to a given
+; integer n that sum to a given integer s.
+
+(define (list-sum list)
+  (accumulate + 0 list))
+
+(define (ordered-triples n)
+  (flatmap (lambda (i)
+             (flatmap (lambda (j)
+                        (map (lambda (k)
+                               (list k j i))
+                             (enumerate-interval 1 (- j 1))))
+                      (enumerate-interval 1 (- i 1))))
+           (enumerate-interval 1 n)))
+
+(output '(ordered-triples 6))
+
+(define (triples-with-sum s n)
+  (filter (lambda (triple) (= (list-sum triple) s))
+          (ordered-triples n)))
+
+(output '(triples-with-sum 9 6))
+
+
+(exercise "2.42")
+; The Eight Queens puzzle
+
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+          (lambda (positions) (safe? k positions))
+          (flatmap
+            (lambda (rest-of-queens)
+              (map (lambda (new-row)
+                     (adjoin-position new-row k rest-of-queens))
+                   (enumerate-interval 1 board-size)))
+            (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+(define (adjoin-position new-row k positions)
+  (append positions (list new-row)))
+
+(define empty-board nil)
+
+(define (safe? k positions)
+  (if (> k (length positions))
+      #t
+      (let ((q (list-ref positions (- k 1))))
+        (define (iter rest i safe)
+          (if (or (null? rest) (not safe))
+              safe
+              (let ((p (list-ref positions (- i 1))))
+                (iter (cdr rest)
+                      (+ i 1)
+                      (or (not (or (= p q)
+                                   (= (abs (- p q)) (abs (- i k)))))
+                          (= i k))))))
+        (iter positions 1 #t))))
+
+(output '(queens 1))
+(output '(queens 2))
+(output '(queens 3))
+(output '(queens 4))
+
