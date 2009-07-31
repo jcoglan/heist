@@ -1,10 +1,11 @@
-=== Version 0.3.0 (TODO)
+=== Version 0.3.0 (2009-07-31)
 
 We've got all your data types now
 * Vectors are supported, including the full R5RS library, macro and quasiquoting support
 * Characters are available, including named characters (#\newline, #\space, #\tab)
 * The full R5RS character and string libraries are implemented
 * Complex numbers work correctly on Ruby1.9
+* Dotted tail notation properly supported in macro templates
 
 
 === Version 0.2.1 (2009-05-19)
