@@ -39,3 +39,10 @@
 
 (assert-equal 1 (make-polar 1 0))
 
+(assert-equal 3 (rationalize 5.5 3))
+(assert-equal 4 (rationalize 5.5 2))
+(assert-equal 5 (rationalize 5.5 1))
+(assert-equal 11/2 (rationalize 5.5 0.1))
+(assert-equal 16/3 (rationalize 5.25 0.1))
+(assert-equal 21/4 (rationalize 5.25 0.01))
+

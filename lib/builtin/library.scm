@@ -149,21 +149,47 @@
 ; (gcd x y)
 ; Returns the greatest common divisor of two numbers
 ; http://en.wikipedia.org/wiki/Euclidean_algorithm
-; TODO take >2 arguments
-(define (gcd x y)
-  (if (zero? y)
-      (abs x)
-      (gcd y (remainder x y))))
+(define (gcd x y . rest)
+  (if (null? rest)
+      (if (zero? y)
+          (abs x)
+          (gcd y (remainder x y)))
+      (apply gcd (cons (gcd x y) rest))))
 
 ; (lcm x y)
 ; Returns the lowest common multiple of two numbers
 ; http://en.wikipedia.org/wiki/Least_common_multiple
-; TODO take >2 arguments
-(define (lcm x y)
-  (/ (abs (* x y))
-     (gcd x y)))
+(define (lcm x y . rest)
+  (if (null? rest)
+      (/ (abs (* x y))
+         (gcd x y))
+      (apply lcm (cons (lcm x y) rest))))
 
 (define ceiling ceil)
+
+; (rationalize x tolerance)
+; Returns the simplest rational number that differs from x by
+; no more than tolerance. Here 'simplest' means the smallest
+; possible denominator is found first, and with that set the
+; smallest corresponding numerator is chosen.
+(define (rationalize x tolerance)
+  (cond [(rational? x)
+          x]
+        [(not (zero? (imag-part x)))
+          (make-rectangular (rationalize (real-part x) tolerance)
+                            (rationalize (imag-part x) tolerance))]
+        [else
+          (let* ([t (abs tolerance)]
+                 [a (- x t)]
+                 [b (+ x t)])
+            (do ([i 1 (+ i 1)]
+                 [z #f])
+                ((number? z) z)
+              (let ([p (ceiling (* a i))]
+                    [q (floor (* b i))])
+                (if (<= p q)
+                    (set! z (/ (if (positive? p) p q)
+                               i))))))]))
 
 ; (make-polar magnitude angle)
 ; Returns a new complex number with the given

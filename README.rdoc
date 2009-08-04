@@ -71,9 +71,9 @@ Currently implemented R5RS features include:
   <tt>abs</tt>, <tt>quotient</tt>, <tt>remainder</tt>, <tt>modulo</tt>,
   <tt>gcd</tt>, <tt>lcm</tt>, <tt>numerator</tt>, <tt>denominator</tt>,
   <tt>floor</tt>, <tt>ceiling</tt>, <tt>truncate</tt>, <tt>round</tt>,
-  <tt>exp</tt>, <tt>log</tt>, <tt>sin</tt>, <tt>cos</tt>, <tt>tan</tt>,
-  <tt>asin</tt>, <tt>acos</tt>, <tt>atan</tt>, <tt>sqrt</tt>, <tt>expt</tt>,
-  <tt>make-rectangular</tt>, <tt>make-polar</tt>, <tt>real-part</tt>,
+  <tt>rationalize</tt>, <tt>exp</tt>, <tt>log</tt>, <tt>sin</tt>, <tt>cos</tt>,
+  <tt>tan</tt>, <tt>asin</tt>, <tt>acos</tt>, <tt>atan</tt>, <tt>sqrt</tt>,
+  <tt>expt</tt>, <tt>make-rectangular</tt>, <tt>make-polar</tt>, <tt>real-part</tt>,
   <tt>imag-part</tt>, <tt>magnitude</tt>, <tt>angle</tt>, <tt>number->string</tt>,
   <tt>string->number</tt>
 * Boolean library: <tt>and</tt>, <tt>or</tt>, <tt>not</tt>, <tt>boolean?</tt>

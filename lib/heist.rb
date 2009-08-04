@@ -9,7 +9,7 @@ require 'treetop'
 # utility methods that don't belong anywhere else. See the README for an
 # overview of Heist's features.
 module Heist
-  VERSION = '0.3.0'
+  VERSION = '0.3.1'
   
   ROOT_PATH    = File.expand_path(File.dirname(__FILE__))
   PARSER_PATH  = ROOT_PATH + '/parser/'
