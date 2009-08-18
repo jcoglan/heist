@@ -215,7 +215,9 @@ interface. Quoting syntax is out, so the expression <tt>'(1 2 3)</tt> would
 need to be written <tt>[:quote, [1, 2, 3]]</tt>. Dotted pairs and improper
 lists are also not available, though you can work around this to some extent
 using <tt>:cons</tt>. Vectors should be written as <tt>[:vector, 1, 2, 3]</tt>
-for example. Characters are not supported at all.
+for example. Characters can be generated using the <tt>char</tt> procedure
+with a unit-length string, for example <tt>[:char, "Z"]</tt> produces the
+character <tt>#\\Z</tt>.
 
 
 == Notes

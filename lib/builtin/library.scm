@@ -2,6 +2,7 @@
 ; in Scheme should go here. If at all possible, write
 ; builtins in Scheme rather than Ruby.
 
+(define quit exit)
 
 ; (newline)
 ; prints a new-line character
@@ -367,6 +368,15 @@
 ;----------------------------------------------------------------
 
 ; Character functions
+
+; (char string)
+; Returns a character from a single-character string. Mostly
+; useful for succinct representation of characters in hand-
+; written Ruby code.
+(define (char string)
+  (if (and (string? string) (= (string-length string) 1))
+      (string-ref string 0)
+      '()))
 
 ; (char-upper-case? letter)
 ; Returns true iff letter is an uppercase letter
