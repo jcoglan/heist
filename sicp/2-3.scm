@@ -201,3 +201,49 @@
 (output '(deriv '(* (* x y) (+ x 3)) 'x))
 (output '(deriv '(* x y (+ x 3)) 'x))
 
+
+(exercise "2.58.a")
+; Redesign the data representations for symbolic expressions to
+; use infix notation. Assume operators take two arguments, and
+; assume fully parenthesised expressions.
+
+(define (exponentiation? x)
+  (and (pair? x) (eq? (cadr x) '**)))
+
+(define (make-exponentiation x1 x2)
+  (cond ((and (number? x1) (number? x2)) (expt x1 x2))
+        ((=number? x2 0) 1)
+        ((=number? x2 1) x1)
+        (else (list x1 '** x2))))
+
+(define base car)
+(define exponent caddr)
+
+(define (product? x)
+  (and (pair? x) (eq? (cadr x) '*)))
+
+(define (make-product m1 m2)
+  (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+        ((=number? m1 1) m2)
+        ((=number? m2 1) m1)
+        ((and (number? m1) (number? m2)) (* m1 m2))
+        (else (list m1 '* m2))))
+
+(define multiplier car)
+(define multiplicand caddr)
+
+(define (sum? x)
+  (and (pair? x) (eq? (cadr x) '+)))
+
+(define (make-sum a1 a2)
+  (cond ((=number? a1 0) a2)
+        ((=number? a2 0) a1)
+        ((and (number? a1) (number? a2)) (+ a1 a2))
+        (else (list a1 '+ a2))))
+
+(define addend car)
+(define augend caddr)
+
+(output '(deriv '(x + (3 * (x + (y + 2)))) 'x))
+(output '(deriv '(((10 * x) + 5) ** 4) 'x))
+
