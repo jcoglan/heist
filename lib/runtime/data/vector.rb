@@ -54,10 +54,10 @@ module Heist
       end
       
       # Returns a Scheme-style string representation of the +Vector+.
-      def inspect
-        '#(' + map { |cell| cell.inspect }.join(' ') + ')'
+      def to_s
+        '#(' + map { |cell| Heist.stringify(cell) }.join(' ') + ')'
       end
-      alias :to_s :inspect
+      alias :inspect :to_s
     end
     
   end

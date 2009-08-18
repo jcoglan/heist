@@ -218,13 +218,13 @@ module Heist
       end
       
       # Returns a Scheme-style string representation of the list.
-      def inspect
+      def to_s
         strings = []
-        tail = each { |value| strings << value.inspect }.cdr
+        tail = each { |value| strings << Heist.stringify(value) }.cdr
         '(' + (strings * ' ') +
               (tail == NULL ? '' : ' . ' + tail.to_s) + ')'
       end
-      alias :to_s :inspect
+      alias :inspect :to_s
     end
     
   end

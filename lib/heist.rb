@@ -66,6 +66,18 @@ module Heist
           op1.to_f / op2
     end
     
+    # Returns a string representation of the object suitable for display on the
+    # command line. Some built-in Ruby types need special handling to display
+    # according to Scheme conventions.
+    def stringify(object)
+      case object
+      when Runtime::Character, String then object.inspect
+      when TrueClass  then '#t'
+      when FalseClass then '#f'
+      else object.to_s
+      end
+    end
+    
   end
 end
 
