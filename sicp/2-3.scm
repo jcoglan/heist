@@ -247,3 +247,35 @@
 (output '(deriv '(x + (3 * (x + (y + 2)))) 'x))
 (output '(deriv '(((10 * x) + 5) ** 4) 'x))
 
+
+(exercise "2.58.b")
+; Abandon assumption that everything is fully parenthesised and
+; handle infix expressions with operator precedence (+ and * only)
+;
+; Note + and * are associative -- (a + b) + c == a + (b + c)
+; so order does not matter when parsing an n-ary expression.
+
+; If the expression contains a '+', it's a sum (lowest binding)
+(define (sum? x)
+  (and (pair? x) (memq '+ x)))
+; If it is not a sum but contains a '*', it's a product
+(define (product? x)
+  (and (pair? x) (not (sum? x)) (memq '* x)))
+
+(define addend car)
+
+; The augend is simply the rest of the expression after the operator.
+; It will either contain a single item (a number or a parenthesised
+; product or sum) or at least three items (two args and an operator).
+; If it's one item, we remove the surrounding list.
+(define (augend s)
+  (let ((rest (cddr s)))
+    (if (=number? (length rest) 1)
+        (car rest)
+        rest)))
+
+(define multiplier addend)
+(define multiplicand augend)
+
+(output '(deriv '(x + 3 * (x + y + 2)) 'x))
+
