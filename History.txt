@@ -1,3 +1,10 @@
+=== Version 0.3.1 (2009-08-23)
+
+* Added the (rationalize) procedure
+* Allowed (gcd) and (lcm) to take more than two arguments
+* Fixed string output so the REPL prints all data types correctly
+
+
 === Version 0.3.0 (2009-07-31)
 
 We've got all your data types now

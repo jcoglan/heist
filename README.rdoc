@@ -38,7 +38,7 @@ languages.
 Heist nominally targets R5RS (http://www.schemers.org/Documents/Standards/R5RS/HTML).
 It has good support for many Scheme runtime features such as tail call
 optimisation, macros and first-class continuations, as well as reasonably
-complete numeric and list libraries.
+complete libraries for all the Scheme data types.
 
 Currently implemented R5RS features include:
 
@@ -228,6 +228,8 @@ explicitly documented in this file can be assumed to work according to
 the Scheme standard, or according to the information presented here,
 and can be assumed to be reasonably stable.
 
+=== Ruby-based syntax
+
 I have not documented how to write your own syntax using Ruby because
 it requires far too much knowledge of Heist's plumbing at present (I
 suspect this may be unavoidable). Besides, we have macros so if you
@@ -235,11 +237,25 @@ want new syntax we've got you covered. In fact, writing syntax using
 macros makes sure that new syntactic forms support continuations
 correctly, and Heist itself eschews Ruby-based syntax where possible.
 
+=== Valid symbols
+
 Heist is extremely liberal as regards symbols. Any sequence of
 characters that does not contain any spaces or parentheses and that
-is not a boolean literal, a number or a string is considered a valid
-symbol. This means that syntax that should be used for chars and
-vectors will currently parse as symbols.
+is not a boolean literal, a number, a character literal or a string
+is considered a valid symbol.
+
+=== Vectors and quoting
+
+Vectors do not need to be quoted, for example the expression <tt>#(1 2 3)</tt>
+evaluates to itself. If a vector is quoted, it is made immutable and
+a quoted vector expression returns the same in-memory object every time
+it is evaluated. In contrast, an unquoted vector returns a new vector
+object every time it is evaluated. Unquoted vectors are not frozen
+as this makes macro transformations hard to implement, and because we
+cannot let the <tt>vector-set!</tt> procedure modify the parse tree
+each unquoted vector is copied on evaluation.
+
+=== Macros
 
 Macros are slightly more liberal than R5RS, in that this is a valid
 macro:
@@ -275,6 +291,8 @@ It's not clear whether it would be useful to choose syntactic forms
 conditionally, certainly this will not work with macros as the
 inlining process will overwrite conditional code using the first
 expansion generated.
+
+=== Laziness
 
 Lazy evaluation mode is mainly useful for doing lambda calculus
 without being concerned about the difference between normal and
