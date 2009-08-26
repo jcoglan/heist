@@ -258,15 +258,12 @@
 ; The final argument is not copied and the return value of
 ; (append) shares structure with it.
 (define (append first . rest)
-  (if (null? rest)
-      first
-      (if (null? first)
-          (apply append rest)
-          (let ([copy (apply list first)])
-            (do ([pair copy (cdr pair)])
-                ((null? (cdr pair))
-                  (set-cdr! pair (apply append rest))))
-            copy))))
+  (cond [(null? rest) first]
+        [(null? first) (apply append rest)]
+        [else
+          (cons (car first)
+                (append (cdr first)
+                        (apply append rest)))]))
 
 ; (reverse list)
 ; Returns a newly allocated list consisting of the
