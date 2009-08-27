@@ -194,3 +194,56 @@
 ;    expensive than `cons` since it copies all its arguments
 ;    by consing their elements together.
 
+
+(exercise "2.64")
+
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+
+(define (partial-tree elts n)
+  (if (= n 0)
+      ; If `n` is zero, return an empty tree and the whole of `elts`
+      (cons '() elts)
+      ; We need to make a tree out of the first `n` elements of
+      ; `elts`, whose root node is the median value in this range.
+      ; Pick the first half of the list (n=6 -> left-size=2,
+      ; n=7 -> left-size=3) and use `partial-tree` recursively
+      ; to process it. We get back the left-hand subtree and
+      ; the remainder of elts.
+      (let ((left-size (quotient (- n 1) 2)))
+        (let ((left-result (partial-tree elts left-size)))
+          ; Extract the tree and remaining list from the result.
+          ; The right-size of the tree is `(- n left-size 1)`,
+          ; since `n` is the size of the tree, we've consumed
+          ; `left-size` elements already and we need one element
+          ; for the root node.
+          (let ((left-tree (car left-result))
+                (non-left-elts (cdr left-result))
+                (right-size (- n (+ left-size 1))))
+            ; Get the root node value from the front of the
+            ; remainder list, and use another recursive call
+            ; to get the right-hand-side of the tree and a list
+            ; of remaining unprocessed values.
+            (let ((this-entry (car non-left-elts))
+                  (right-result (partial-tree (cdr non-left-elts)
+                                              right-size)))
+              (let ((right-tree (car right-result))
+                    (remaining-elts (cdr right-result)))
+                ; Return a tree node using the root value and the
+                ; two subtrees, and a list of the unprocessed
+                ; elements from the original elts list.
+                (cons (make-tree this-entry left-tree right-tree)
+                      remaining-elts))))))))
+
+(output '(list->tree '(1 3 5 7 9 11)))
+; => (5 (1 ()
+;          (3 () ()))
+;       (9 (7 () ())
+;          (11 () ())))
+
+; `Partial-tree` returns once for every element in the input list
+; -- the `this-entry` term in the return expression takes every value
+; in the list once and only once -- so grows as O(n). (There is
+; an O(log n) overhead of making empty subtrees for the leaves, but
+; the O(n) term will dominate.)
+
