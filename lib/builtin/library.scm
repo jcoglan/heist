@@ -362,6 +362,14 @@
       (proc (car list)
             (foldr proc value (cdr list)))))
 
+; (sublist list start end)
+(define (sublist list start end)
+  (cond [(null? list) '()]
+        [(> start 0) (sublist (cdr list) (- start 1) (- end 1))]
+        [(<= end 0) '()]
+        [else (cons (car list)
+                    (sublist (cdr list) 0 (- end 1)))]))
+
 ;----------------------------------------------------------------
 
 ; Character functions
@@ -525,16 +533,7 @@
 ; Returns a string composed of the characters from start (inclusive)
 ; to end (exclusive) in string
 (define (substring string start end)
-  (let ([size (string-length string)])
-    (cond [(< start 0)   (error "start index must be positive")]
-          [(> end size)  (error "end index must be <= the length of string")]
-          [(> start end) (error "start must be <= end index")]
-          [else
-            (let* ([subsize (- end start)]
-                   [substr (make-string subsize)])
-              (do ([i 0 (+ i 1)])
-                  ((= i subsize) substr)
-                (string-set! substr i (string-ref string (+ start i)))))])))
+  (list->string (sublist (string->list string) start end)))
 
 ; (list->string chars)
 ; Returns a new string formed by combining the list
