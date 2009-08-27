@@ -251,3 +251,42 @@
 ; an O(log n) overhead of making empty subtrees for the leaves, but
 ; the O(n) term will dominate.)
 
+
+(exercise "2.65")
+; O(n) union-set and intersection-set for balanced binary trees.
+; Use the list-based procedures with O(n) input/output
+; conversion filters.
+
+(define tree->list tree->list-2)
+
+(define (intersection-list set1 set2)
+  (if (or (null? set1) (null? set2))
+      '()    
+      (let ((x1 (car set1)) (x2 (car set2)))
+        (cond ((= x1 x2) (cons x1 (intersection-list (cdr set1) (cdr set2))))
+              ((< x1 x2) (intersection-list (cdr set1) set2))
+              ((< x2 x1) (intersection-list set1 (cdr set2)))))))
+
+(define (intersection-set set1 set2)
+  (list->tree (intersection-list (tree->list set1)
+                                 (tree->list set2))))
+
+(define (union-list set1 set2)
+  (cond ((null? set1) set2)
+        ((null? set2) set1)
+        (else
+          (let ((x1 (car set1)) (x2 (car set2)))
+            (cond ((= x1 x2) (cons x1 (union-list (cdr set1) (cdr set2))))
+                  ((< x1 x2) (cons x1 (union-list (cdr set1) set2)))
+                  ((> x1 x2) (cons x2 (union-list set1 (cdr set2)))))))))
+
+(define (union-set set1 set2)
+  (list->tree (union-list (tree->list set1)
+                          (tree->list set2))))
+
+(define A (list->tree '(1 3 5 7 8)))
+(define B (list->tree '(2 3 5 6 9)))
+
+(output '(intersection-set A B))
+(output '(union-set A B))
+
