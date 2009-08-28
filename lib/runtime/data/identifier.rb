@@ -30,7 +30,7 @@ module Heist
       
       # Returns +true+ if the receiver has the same name as the argument.
       def ==(other)
-        Identifier === other and @orginal_name == other.name
+        Identifier === other and @orginal_name.downcase == other.name.downcase
       end
       
       # Returns a raw Ruby representation of the identifier, for which
