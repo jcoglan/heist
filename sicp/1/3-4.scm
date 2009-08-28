@@ -1,7 +1,7 @@
 ; Section 1.3.4
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-12.html#%_sec_1.3.4
 
-(load "helpers")
+(load "../helpers")
 
 
 ; Higher-order functions for the final few exercises

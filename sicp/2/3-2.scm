@@ -1,7 +1,7 @@
 ; Section 2.3.2
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-16.html#%_sec_2.3.2
 
-(load "helpers")
+(load "../helpers")
 
 
 ; Symbolic differentiator

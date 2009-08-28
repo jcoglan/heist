@@ -1,7 +1,7 @@
 ; Section 2.3.3
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-16.html#%_sec_2.3.3
 
-(load "helpers")
+(load "../helpers")
 
 
 ; Set procedures

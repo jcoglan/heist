@@ -1,7 +1,7 @@
 ; Section 2.3.4
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-16.html#%_sec_2.3.4
 
-(load "helpers")
+(load "../helpers")
 
 
 ; Huffman encoding trees
@@ -169,7 +169,7 @@
 ;                     /\
 ;                    /  \
 ;                   /    \
-;                  B:2   A:1
+;                 B:2    A:1
 ; 
 ; These trees will always follow this structure, since the
 ; following is true:

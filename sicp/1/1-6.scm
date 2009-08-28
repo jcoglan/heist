@@ -1,7 +1,7 @@
 ; Section 1.1.6
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-10.html#%_sec_1.1.6
 
-(load "helpers")
+(load "../helpers")
 
 
 (exercise "1.2")

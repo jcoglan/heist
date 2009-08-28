@@ -1,7 +1,7 @@
 ; Section 2.2.1
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-15.html#%_sec_2.2.1
 
-(load "helpers")
+(load "../helpers")
 (define nil (list))
 (define orig-map map)
 
