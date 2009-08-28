@@ -12,10 +12,10 @@ module Heist
     # In Scheme, this list includes the various quoting symbols that can be used
     # as shorthands for calling quoting functions.
     SHORTHANDS = {
-      "'"   => :quote,
-      "`"   => :quasiquote,
-      ","   => :unquote,
-      ",@"  => :'unquote-splicing'
+      "'"   => 'quote',
+      "`"   => 'quasiquote',
+      ","   => 'unquote',
+      ",@"  => 'unquote-splicing'
     }
     
     # +Program+ is the root of the parse tree; parsing any string of Scheme code

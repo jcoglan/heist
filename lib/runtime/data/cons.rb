@@ -60,6 +60,10 @@ module Heist
       # An array of all the c[ad]+r functions supported by Heist
       ACCESSORS = cadr_combos
       
+      # For stringifying purposes, we need an inverted copy of the table
+      # of quoting shorthand symbols
+      SHORTHANDS = Scheme::SHORTHANDS.invert
+      
       class << self
         # Creates a new list from the elements of the enumerable object +enum+,
         # and returns the +Cons+ that forms the head of the list. If +enum+ is
@@ -220,9 +224,13 @@ module Heist
       # Returns a Scheme-style string representation of the list.
       def to_s
         strings = []
-        tail = each { |value| strings << Heist.stringify(value) }.cdr
-        '(' + (strings * ' ') +
-              (tail == NULL ? '' : ' . ' + tail.to_s) + ')'
+        if Identifier === @car and SHORTHANDS.has_key?(@car.to_s) and list? and length == 2
+          SHORTHANDS[@car.to_s] + Heist.stringify(@cdr.car)
+        else
+          tail = each { |value| strings << Heist.stringify(value) }.cdr
+          '(' + (strings * ' ') +
+                (tail == NULL ? '' : ' . ' + Heist.stringify(tail)) + ')'
+        end
       end
       alias :inspect :to_s
     end
