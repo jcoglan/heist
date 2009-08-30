@@ -38,6 +38,10 @@ program [
   [:define, [:boolean?, :x],
     [:or, [:eqv?, :x, true], [:eqv?, :x, false]]],
   
+  #----------------------------------------------------------------
+  
+  # Numerical functions
+  
   # (number? x)
   # Returns true iff x is any type of number
   [:define, :number?, :complex?],
@@ -175,6 +179,110 @@ program [
       [:if, [:zero?, :y],
             :acc,
             [:iter, [:'-', :y, 1], [:'*', :y, :acc]]]],
-    [:iter, :x, 1]]
+    [:iter, :x, 1]],
+  
+  #----------------------------------------------------------------
+  
+  # List/pair functions
+  
+  # (null? object)
+  # Returns true iff object is the empty list
+  [:define, [:null?, :object],
+    [:eqv?, [:quote, []], :object]],
+  
+  # (list? object)
+  # Returns true iff object is a proper list
+  [:define, [:list?, :object],
+    [:or, [:null?, :object],
+          [:and, [:pair?, :object],
+                 [:list?, [:cdr, :object]]]]],
+  
+  # (length object)
+  # Returns the length of a proper list
+  [:define, [:length, :object],
+    [:define, [:iter, :list, :acc],
+      [:if, [:null?, :list],
+            :acc,
+            [:iter, [:cdr, :list], [:'+', 1, :acc]]]],
+    [:iter, :object, 0]],
+  
+  # (reverse list)
+  # Returns a newly allocated list consisting of the
+  # elements of list in reverse order.
+  [:define, [:reverse, :object],
+    [:if, [:null?, :object],
+          :object,
+          [:append, [:reverse, [:cdr, :object]],
+                    [:list, [:car, :object]]]]],
+  
+  # (list-tail list k)
+  # Returns the sublist of list obtained by omitting the
+  # first k elements.
+  [:define, [:'list-tail', :list, :k],
+    [:do, [[:pair, :list, [:cdr, :pair]],
+           [:i, :k, [:'-', :i, 1]]],
+          [[:zero?, :i], :pair]]],
+  
+  # (list-ref list k)
+  # Returns the kth element of list.
+  [:define, [:'list-ref', :list, :k],
+    [:car, [:'list-tail', :list, :k]]],
+  
+  # (memq obj list)
+  # (memv obj list)
+  # (member obj list)
+  # These procedures return the first sublist of list whose
+  # car is obj, where the sublists of list are the non-empty
+  # lists returned by (list-tail list k) for k less than the
+  # length of list. If obj does not occur in list, then #f
+  # (not the empty list) is returned. Memq uses eq? to compare
+  # obj with the elements of list, while memv uses eqv? and
+  # member uses equal?.
+  
+  [:define, [:'list-transform-search', :transform],
+    [:lambda, [:predicate],
+      [:lambda, [:object, :list],
+        [:do, [[:pair, :list, [:cdr, :pair]]],
+              [[:or, [:null?, :pair],
+                     [:predicate, [:car, [:transform, :pair]], :object]],
+               [:if, [:null?, :pair],
+                     false,
+                     [:transform, :pair]]]]]]],
+  
+  [:define, :'list-search', [:'list-transform-search', [:lambda, [:x], :x]]],
+  [:define, :memq,   [:'list-search', :eq?]],
+  [:define, :memv,   [:'list-search', :eqv?]],
+  [:define, :member, [:'list-search', :equal?]],
+  
+  # (assq obj alist)
+  # (assv obj alist)
+  # (assoc obj alist)
+  # Alist (for "association list") must be a list of pairs.
+  # These procedures find the first pair in alist whose car
+  # field is obj, and returns that pair. If no pair in alist
+  # has obj as its car, then #f (not the empty list) is
+  # returned. Assq uses eq? to compare obj with the car fields
+  # of the pairs in alist, while assv uses eqv? and assoc
+  # uses equal?.
+  
+  [:define, :'assoc-list-search', [:'list-transform-search', :car]],
+  [:define, :assq,  [:'assoc-list-search', :eq?]],
+  [:define, :assv,  [:'assoc-list-search', :eqv?]],
+  [:define, :assoc, [:'assoc-list-search', :equal?]],
+  
+  # (foldr proc value list)
+  [:define, [:foldr, :proc, :value, :list],
+    [:if, [:null?, :list],
+          :value,
+          [:proc, [:car, :list],
+                  [:foldr, :proc, :value, [:cdr, :list]]]]],
+  
+  # (sublist list start end)
+  [:define, [:sublist, :list, :start, :end],
+    [:cond, [[:null?, :list], [:quote, []]],
+            [[:'>', :start, 0], [:sublist, [:cdr, :list], [:'-', :start, 1], [:'-', :end, 1]]],
+            [[:'<=', :end, 0], [:quote, []]],
+            [:else, [:cons, [:car, :list],
+                            [:sublist, [:cdr, :list], 0, [:'-', :end, 1]]]]]]
 ]
 
