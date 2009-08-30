@@ -145,6 +145,11 @@ module Heist
       end
       alias :exec :eval
       
+      # Executes an array of Scheme statements expressed as Ruby data.
+      def program(expressions)
+        expressions.map { |expr| exec(expr) }.last
+      end
+      
       # Returns the longest shared prefix match for the given variable name
       # stub, used to support autocompletion in the REPL.
       def longest_prefix(name)

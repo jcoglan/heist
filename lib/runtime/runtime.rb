@@ -22,7 +22,7 @@ module Heist
     end
     
     extend Forwardable
-    def_delegators(:@top_level, :[], :eval, :exec, :define, :syntax, :run)
+    def_delegators(:@top_level, :[], :eval, :exec, :program, :define, :syntax, :run)
     
     attr_accessor :stack, :top_level
     
@@ -44,6 +44,7 @@ module Heist
       
       run("#{ BUILTIN_PATH }primitives.rb")
       run("#{ BUILTIN_PATH }syntax.scm")
+      run("#{ BUILTIN_PATH }library.rb")
       run("#{ BUILTIN_PATH }library.scm")
       
       @start_time = Time.now.to_f
