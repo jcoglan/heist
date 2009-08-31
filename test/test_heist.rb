@@ -136,6 +136,10 @@ Class.new(Test::Unit::TestCase) do
     list = Heist.parse(expr)
     assert Heist::Runtime::Cons === list
     assert_equal expr, list.to_ruby
+    
+    cons = Heist::Runtime::Cons.method(:new)
+    assert_equal cons[3,cons[4,5]], Heist.parse([3, 4, :'.', 5])
+    assert_equal [3, 4, :'.', 5], cons[3,cons[4,5]].to_ruby
   end
 end
 

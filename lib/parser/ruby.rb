@@ -12,11 +12,16 @@ module Heist
   #
   class RubyParser
     
+    DOT = :'.'
+    
     # Parses a single piece of Ruby data in
     def parse(source)
       case source
         when Array then
-          Runtime::Cons.construct(source) { |cell| parse(cell) }
+          members, tail = *(source[-2] == DOT ? [source[0..-3], source.last] : [source, nil])
+          list = Runtime::Cons.construct(members) { |cell| parse(cell) }
+          list.tail.cdr = parse(tail) if tail
+          list
         when Symbol then
           Runtime::Identifier.new(source)
         else

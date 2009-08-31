@@ -218,7 +218,15 @@ module Heist
       # Returns a pure Ruby representation of the list, with any Heist
       # specific objects converted to basic Ruby equivalents.
       def to_ruby
-        map { |cell| cell.respond_to?(:to_ruby) ? cell.to_ruby : cell }
+        members = []
+        tail = each do |cell|
+          members << (cell.respond_to?(:to_ruby) ? cell.to_ruby : cell)
+        end
+        if NULL != tail.cdr
+          members << RubyParser::DOT
+          members << (tail.cdr.respond_to?(:to_ruby) ? tail.cdr.to_ruby : tail.cdr)
+        end
+        members
       end
       
       # Returns a Scheme-style string representation of the list.
