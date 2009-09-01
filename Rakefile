@@ -9,6 +9,13 @@ Hoe.spec('heist') do |p|
   p.extra_deps = %w(oyster treetop)
 end
 
+file "lib/builtin/library.rb" => "lib/builtin/library.scm" do |t|
+  program = Heist.parse(File.read t.prerequisites.first).convert!
+  File.open(t.name, 'w') { |f| f.write 'program ' + program.to_ruby.inspect }
+end
+
+task :compile => "lib/builtin/library.rb"
+
 namespace :spec do
   task :r5rs do
     procedures = Dir['r5rs/*.html'].

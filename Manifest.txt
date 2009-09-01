@@ -8,6 +8,7 @@ lib/heist.rb
 lib/repl.rb
 lib/trie.rb
 lib/builtin/library.scm
+lib/builtin/library.rb
 lib/builtin/primitives.rb
 lib/builtin/syntax.scm
 lib/parser/nodes.rb
