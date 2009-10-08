@@ -1,4 +1,4 @@
-(load "macro-helpers")
+(load "../helpers/macro-helpers")
 
 ; Basic test: no subpatterns or ellipses
 

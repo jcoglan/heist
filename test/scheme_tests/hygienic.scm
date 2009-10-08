@@ -1,4 +1,4 @@
-(load "macro-helpers")
+(load "../helpers/macro-helpers")
 
 (assert-equal 100 (let ([first 9])
                   (square-sum 1 first)))

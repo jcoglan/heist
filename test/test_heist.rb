@@ -1,5 +1,5 @@
 $VERBOSE = nil
-$dir = File.dirname(__FILE__)
+$dir = File.expand_path(File.dirname(__FILE__))
 
 $args = ARGV.map { |opt| "-#{opt}" }
 
@@ -46,7 +46,7 @@ Class.new(Test::Unit::TestCase) do
         
   ].each do |test|
     define_method('test_' + test) do
-      @@env.run($dir + '/' + test)
+      @@env.run($dir + '/scheme_tests/' + test)
     end
   end
   
@@ -84,15 +84,15 @@ Class.new(Test::Unit::TestCase) do
   end
   
   def test_macro_hygiene
-    @@env.run($dir + '/' + (@@env.hygienic? ? 'hygienic' : 'unhygienic'))
+    @@env.run($dir + '/scheme_tests/' + (@@env.hygienic? ? 'hygienic' : 'unhygienic'))
   end
   
   def test_continuations
     return if @@env.stackless?
-    @@env.run($dir + '/continuations')
+    @@env.run($dir + '/scheme_tests/continuations')
   end
   
-  def test_quotes
+  def test_quotation
     cons = Heist::Runtime::Cons
     c = cons.method(:new)
     
@@ -114,7 +114,7 @@ Class.new(Test::Unit::TestCase) do
     assert_equal [:quote, []],          @@env.eval("''()").to_ruby
   end
   
-  def test_birds
+  def test_birdhouse
     return unless @@env.lazy?
     @@env.eval('(load "birdhouse")')
     
