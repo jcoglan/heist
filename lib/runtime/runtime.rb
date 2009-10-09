@@ -5,7 +5,14 @@ module Heist
   # the standard set of primitive functions and special forms as defined
   # in <tt>lib/builtin</tt>.
   #
-  # +Runtime+ exposes several methods from the top-level +Scope+ object,
+  # User code runs in another scope descended from the top-level. This is
+  # done so that user-level redefinitions of built-in functions do not break
+  # other built-in functions that refer to the redefined names; lexical
+  # scoping ensures that built-in functions can only refer to other bindings
+  # in the top-level scope so user-level bindings do not affect the built-in
+  # library functions.
+  #
+  # +Runtime+ exposes several methods from the user-level +Scope+ object,
   # allowing runtime objects to be used as interfaces for defining
   # functions, eval'ing code and running source files.
   #
