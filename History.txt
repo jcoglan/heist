@@ -1,3 +1,11 @@
+=== Version 0.3.2 (TODO)
+
+* Built-in library code is executed in a protected scope so that redefinitions of
+  core functions in user code do not break implementations of library functions
+* The core library is compiled to a Ruby representation that loads faster
+* The REPL prints quote/unquote expressions using shorthand notation
+
+
 === Version 0.3.1 (2009-08-23)
 
 * Added the (rationalize) procedure
