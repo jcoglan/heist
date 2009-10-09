@@ -5,7 +5,7 @@ module Heist
     
     def initialize(options = {})
       @runtime = Runtime.new(options)
-      @scope = Runtime::FileScope.new(@runtime.top_level, File.expand_path('.'))
+      @scope = Runtime::FileScope.new(@runtime.user_scope, File.expand_path('.'))
       @results = []
       
       @runtime.define('~') { |x| @results[-x] }
@@ -17,7 +17,7 @@ module Heist
       puts @runtime.info
       
       Readline.completion_append_character = nil
-      Readline.completion_proc = @runtime.top_level.method(:longest_prefix)
+      Readline.completion_proc = @runtime.user_scope.method(:longest_prefix)
       
       loop do
         begin
