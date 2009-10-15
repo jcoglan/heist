@@ -1,5 +1,5 @@
-; Section 2.3.4
-; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-16.html#%_sec_2.3.4
+; Section 2.4.3
+; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-17.html#%_sec_2.4.3
 
 (load "../helpers")
 
