@@ -24,8 +24,8 @@ module Heist
   require ROOT_PATH + '/trie'
   require ROOT_PATH + '/repl'
   
-  LOAD_PATH = [LIB_PATH]
-  FILE_EXT  = ".scm"
+  LOAD_PATH = [BUILTIN_PATH, LIB_PATH]
+  FILE_EXTS = [""] + %w[.rb .scm .ss]
   
   class HeistError            < StandardError; end
   class RuntimeError          < HeistError; end

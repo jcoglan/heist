@@ -162,7 +162,6 @@ module Heist
       # sure we use 'obscure' names here.
       def run(_path)
         return instance_eval(File.read(_path)) if File.extname(_path) == '.rb'
-        _path   = _path + FILE_EXT unless File.file?(_path)
         _source = Heist.parse(File.read(_path))
         _scope  = FileScope.new(self, _path)
         _source.eval(_scope)
@@ -173,19 +172,29 @@ module Heist
       # is found, the path is assumed to refer to a module from the Heist
       # standard library. The <tt>(load)</tt> primitive is a wrapper
       # around this method.
-      def load(path)
-        dir = load_path.find do |dir|
-          File.file?("#{dir}/#{path}") or File.file?("#{dir}/#{path}#{FILE_EXT}")
-        end
-        return false unless dir
-        runtime.run("#{dir}/#{path}")
-        true
+      def load(file)
+        path = expand_path(file)
+        runtime.run(path) if path
       end
       
       # Returns the path of the current file. The receiving scope must have
       # a +FileScope+ as an ancestor, otherwise this method will return +nil+.
       def current_file
         @path || @parent.current_file rescue nil
+      end
+      
+      # Returns an absolute path to a requested library based on searching
+      # the current load path. The file extension may be omitted, suitable
+      # extensions being listed in Heist::FILE_EXTS.
+      def expand_path(path)
+        load_path.each do |dir|
+          test_path = File.expand_path(File.join(dir, path))
+          FILE_EXTS.each do |ext|
+            full_path = test_path + ext
+            return full_path if File.file?(full_path)
+          end
+        end
+        nil
       end
       
     private
@@ -211,7 +220,7 @@ module Heist
       # the directory of the current file if the receiving +Scope+ has a
       # +FileScope+ as an ancestor.
       def load_path
-        paths, file = [], current_file
+        paths, file = [""], current_file
         paths << File.dirname(file) if file
         paths + LOAD_PATH
       end

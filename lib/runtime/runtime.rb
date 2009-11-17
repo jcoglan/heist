@@ -29,9 +29,11 @@ module Heist
     end
     
     extend Forwardable
-    def_delegators(:@user_scope, :[], :eval, :exec, :program, :define, :syntax, :run)
+    def_delegators(:@user_scope, :[], :eval, :exec, :program, :define, :syntax, :run, :load)
     
-    attr_accessor :stack, :user_scope
+    attr_accessor :stack, :top_level, :user_scope
+    
+    LIBRARIES = %w[primitives syntax library]
     
     # A +Runtime+ is initialized using a set of options. The available
     # options include the following, all of which are +false+ unless
@@ -46,14 +48,13 @@ module Heist
       @continuations = !!options[:continuations]
       @hygienic      = !options[:unhygienic]
       
-      @top_level = Scope.new(self)
-      @stack = stackless? ? Stackless.new : Stack.new
-      
-      %w[primitives.rb syntax.scm library.rb].each do |lib|
-        @top_level.run("#{ BUILTIN_PATH }#{ lib }")
-      end
-      
+      @top_level  = Scope.new(self)
       @user_scope = Scope.new(@top_level)
+      @stack      = stackless? ? Stackless.new : Stack.new
+      
+      LIBRARIES.each do |library|
+        @top_level.run(@top_level.expand_path(library))
+      end
       
       @start_time = Time.now.to_f
     end

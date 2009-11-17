@@ -49,7 +49,7 @@ Class.new(Test::Unit::TestCase) do
         
   ].each do |test|
     define_method('test_' + test) do
-      @env.run($dir + '/scheme_tests/' + test)
+      @env.run($dir + '/scheme_tests/' + test + '.scm')
     end
   end
   
@@ -87,12 +87,12 @@ Class.new(Test::Unit::TestCase) do
   end
   
   def test_macro_hygiene
-    @env.run($dir + '/scheme_tests/' + (@env.hygienic? ? 'hygienic' : 'unhygienic'))
+    @env.run($dir + '/scheme_tests/' + (@env.hygienic? ? 'hygienic' : 'unhygienic') + '.scm')
   end
   
   def test_continuations
     return if @env.stackless?
-    @env.run($dir + '/scheme_tests/continuations')
+    @env.run($dir + '/scheme_tests/continuations.scm')
   end
   
   def test_quotation
