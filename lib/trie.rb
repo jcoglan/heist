@@ -38,6 +38,20 @@ module Heist
       @children = {}
     end
     
+    # Iterates over each child key of the +Trie+, calling the given +block+
+    # with each key and corresponding value. Like iterating over a flat +Hash+.
+    def each_child
+      @children.each { |key, subtree| yield(key, subtree) }
+    end
+    
+    # Iterates over the whole +Trie+, calling the given +block+ with each
+    # composite key and corresponding value. Each key will be an +Array+ matching
+    # the route to get from the root of the +Trie+ to the current node.
+    def each(prefix = [], &block)
+      each_child { |path, subtree| subtree.each(prefix + [path], &block) }
+      yield(prefix, @value) unless @value.nil?
+    end
+    
     # Returns +true+ iff the given +key+ is present in the +Trie+. They key
     # must match a complete key sequence that maps to a value, not a partial
     # prefix with no value attached.

@@ -135,6 +135,15 @@ module Heist
       def syntax(name, &block)
         self[name] = Syntax.new(self, &block)
       end
+      
+      # Calls the given +block+ with the name of every variable visible in
+      # the +Scope+ (given as a +Symbol+) and its corresponding value.
+      def each_var(&block)
+        @parent.each_var(&block) if @parent.respond_to?(:each_var)
+        @symbols.each do |key, value|
+          block.call((key * '').to_sym, value)
+        end
+      end
 
       # Parses and executes the given string of source code in the receiving
       # +Scope+. Accepts strings of Scheme source and arrays of Ruby data to

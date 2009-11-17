@@ -33,7 +33,7 @@ module Heist
     
     attr_accessor :stack, :top_level, :user_scope
     
-    LIBRARIES = %w[primitives syntax library]
+    BUILTIN_LIBRARIES = %w[primitives syntax library]
     
     # A +Runtime+ is initialized using a set of options. The available
     # options include the following, all of which are +false+ unless
@@ -52,11 +52,21 @@ module Heist
       @user_scope = Scope.new(@top_level)
       @stack      = stackless? ? Stackless.new : Stack.new
       
-      LIBRARIES.each do |library|
+      load_builtins(options)
+      @start_time = Time.now.to_f
+    end
+    
+    # To stop user-space redefinitions of built-in functions from breaking
+    # the standard library, we define builtins in a privileged scope, one up
+    # from the scope that user code runs in. We then bind the names in 'user
+    # space' to stop (set!) from reaching into our privileged top level.
+    def load_builtins(options = {})
+      libraries = (options[:only] || BUILTIN_LIBRARIES) - (options[:except] || [])
+      
+      libraries.each do |library|
         @top_level.run(@top_level.expand_path(library))
       end
-      
-      @start_time = Time.now.to_f
+      @user_scope.each_var(&@user_scope.method(:[]=))
     end
     
     # Returns the length of time the +Runtime+ has been alive for, as a
