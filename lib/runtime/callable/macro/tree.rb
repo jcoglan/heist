@@ -88,7 +88,6 @@ module Heist
         # seeing as the pattern should be followed by the same number of ellipses
         # every time it is encountered.
         def <<(value)
-          return if Cons::NULL == value
           tail(@depth) << value
         end
         

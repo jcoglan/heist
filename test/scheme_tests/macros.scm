@@ -43,6 +43,13 @@
 
 (assert-equal 8 (dont-rename-else #f 6 8))
 
+; Check that empty lists are stored as matches and appear in output
+(let-syntax ([quote-match (syntax-rules (quote)
+                            [(_ 'arg ...) '(arg ...)])])
+  (assert-equal '(4 5 6) (quote-match '4 '5 '6))
+  (assert-equal '(4 5 ()) (quote-match '4 '5 '()))
+  (assert-equal '(4 () 6) (quote-match '4 '() '6)))
+
 ; Check that keywords are ignored if locally bound
 ; example from R6RS -- http://www.r6rs.org/final/html/r6rs/r6rs-Z-H-14.html#node_sec_11.19
 (assert-equal 'ok (let ((=> #f))
