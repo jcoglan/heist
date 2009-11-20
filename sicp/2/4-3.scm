@@ -2,6 +2,7 @@
 ; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-17.html#%_sec_2.4.3
 
 (load "../helpers")
+(load "../tables")
 
 
 ; Symbolic differentiation using generics
@@ -15,7 +16,7 @@
 ; the values of the arguments and the result is returned.
 (define (apply-generic op . args)
   (let ([type-tags (map type-tag args)])
-    (let [(proc (get op type-tags)])
+    (let ([proc (get op type-tags)])
       (if proc
           (apply proc (map contents args))
           (error "No method for these types -- APPLY-GENERIC"
