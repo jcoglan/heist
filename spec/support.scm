@@ -28,10 +28,34 @@
   ((describe proc-name)
    '())))
 
-(define spec (let ()
-  (define test-failures '())
+(define-syntax define-object (syntax-rules (var public private)
+  ((_ "match?" symbol public (name . args) body ...)
+   (eq? symbol 'name))
+  
+  ((_ "match?" expression ...) #f)
+  
+  ((_ "lookup" (name . args) body ...) name)
+  
+  ((_ "lookup" name expression ...) name)
+  
+  ((define-object name
+     (modifier expression ...)
+     ...)
+   (define name (let ()
+     (define expression ...)
+     ...
+     (lambda (symbol . args)
+       (define proc (cond ((define-object "match?" symbol modifier expression ...)
+                           (define-object "lookup" expression ...))
+                          ...))
+       (if (procedure? proc)
+           (apply proc args)
+           (error "No such method" symbol))))))))
 
-  (define (run-test proc-name description proc args expected)
+(define-object spec
+  (var test-failures '())
+  
+  (public (run proc-name description proc args expected)
     (let ((actual (apply proc args)))
       (if (equal? expected actual)
           (display ".")
@@ -41,8 +65,8 @@
                   (cons `(,proc-name "with" ,description
                             ": expected" ,expected "but got" ,actual)
                         test-failures))))))
-
-  (define (test-summary)
+  
+  (public (summary)
     (define (report failures i)
       (if (not (null? failures))
           (begin
@@ -53,18 +77,12 @@
           '()))
     (newline)
     (report test-failures (length test-failures)))
-
-  (define (print . args)
+  
+  (private (print . args)
     (if (null? args)
         (newline)
         (begin
           (display (car args))
           (display " ")
-          (apply print (cdr args)))))
-  
-  (lambda (symbol . args)
-    (define proc (case symbol
-                   ((run)     run-test)
-                   ((summary) test-summary)))
-    (apply proc args))))
+          (apply print (cdr args))))))
 
