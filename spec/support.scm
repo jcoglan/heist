@@ -18,6 +18,14 @@
   ((describe proc-name)
    '())))
 
+(define-syntax describe-group (syntax-rules ()
+  ((describe-group (first rest ...) example ...)
+   (begin
+     (describe first example ...)
+     (describe-group (rest ...) example ...)))
+  ((describe-group () example ...)
+   '())))
+
 (define test-failures '())
 
 (define (run-test proc-name description proc args expected)

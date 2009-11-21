@@ -6,7 +6,7 @@
                      (let ((n 0))
                        (lambda () (set! n (+ n 1)) n)))))
   
-  (describe eqv?
+  (describe-group (eqv? eq?)
     (with "both true"                   (#t #t)         => #t)
     (with "both false"                  (#f #f)         => #t)
     
