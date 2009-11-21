@@ -1,4 +1,4 @@
-(define-syntax describe (syntax-rules (with =>)
+(define-syntax describe (syntax-rules (with => ~>)
   ((describe (single) example ...)
    (describe single example ...))
   
@@ -11,9 +11,18 @@
      (with description (argument ...) => result)
      further-clauses ...)
    (begin
-     (spec 'run 'proc-name description
-                proc-name `(,argument ...)
-                result)
+     (spec 'equal 'proc-name description
+                  proc-name `(,argument ...)
+                  result)
+     (describe proc-name further-clauses ...)))
+  
+  ((describe proc-name
+     (with description (argument ...) ~> matcher-name)
+     further-clauses ...)
+   (begin
+     (spec 'match 'proc-name description
+                  proc-name `(,argument ...)
+                  'matcher-name matcher-name)
      (describe proc-name further-clauses ...)))
   
   ((describe proc-name
@@ -56,17 +65,28 @@
   (var assertions 0)
   (var test-failures '())
   
-  (public (run proc-name description proc args expected)
+  (public (equal proc-name description proc args expected)
     (let ((actual (apply proc args)))
-      (set! assertions (+ 1 assertions))
-      (if (equal? expected actual)
-          (display ".")
-          (begin
-            (display "F")
-            (set! test-failures
-                  (cons `(,proc-name "with" ,description
-                            ": expected" ,expected "but got" ,actual)
-                        test-failures))))))
+      (run-test
+        (lambda () (equal? expected actual))
+        `(,proc-name "with" ,description
+          ": expected" ,expected "but got" ,actual))))
+  
+  (public (match proc-name description proc args matcher-name matcher)
+    (let ((actual (apply proc args)))
+      (run-test
+        (lambda () (matcher actual))
+        `(,proc-name "with" ,description
+          ": expected" ,actual "to match", matcher-name))))
+  
+  (private (run-test block message)
+    (set! assertions (+ 1 assertions))
+    (if (block)
+        (display ".")
+        (begin
+          (display "F")
+          (set! test-failures
+                (cons message test-failures)))))
   
   (public (summary)
     (define (report failures i)

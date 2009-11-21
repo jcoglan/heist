@@ -4,7 +4,10 @@ require dir + '/../lib/heist'
 require dir + '/../lib/bin_spec'
 
 INIT_FLAGS = [''] + %w[-c -l -u -uc -ul]
-TEST_FILES = %w[equivalence]
+TEST_FILES = %w[
+  equivalence
+  numbers
+]
 
 INIT_FLAGS.each do |flags|
   options = Heist::BIN_SPEC.parse([flags])

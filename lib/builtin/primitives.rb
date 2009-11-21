@@ -241,7 +241,9 @@ end
 
 # Returns the product of all arguments passed
 define('*') do |*args|
-  args.inject(1) { |prod, arg| prod * arg }
+  args.any? { |arg| arg == 0 } ?
+      0 :
+      args.inject(1) { |prod, arg| prod * arg }
 end
 
 # Returns the first argument divided by the second, or the
@@ -262,7 +264,8 @@ end
 
 %w[floor ceil truncate round].each do |symbol|
   define(symbol) do |number|
-    number.__send__(symbol)
+    result = number.__send__(symbol)
+    Float === number ? result.to_f : result
   end
 end
 
