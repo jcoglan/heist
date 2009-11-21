@@ -6,7 +6,7 @@
                      (let ((n 0))
                        (lambda () (set! n (+ n 1)) n)))))
   
-  (describe-group (eqv? eq?)
+  (describe-group (eq? eqv? equal?)
     (with "both true"                   (#t #t)         => #t)
     (with "both false"                  (#f #f)         => #t)
     
@@ -54,18 +54,6 @@
     
     (with "the empty list and a pair"   ('() pair)      => #f)
     (with "a pair and the empty list"   (pair '())      => #f)
-    
-    (with "distinct pair objects"       ('(1 2) '(1 2))   => #f)
-    (with "distinct vector objects"     ('#(1 2) '#(1 2)) => #f)
-    (with "distinct strings"            ("foo" "foo")     => #f)
-  )
-  
-  (describe eqv?
-    (with "equal rationals"             (7/8 14/16)     => #t)
-    (with "equal reals"                 (3.14 3.14)     => #t)
-    (with "equal complexes"             (8+3i 8+3i)     => #t)
-    (with "inexact complex and real"    (9.3+0i 9.3)    => #t)
-    (with "real and inexact complex"    (9.3 9.3+0i)    => #t)
   )
   
   (describe eq?
@@ -74,5 +62,25 @@
     (with "equal complexes"             (8+3i 8+3i)     => #f)
     (with "inexact complex and real"    (9.3+0i 9.3)    => #f)
     (with "real and inexact complex"    (9.3 9.3+0i)    => #f)
+  )
+  
+  (describe-group (eqv? equal?)
+    (with "equal rationals"             (7/8 14/16)     => #t)
+    (with "equal reals"                 (3.14 3.14)     => #t)
+    (with "equal complexes"             (8+3i 8+3i)     => #t)
+    (with "inexact complex and real"    (9.3+0i 9.3)    => #t)
+    (with "real and inexact complex"    (9.3 9.3+0i)    => #t)
+  )
+  
+  (describe-group (eq? eqv?)
+    (with "distinct pair objects"       ('(1 2) '(1 2))   => #f)
+    (with "distinct vector objects"     ('#(1 2) '#(1 2)) => #f)
+    (with "distinct strings"            ("foo" "foo")     => #f)
+  )
+  
+  (describe equal?
+    (with "distinct pair objects"       ('(1 2) '(1 2))   => #t)
+    (with "distinct vector objects"     ('#(1 2) '#(1 2)) => #t)
+    (with "distinct strings"            ("foo" "foo")     => #t)
   ))
 

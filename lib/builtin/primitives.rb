@@ -136,10 +136,9 @@ end
 # rationals, reals and complexes with equal values will cause
 # this to return true where (eq?) would return false.
 define('eqv?') do |op1, op2|
-  ([Identifier, Character].any? { |type| type === op1 } and op1 == op2) or
   ([op1, op2].all? { |x| Heist.exact?(x) } and op1 == op2) or
   ([op1, op2].all? { |x| Heist.inexact?(x) } and op1 == op2) or
-  op1.equal?(op2)
+  call('eq?', op1, op2)
 end
 
 # The coarsest kind of equality predicate; returns true for
@@ -147,7 +146,8 @@ end
 # true if given two lists, vectors or strings containing the
 # same elements/characters.
 define('equal?') do |op1, op2|
-  op1 == op2
+  ([Cons, Vector, String].any? { |type| type === op1 } and op1 == op2) or
+  call('eqv?', op1, op2)
 end
 
 # Returns true iff the arguments are monotonically decreasing
