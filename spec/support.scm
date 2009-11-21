@@ -53,10 +53,12 @@
            (error "No such method" symbol))))))))
 
 (define-object spec
+  (var assertions 0)
   (var test-failures '())
   
   (public (run proc-name description proc args expected)
     (let ((actual (apply proc args)))
+      (set! assertions (+ 1 assertions))
       (if (equal? expected actual)
           (display ".")
           (begin
@@ -76,7 +78,9 @@
             (newline))
           '()))
     (newline)
-    (report test-failures (length test-failures)))
+    (report test-failures (length test-failures))
+    (newline)
+    (print "Finished." assertions "assertions," (length test-failures) "failures."))
   
   (private (print . args)
     (if (null? args)
