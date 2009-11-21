@@ -100,7 +100,10 @@ module Heist
     
     class Complex < Treetop::Runtime::SyntaxNode
       def eval
-        @value ||= Complex(real.eval, imaginary.eval)
+        return @value if defined?(@value)
+        @value = Complex(real.eval, imaginary.eval)
+        @value = @value.real if @value.imag == 0
+        @value
       end
     end
     
@@ -112,7 +115,10 @@ module Heist
     
     class Rational < Treetop::Runtime::SyntaxNode
       def eval
-        @value ||= Rational(numerator.eval, denominator.eval)
+        return @value if defined?(@value)
+        @value = Rational(numerator.eval, denominator.eval)
+        @value = @value.numerator if @value.denominator == 1
+        @value
       end
     end
     

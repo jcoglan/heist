@@ -122,7 +122,19 @@ end
 
 # Comparators
 
-# TODO write a more exact implementation, and implement (eq?)
+# Returns true iff the two arguments refer to the same object.
+# Booleans, symbols, integers, characters and the empty list
+# all behave like interned objects so all instances of a given
+# symbol will appear equal according to (eq?).
+define('eq?') do |op1, op2|
+  ([Identifier, Character].any? { |type| type === op1 } and op1 == op2) or
+  op1.equal?(op2)
+end
+
+# Broadly speaking, returns true iff given two references to
+# the same object. Slightly more tolerant than (eq?) in that
+# rationals, reals and complexes with equal values will cause
+# this to return true where (eq?) would return false.
 define('eqv?') do |op1, op2|
   ([Identifier, Character].any? { |type| type === op1 } and op1 == op2) or
   ([op1, op2].all? { |x| Heist.exact?(x) } and op1 == op2) or
@@ -130,6 +142,10 @@ define('eqv?') do |op1, op2|
   op1.equal?(op2)
 end
 
+# The coarsest kind of equality predicate; returns true for
+# all cases in which (eqv?) returns true but will also return
+# true if given two lists, vectors or strings containing the
+# same elements/characters.
 define('equal?') do |op1, op2|
   op1 == op2
 end

@@ -17,10 +17,6 @@
 ; Alias for (call-with-current-continuation)
 (define call/cc call-with-current-continuation)
 
-; (eq? x y)
-; Currently an alias for (eqv? x y). TODO implement properly
-(define eq? eqv?)
-
 ; (not x)
 ; Boolean inverse of x
 (define (not x)

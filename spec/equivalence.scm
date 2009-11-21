@@ -13,17 +13,12 @@
     (with "identical symbols"           ('foo 'foo)     => #t)
     
     (with "equal integers"              (3 3)           => #t)
-    (with "equal rationals"             (7/8 14/16)     => #t)
     (with "equal integer and rational"  (4 8/2)         => #t)
     (with "equal rational and integer"  (30/6 5)        => #t)
-    (with "equal reals"                 (3.14 3.14)     => #t)
-    (with "equal complexes"             (8+3i 8+3i)     => #t)
     (with "equal integer and complex"   (6 6+0i)        => #t)
     (with "equal complex and integer"   (9+0i 9)        => #t)
     (with "equal rational and complex"  (12/2 6+0i)     => #t)
     (with "equal complex and rational"  (9+0i 54/6)     => #t)
-    (with "inexact complex and real"    (9.3+0i 9.3)    => #t)
-    (with "real and inexact complex"    (9.3 9.3+0i)    => #t)
     
     (with "equal characters"            (#\h #\h)       => #t)
     
@@ -63,5 +58,21 @@
     (with "distinct pair objects"       ('(1 2) '(1 2))   => #f)
     (with "distinct vector objects"     ('#(1 2) '#(1 2)) => #f)
     (with "distinct strings"            ("foo" "foo")     => #f)
+  )
+  
+  (describe eqv?
+    (with "equal rationals"             (7/8 14/16)     => #t)
+    (with "equal reals"                 (3.14 3.14)     => #t)
+    (with "equal complexes"             (8+3i 8+3i)     => #t)
+    (with "inexact complex and real"    (9.3+0i 9.3)    => #t)
+    (with "real and inexact complex"    (9.3 9.3+0i)    => #t)
+  )
+  
+  (describe eq?
+    (with "equal rationals"             (7/8 14/16)     => #f)
+    (with "equal reals"                 (3.14 3.14)     => #f)
+    (with "equal complexes"             (8+3i 8+3i)     => #f)
+    (with "inexact complex and real"    (9.3+0i 9.3)    => #f)
+    (with "real and inexact complex"    (9.3 9.3+0i)    => #f)
   ))
 
