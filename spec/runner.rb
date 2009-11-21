@@ -14,6 +14,6 @@ INIT_FLAGS.each do |flags|
   runtime.run(dir + '/support.scm')
   
   TEST_FILES.each { |file| runtime.run "#{dir}/#{file}.scm" }
-  runtime.exec [:'test-summary']
+  runtime.exec [:spec, [:quote, :summary]]
 end
 
