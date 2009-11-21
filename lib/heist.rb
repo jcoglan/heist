@@ -66,6 +66,16 @@ module Heist
           op1.to_f / op2
     end
     
+    def exact?(number)
+      return false unless Numeric === number
+      return true if Integer === number or Rational === number
+      Complex === number and (exact?(number.real) and exact?(number.imag))
+    end
+    
+    def inexact?(number)
+      Numeric === number and not exact?(number)
+    end
+    
     # Returns a string representation of the object suitable for display on the
     # command line. Some built-in Ruby types need special handling to display
     # according to Scheme conventions.
