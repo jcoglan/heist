@@ -1,4 +1,12 @@
 (define-syntax describe (syntax-rules (with =>)
+  ((describe (single) example ...)
+   (describe single example ...))
+  
+  ((describe (first rest ...) example ...)
+   (begin
+     (describe first example ...)
+     (describe (rest ...) example ...)))
+  
   ((describe proc-name
      (with description (argument ...) => result)
      further-clauses ...)
@@ -7,6 +15,7 @@
                 proc-name `(,argument ...)
                 result)
      (describe proc-name further-clauses ...)))
+  
   ((describe proc-name
      (binding-construct ((name value) ...)
        example ...)
@@ -15,15 +24,8 @@
      (describe proc-name
        example ...
        further-clauses ...)))
+  
   ((describe proc-name)
-   '())))
-
-(define-syntax describe-group (syntax-rules ()
-  ((describe-group (first rest ...) example ...)
-   (begin
-     (describe first example ...)
-     (describe-group (rest ...) example ...)))
-  ((describe-group () example ...)
    '())))
 
 (define spec (let ()
