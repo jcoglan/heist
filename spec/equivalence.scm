@@ -54,6 +54,10 @@
     
     (with "the empty list and a pair"   ('() pair)      => #f)
     (with "a pair and the empty list"   (pair '())      => #f)
+    
+    (with "unequal lists"               ('(1 2) '(1 3))   => #f)
+    (with "unequal vectors"             ('#(1 2) '#(1 3)) => #f)
+    (with "unequal strings"             ("foo" "bar")     => #f)
   )
   
   (describe eq?
