@@ -150,32 +150,39 @@ define('equal?') do |op1, op2|
   ([Cons, Vector, String].any? { |type| type === op1 } and op1 == op2)
 end
 
+define('numeric-compare') do |comparator, args|
+  result = args.all? { |arg| Numeric === arg }
+  args.inject do |former, latter|
+    next unless result
+    result = false unless former.__send__(comparator, latter)
+    latter
+  end
+  result
+end
+
+# Returns true iff the arguments are numerically equal
+define('=') do |*args|
+  call('numeric-compare', :==, args)
+end
+
 # Returns true iff the arguments are monotonically decreasing
 define('>') do |*args|
-  result = true
-  args.inject { |former, latter| result = false unless former > latter }
-  result
+  call('numeric-compare', :>, args)
 end
 
 # Returns true iff the arguments are monotonically non-increasing
 define('>=') do |*args|
-  result = true
-  args.inject { |former, latter| result = false unless former >= latter }
-  result
+  call('numeric-compare', :>=, args)
 end
 
 # Returns true iff the arguments are monotonically increasing
 define('<') do |*args|
-  result = true
-  args.inject { |former, latter| result = false unless former < latter }
-  result
+  call('numeric-compare', :<, args)
 end
 
 # Returns true iff the arguments are monotonically non-decreasing
 define('<=') do |*args|
-  result = true
-  args.inject { |former, latter| result = false unless former <= latter }
-  result
+  call('numeric-compare', :<=, args)
 end
 
 #----------------------------------------------------------------

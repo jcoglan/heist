@@ -39,19 +39,6 @@
 ; Returns true iff x is any type of number
 (define number? complex?)
 
-; Returns true iff all arguments are numerically equal
-(define (= . args)
-  (define (iter x rest)
-    (if (null? rest)
-        #t
-        (let ([y (car rest)])
-          (if (or (not (number? x))
-                  (not (number? y))
-                  (not (equal? x y)))
-              #f
-              (iter x (cdr rest))))))
-  (iter (car args) (cdr args)))
-
 ; (zero? x)
 ; Returns true iff x is zero
 (define (zero? x)

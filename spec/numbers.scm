@@ -34,3 +34,39 @@
   (with "two rationals giving a rational" (3/4 2/3) => 9/8)
 )
 
+(describe =
+  (with "equal integers"          (3 3)             => #t)
+  (with "equal rationals"         (4/3 4/3)         => #t)
+  (with "equal reals"             (3.14 3.14)       => #t)
+  (with "equal complexes"         (3+8i 3.0+8i)     => #t)
+  (with "mixed types"             (3 6/2 3.0 3+0i)  => #t)
+  (with "unequal complex"         (3 6/2 3.0 3+2i)  => #f)
+  (with "unequal real"            (3 6/2 3.1 3+0i)  => #f)
+  (with "unequal rational"        (3 6/5 3.0 3+0i)  => #f)
+  (with "unequal integer"         (7 6/2 3.0 3+0i)  => #f)
+)
+
+(describe <
+  (with "increasing arguments"    (3 9/2 5.6)       => #t)
+  (with "an equal pair"           (4.5 9/2 5)       => #f)
+  (with "a decreasing pair"       (4.5 4.4 5.6)     => #f)
+)
+
+(describe <=
+  (with "increasing arguments"    (3 9/2 5.6)       => #t)
+  (with "an equal pair"           (4.5 9/2 5)       => #t)
+  (with "a decreasing pair"       (4.5 4.4 5.6)     => #f)
+)
+
+(describe >
+  (with "decreasing arguments"    (9 17/2 7.2)      => #t)
+  (with "an equal pair"           (9 17/2 8.5)      => #f)
+  (with "an increasing pair"      (9 17/2 8.6)      => #f)
+)
+
+(describe >=
+  (with "decreasing arguments"    (9 17/2 7.2)      => #t)
+  (with "an equal pair"           (9 17/2 8.5)      => #t)
+  (with "an increasing pair"      (9 17/2 8.6)      => #f)
+)
+
