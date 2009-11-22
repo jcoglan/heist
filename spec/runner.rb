@@ -6,6 +6,7 @@ require dir + '/../lib/bin_spec'
 INIT_FLAGS = [''] + %w[-c -l -u -uc -ul]
 TEST_FILES = %w[
   equivalence
+  types
   numbers
 ]
 
