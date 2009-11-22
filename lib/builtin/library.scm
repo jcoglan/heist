@@ -70,7 +70,7 @@
 ; (odd? x)
 ; Returns true iff x is odd
 (define (odd? x)
-  (= 1 (remainder x 2)))
+  (= 1 (abs (remainder x 2))))
 
 ; (even? x)
 ; Returns true iff x is even

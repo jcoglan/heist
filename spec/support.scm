@@ -37,6 +37,36 @@
   ((describe proc-name)
    '())))
 
+(define-syntax with (syntax-rules (~> !~>)
+  ((with description expression
+     (~> matcher-name)
+     further-clauses ...)
+   (begin
+     (spec 'equal 'matcher-name description
+                  matcher-name `(,expression)
+                  #t)
+     (with description expression further-clauses ...)))
+  
+  ((with description expression
+     (!~> matcher-name)
+     further-clauses ...)
+   (begin
+     (spec 'equal 'matcher-name description
+                  matcher-name `(,expression)
+                  #f)
+     (with description expression further-clauses ...)))
+  
+  ((with description expression
+    (modifier matcher-name more ...)
+    further-clauses ...)
+   (with description expression
+     (modifier matcher-name)
+     (modifier more) ...
+     further-clauses ...))
+  
+  ((with description expression)
+   '())))
+
 (define-syntax define-object (syntax-rules (var public private)
   ((_ "match?" symbol public (name . args) body ...)
    (eq? symbol 'name))

@@ -94,3 +94,24 @@
   (with "two rationals giving a rational" (3/4 2/3) => 9/8)
 )
 
+(with "zero"                      0 (~>   zero? even?)
+                                    (!~>  positive? negative? odd?))
+
+(with "a positive even integer"   4 (!~>  zero? negative? odd?)
+                                    (~>   positive? even?))
+
+(with "a positive odd integer"    5 (!~>  zero? negative? even?)
+                                    (~>   positive? odd?))
+
+(with "a negative even integer"  -6 (!~>  zero? positive? odd?)
+                                    (~>   negative? even?))
+
+(with "a negative odd integer"   -9 (!~>  zero? positive? even?)
+                                    (~>   negative? odd?))
+
+(with "a positive real"         4.5 (!~>  zero? negative? odd? even?)
+                                    (~>   positive?))
+
+(with "a negative real"        -6.3 (!~>  zero? positive? odd? even?)
+                                    (~>   negative?))
+
