@@ -247,9 +247,13 @@ define('*') do |*args|
 end
 
 # Returns the first argument divided by the second, or the
-# reciprocal of the first if only one argument is given
+# reciprocal of the first if only one argument is given. If
+# two integers are given, we return a rational rather than
+# using integer division
 define('/') do |op1, op2|
-  op2.nil? ? Heist.divide(1, op1) : Heist.divide(op1, op2)
+  [op1, op2].all? { |value| Integer === value } ?
+      Rational(op1, op2) :
+      op1 / op2
 end
 
 # Returns the numerator of a number

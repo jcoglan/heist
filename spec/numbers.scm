@@ -87,5 +87,10 @@
   (with "two rationals"         (4/5 2/3)   ~> exact?)
   (with "an integer and a real" (9 4.5)     ~> inexact?)
   (with "a real and a rational" (2.3 8/9)   ~> inexact?)
+  
+  (with "two integers giving an integer"  (20 5)    => 4)
+  (with "two integers giving a rational"  (20 6)    => 10/3)
+  (with "two rationals giving an integer" (8/2 2/3) => 6)
+  (with "two rationals giving a rational" (3/4 2/3) => 9/8)
 )
 

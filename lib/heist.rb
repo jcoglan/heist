@@ -57,15 +57,6 @@ module Heist
           expression
     end
     
-    # Returns the result of dividing the first argument by the second. If both
-    # arguments are integers, returns a rational rather than performing
-    # integer division as Ruby would normally do.
-    def divide(op1, op2)
-      [op1, op2].all? { |value| Integer === value } ?
-          Rational(op1, op2) :
-          op1.to_f / op2
-    end
-    
     def exact?(number)
       return false unless Numeric === number
       return true if Integer === number or Rational === number
