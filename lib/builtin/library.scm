@@ -39,20 +39,6 @@
 ; Returns true iff x is any type of number
 (define number? complex?)
 
-; (exact? x)
-; Returns true iff the given number is exact i.e. an integer, a
-; rational, or a complex made of integers or rationals
-(define (exact? x)
-  (or (rational? x)
-      (and (not (zero? (imag-part x)))
-           (exact? (real-part x))
-           (exact? (imag-part x)))))
-
-; (inexact? x)
-; Returns true iff x is not an exact number
-(define (inexact? x)
-  (not (exact? x)))
-
 ; Returns true iff all arguments are numerically equal
 (define (= . args)
   (define (iter x rest)

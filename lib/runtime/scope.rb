@@ -215,7 +215,7 @@ module Heist
       # be called with a +Scope+, but Ruby primitives are not given the
       # current +scope+. Figure out something better.
       def call(name, *params)
-        self[name].body.call(*params)
+        self[name].apply(params)
       end
 
       # Converts any Ruby object to a name string. All names are downcased

@@ -127,8 +127,8 @@ end
 # all behave like interned objects so all instances of a given
 # symbol will appear equal according to (eq?).
 define('eq?') do |op1, op2|
-  ([Identifier, Character].any? { |type| type === op1 } and op1 == op2) or
-  op1.equal?(op2)
+  op1.equal?(op2) or
+  ([Identifier, Character].any? { |type| type === op1 } and op1 == op2)
 end
 
 # Broadly speaking, returns true iff given two references to
@@ -136,9 +136,9 @@ end
 # rationals, reals and complexes with equal values will cause
 # this to return true where (eq?) would return false.
 define('eqv?') do |op1, op2|
-  ([op1, op2].all? { |x| Heist.exact?(x) } and op1 == op2) or
-  ([op1, op2].all? { |x| Heist.inexact?(x) } and op1 == op2) or
-  call('eq?', op1, op2)
+  call('eq?', op1, op2) or
+  ([op1, op2].all? { |x| call('exact?', x) } and op1 == op2) or
+  ([op1, op2].all? { |x| call('inexact?', x) } and op1 == op2)
 end
 
 # The coarsest kind of equality predicate; returns true for
@@ -146,8 +146,8 @@ end
 # true if given two lists, vectors or strings containing the
 # same elements/characters.
 define('equal?') do |op1, op2|
-  ([Cons, Vector, String].any? { |type| type === op1 } and op1 == op2) or
-  call('eqv?', op1, op2)
+  call('eqv?', op1, op2) or
+  ([Cons, Vector, String].any? { |type| type === op1 } and op1 == op2)
 end
 
 # Returns true iff the arguments are monotonically decreasing
@@ -225,7 +225,21 @@ end
 #----------------------------------------------------------------
 
 # Numerical functions
-# TODO implement rationalize, exact->inexact and vice versa
+# TODO implement exact->inexact and vice versa
+
+# Returns true iff the given number is exact i.e. an integer, a
+# rational, or a complex made of integers or rationals
+define('exact?') do |value|
+  Numeric === value and
+      (Integer === value or
+       Rational === value or
+       (Complex === value and call('exact?', value.real) and call('exact?', value.imag)))
+end
+
+# Returns true iff the given value is an inexact number
+define('inexact?') do |value|
+  Numeric === value and not call('exact?', value)
+end
 
 # Returns the sum of all arguments passed
 define('+') do |*args|
