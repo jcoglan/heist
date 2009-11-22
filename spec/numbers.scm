@@ -70,3 +70,27 @@
   (with "an increasing pair"      (9 17/2 8.6)      => #f)
 )
 
+(describe max
+  (with "two integers"            (6 3)             => 6)
+  (with "two rationals"           (5/2 22/7)        => 22/7)
+  (with "two reals"               (6.7 8.3)         => 8.3)
+  
+  (with "mixed types, integer largest"  (8 5/2 6.7)   => 8.0)
+  (with "mixed types, rational largest" (4 13/2 5.9)  => 6.5)
+  (with "mixed types, real largest"     (4.6 5/2 6.7) => 6.7)
+  
+  (with "an inexact argument"     (8 5/2 6.7) ~> inexact?)
+)
+
+(describe min
+  (with "two integers"            (6 3)             => 3)
+  (with "two rationals"           (5/2 22/7)        => 5/2)
+  (with "two reals"               (6.7 8.3)         => 6.7)
+  
+  (with "mixed types, integer smallest"   (2 5/2 6.7)   => 2.0)
+  (with "mixed types, rational smallest"  (4 3/4 5.9)   => 0.75)
+  (with "mixed types, real smallest"      (4.6 5/2 1.5) => 1.5)
+  
+  (with "an inexact argument"     (2 5/2 6.7) ~> inexact?)
+)
+

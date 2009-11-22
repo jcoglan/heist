@@ -17,6 +17,9 @@ INIT_FLAGS.each do |flags|
   puts "\n" + runtime.info
   runtime.run(dir + '/support.scm')
   
+  files = TEST_FILES
+  files = files.select { |f| ARGV.include?(f) } unless ARGV.empty?
+  
   TEST_FILES.each { |file| runtime.run "#{dir}/#{file}.scm" }
   runtime.exec [:spec, [:quote, :summary]]
 end

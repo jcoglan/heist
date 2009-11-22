@@ -64,20 +64,6 @@
 (define (even? x)
   (zero? (remainder x 2)))
 
-; (max arg1 arg2 ...)
-; Returns the maximum value in the list of arguments
-(define (max . values)
-  (foldr (lambda (a b) (if (>= a b) a b))
-         (car values)
-         (cdr values)))
-
-; (min arg1 arg2 ...)
-; Returns the minimum value in the list of arguments
-(define (min . values)
-  (foldr (lambda (a b) (if (<= a b) a b))
-         (car values)
-         (cdr values)))
-
 ; (abs x)
 ; Returns the absolute value of a number
 (define (abs x)
@@ -323,13 +309,6 @@
       ((null? pair) '())
     (apply proc (cons (car pair)
                       (map car others)))))
-
-; (foldr proc value list)
-(define (foldr proc value list)
-  (if (null? list)
-      value
-      (proc (car list)
-            (foldr proc value (cdr list)))))
 
 ; (sublist list start end)
 (define (sublist list start end)

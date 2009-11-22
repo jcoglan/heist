@@ -248,6 +248,18 @@ define('inexact?') do |value|
   Numeric === value and not call('exact?', value)
 end
 
+# Returns the maximum of a list of values
+define('max') do |*args|
+  max = args.max
+  args.any? { |arg| Float === arg } ? max.to_f : max
+end
+
+# Returns the minimum of a list of values
+define('min') do |*args|
+  min = args.min
+  args.any? { |arg| Float === arg } ? min.to_f : min
+end
+
 # Returns the sum of all arguments passed
 define('+') do |*args|
   args.any? { |arg| String === arg } ?
