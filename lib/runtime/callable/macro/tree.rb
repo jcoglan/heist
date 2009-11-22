@@ -101,6 +101,7 @@ module Heist
         # to one of the values in <tt>@indexes</tt>. The macro expander calls this
         # while walking a template to iterate over repetition branches.
         def shift!(depth)
+          return if depth > @depth
           indexes[depth] += 1
           indexes[depth] = 0 if indexes[depth] >= current(depth).size
         end
@@ -109,6 +110,7 @@ module Heist
         # read branch at the given +depth+. Returns zero if no branch exists at
         # the given indexes.
         def size(depth)
+          return nil if depth > @depth
           current(depth).size rescue 0
         end
         

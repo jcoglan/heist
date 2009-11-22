@@ -321,6 +321,31 @@
 (assert-equal '() (double-up))
 
 
+; Test that pattern variables may appear at a greater
+; repetition depth in the template than they do in the pattern
+
+(let-syntax ((repeater (syntax-rules ()
+                         [(_ one (many ...))
+                          '((one many) ...)]))
+             
+             (root-v-2 (syntax-rules ()
+                         [(_ one (many ...) ...)
+                          '(((one many) ...) ...)]))
+             
+             (1-v-2 (syntax-rules ()
+                      [(_ (one ...) (many ...) ...)
+                       '(((one many) ...) ...)])))
+  
+  (assert-equal '((a 2) (a 3) (a 4))
+                (repeater a (2 3 4)))
+  
+  (assert-equal '(((a 1) (a 2)) ((a 6)) () ((a 3) (a 6) (a 8)))
+                (root-v-2 a (1 2) (6) () (3 6 8)))
+  
+  (assert-equal '(((a 1) (a 2)) ((b 6)) () ((d 3) (d 6) (d 8)))
+                (1-v-2 (a b c d) (1 2) (6) () (3 6 8))))
+
+
 ; R5RS version of (let), uses ellipsis after lists in patterns
 
 (define-syntax r5rs-let
