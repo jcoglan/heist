@@ -138,7 +138,7 @@ module Heist
             sizes << tree.size(depth) if names.include?(name)
           end
           
-          sizes.uniq!
+          sizes = sizes.compact.uniq
           return sizes.first if sizes.size == 1
           
           raise MacroTemplateMismatch.new(
