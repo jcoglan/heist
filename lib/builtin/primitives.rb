@@ -268,8 +268,9 @@ define('+') do |*args|
 end
 
 # Subtracts the second argument from the first
-define('-') do |op1, op2|
-  op2.nil? ? 0 - op1 : op1 - op2
+define('-') do |*args|
+  args = [0, args.first] if args.size == 1
+  args.inject { |a,b| a - b }
 end
 
 # Returns the product of all arguments passed
@@ -283,10 +284,11 @@ end
 # reciprocal of the first if only one argument is given. If
 # two integers are given, we return a rational rather than
 # using integer division
-define('/') do |op1, op2|
-  [op1, op2].all? { |value| Integer === value } ?
-      Rational(op1, op2) :
-      op1 / op2
+define('/') do |*args|
+  args = [1, args.first] if args.size == 1
+  args.inject do |a,b|
+    [a,b].all? { |x| Integer === x } ? Rational(a,b) : a / b
+  end
 end
 
 # Returns the numerator of a number

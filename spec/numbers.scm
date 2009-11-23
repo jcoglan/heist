@@ -1,14 +1,14 @@
 (describe (+ - * quotient remainder modulo max min gcd lcm expt)
-  (with "two integers"            (4 5)       ~> exact?)
+  (with "two integers"            (4 5)     ~> exact?)
 )
 
 (describe (abs numerator denominator floor ceiling truncate round)
-  (with "an integer"              (17)        ~> exact?)
-  (with "an rational number"      (23/6)      ~> exact?)
+  (with "an integer"              (17)      ~> exact?)
+  (with "an rational number"      (23/6)    ~> exact?)
 )
 
 (describe (abs floor ceiling truncate round)
-  (with "a real number"           (-34.6)     ~> inexact?)
+  (with "a real number"           (-34.6)   ~> inexact?)
 )
 
 (describe (+ - *)
@@ -17,21 +17,67 @@
   (with "both arguments  inexact" (0.1 2.5) ~> inexact?)
 )
 
+(describe /
+  (with "two integers"            (7 4)     ~> exact?)
+  (with "two rationals"           (4/5 2/3) ~> exact?)
+  (with "an integer and a real"   (9 4.5)   ~> inexact?)
+  (with "a real and a rational"   (2.3 8/9) ~> inexact?)
+)
+
 (describe *
   (with "the first arg as zero"   (0 3.4)   ~> exact?)
   (with "the second arg as zero"  (3.4 0)   ~> exact?)
 )
 
-(describe /
-  (with "two integers"            (7 4)       ~> exact?)
-  (with "two rationals"           (4/5 2/3)   ~> exact?)
-  (with "an integer and a real"   (9 4.5)     ~> inexact?)
-  (with "a real and a rational"   (2.3 8/9)   ~> inexact?)
+(describe +
+  (with "no arguments"            ()          => 0)
+  (with "one argument"            (44)        => 44)
+  (with "two integers"            (3 -6)      => -3)
+  (with "two rationals"           (3/4 5/2)   => 13/4)
+  (with "two reals"               (9.2 3.4)   => 12.6)
+  (with "two complexes"           (4+5i 9+2i) => 13+7i)
   
+  (with "an integer and a rational" (5 7/2)   => 17/2)
+  (with "exact and inexact types"   (5 4.0)   => 9.0)
+  
+  (with "more than two arguments"   (3.4 5 7/2) => 11.9)
+)
+
+(describe *
+  (with "no arguments"            ()          => 1)
+  (with "one argument"            (44)        => 44)
+  (with "two integers"            (3 -6)      => -18)
+  (with "two rationals"           (3/4 5/2)   => 15/8)
+  (with "two reals"               (9.2 3.6)   => 33.12)
+  (with "two complexes"           (4+5i 9+2i) => 26+53i)
+  
+  (with "an integer and a rational" (5 7/2)   => 35/2)
+  (with "exact and inexact types"   (5 4.0)   => 20.0)
+  
+  (with "more than two arguments"   (3.4 5 7/2) => 59.5)
+)
+
+(describe -
+  (with "one argument"            (44)        => -44)
+  (with "two integers"            (3 -6)      => 9)
+  (with "two rationals"           (3/4 5/2)   => -7/4)
+  (with "two reals"               (9.2 3.6)   => 5.6)
+  (with "two complexes"           (4+5i 9+2i) => -5+3i)
+  
+  (with "an integer and a rational" (5 7/2)   => 3/2)
+  (with "exact and inexact types"   (5 4.0)   => 1.0)
+  
+  (with "more than two arguments"   (3 4 5)   => -6)
+)
+
+(describe /
+  (with "one argument"                    (5)       => 1/5)
   (with "two integers giving an integer"  (20 5)    => 4)
   (with "two integers giving a rational"  (20 6)    => 10/3)
   (with "two rationals giving an integer" (8/2 2/3) => 6)
   (with "two rationals giving a rational" (3/4 2/3) => 9/8)
+  
+  (with "more than two arguments"         (3 4 5)   => 3/20)
 )
 
 (describe =

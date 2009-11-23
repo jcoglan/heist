@@ -20,7 +20,7 @@ INIT_FLAGS.each do |flags|
   files = TEST_FILES
   files = files.select { |f| ARGV.include?(f) } unless ARGV.empty?
   
-  TEST_FILES.each { |file| runtime.run "#{dir}/#{file}.scm" }
+  files.each { |file| runtime.run "#{dir}/#{file}.scm" }
   runtime.exec [:spec, [:quote, :summary]]
 end
 
