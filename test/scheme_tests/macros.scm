@@ -90,6 +90,15 @@
 (assert-equal 3 (iffy 7 #f 3))
 
 
+; Test that bound and non-bound symbols can be matched correctly
+
+(letrec-syntax ((foo (syntax-rules (=)
+                       ((foo = x) x)))
+                (bar (syntax-rules ()
+                       ((bar x) (foo = x)))))
+  (assert-equal 5 (bar 5)))
+
+
 ; Test improper patterns
 (define-syntax rest (syntax-rules ()
   [(_ foo bar . rest)

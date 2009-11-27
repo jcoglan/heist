@@ -42,6 +42,17 @@ module Heist
         force!
       end
       
+      # We provide an equality method so that a bound +Identifier+ produced
+      # by expanding a macro can be matched against literal identifiers in
+      # another macro pattern.
+      def ==(identifier)
+        @expression == identifier
+      end
+
+      def innermost_binding(identifier)
+        @scope
+      end
+
       # Returns a string representation of the binding's +Expression+.
       def to_s
         @expression.to_s

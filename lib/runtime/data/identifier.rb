@@ -30,6 +30,7 @@ module Heist
       
       # Returns +true+ if the receiver has the same name as the argument.
       def ==(other)
+        return true if Binding === other and other == self
         Identifier === other and @orginal_name.downcase == other.name.downcase
       end
       
