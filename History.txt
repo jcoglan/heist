@@ -1,8 +1,12 @@
-=== Version 0.3.2 (TODO)
+=== Version 0.3.2 (2010-01-16)
 
 * Built-in library code is executed in a protected scope so that redefinitions of
   core functions in user code do not break implementations of library functions
 * The core library is compiled to a Ruby representation that loads faster
+* Macros correctly transcribe empty lists appearing in the input
+* Macro variables may appear at greater ellipsis depth in templates than in corresponding patterns
+* Fix bug in macro literal identifier recognition
+* Identifier comparison is now case-insensitive
 * The REPL prints quote/unquote expressions using shorthand notation
 
 

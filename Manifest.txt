@@ -55,6 +55,7 @@ test/scheme_tests/let.scm
 test/scheme_tests/lists.scm
 test/scheme_tests/macros.scm
 test/scheme_tests/numbers.scm
+test/scheme_tests/protection.scm
 test/scheme_tests/strings.scm
 test/scheme_tests/unhygienic.scm
 test/scheme_tests/vectors.scm
