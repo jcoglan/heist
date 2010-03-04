@@ -62,7 +62,7 @@ module Heist
         rule, matches = *rule_for(cells, scope)
         return Expansion.new(@scope, scope, rule.cdr.car, matches) if rule
         raise SyntaxError.new(
-          "Bad syntax: no macro expansion found for #{Cons.new(@name, cells)}")
+          "Bad syntax: no macro expansion found for #{Cons.new(Identifier.new(@name), cells)}")
       end
       
       # Returns a string placeholder for the +Macro+, containing its
