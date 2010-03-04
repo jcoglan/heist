@@ -143,6 +143,10 @@ Class.new(Test::Unit::TestCase) do
     cons = Heist::Runtime::Cons.method(:new)
     assert_equal cons[3,cons[4,5]], Heist.parse([3, 4, :'.', 5])
     assert_equal [3, 4, :'.', 5], cons[3,cons[4,5]].to_ruby
+    
+    runtime = Heist::Runtime.new
+    binding = Heist::Runtime::Binding.new(cons[3,cons[4]], runtime.top_level)
+    assert_equal [3, 4], binding.to_ruby
   end
 end
 

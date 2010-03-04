@@ -52,6 +52,11 @@ module Heist
       def innermost_binding(identifier)
         @scope
       end
+      
+      # Returns a Rubyish representation of the binding's expression.
+      def to_ruby
+        @expression.respond_to?(:to_ruby) ? @expression.to_ruby : @expression
+      end
 
       # Returns a string representation of the binding's +Expression+.
       def to_s
