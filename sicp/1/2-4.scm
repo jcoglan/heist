@@ -54,9 +54,9 @@
 
 (exercise "1.19")
 ; Let T be the transformation:      a <- a + b,         b <- a
-; Let T[pq] be the transformation:  a <- bq + aq + ap,  b <- bp + aq
-; => T = T[01]
-; Apply T[pq] twice to a,b:
+; Let T(pq) be the transformation:  a <- bq + aq + ap,  b <- bp + aq
+; => T = T(01)
+; Apply T(pq) twice to a,b:
 ; 
 ;                                        a                               b
 ; 

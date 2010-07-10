@@ -15,8 +15,8 @@
 ; arguments, then if a suitable function is found it is applied to
 ; the values of the arguments and the result is returned.
 (define (apply-generic op . args)
-  (let ([type-tags (map type-tag args)])
-    (let ([proc (get op type-tags)])
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
       (if proc
           (apply proc (map contents args))
           (error "No method for these types -- APPLY-GENERIC"
@@ -24,27 +24,27 @@
 
 ; (deriv exp var) using hard-coding type dispatch
 (define (deriv exp var)
-  (cond [(number? exp) 0]
-        [(variable? exp) (if (same-variable? exp var) 1 0)]
-        [(sum? exp)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        ((sum? exp)
          (make-sum (deriv (addend exp) var)
-                   (deriv (augend exp) var))]
-        [(product? exp)
+                   (deriv (augend exp) var)))
+        ((product? exp)
          (make-sum
            (make-product (multiplier exp)
                          (deriv (multiplicand exp) var))
            (make-product (deriv (multiplier exp) var)
-                         (multiplicand exp)))]
+                         (multiplicand exp))))
         ; <more rules can be added here>
         (else (error "unknown expression type -- DERIV" exp))))
 
 ; (deriv exp var) using data-driven design
 (define (deriv exp var)
-  (cond [(number? exp) 0]
-        [(variable? exp) (if (same-variable? exp var) 1 0)]
-        [else
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        (else
           ((get 'deriv (operator exp)) (operands exp)
-                                       var)]))
+                                       var))))
 
 (define (operator exp) (car exp))
 (define (operands exp) (cdr exp))

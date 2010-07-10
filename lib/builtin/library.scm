@@ -62,7 +62,7 @@
   (define (iter x rest)
     (if (null? rest)
         #t
-        (let ([y (car rest)])
+        (let ((y (car rest)))
           (if (or (not (number? x))
                   (not (number? y))
                   (not (equal? x y)))
@@ -125,7 +125,7 @@
 ; Returns the quotient of two numbers, i.e. performs n1/n2
 ; and rounds toward zero.
 (define (quotient x y)
-  (let ([result (/ x y)])
+  (let ((result (/ x y)))
     ((if (positive? result)
          floor
          ceiling)
@@ -174,45 +174,45 @@
 ; possible denominator is found first, and with that set the
 ; smallest corresponding numerator is chosen.
 (define (rationalize x tolerance)
-  (cond [(rational? x)
-          x]
-        [(not (zero? (imag-part x)))
+  (cond ((rational? x)
+          x)
+        ((not (zero? (imag-part x)))
           (make-rectangular (rationalize (real-part x) tolerance)
-                            (rationalize (imag-part x) tolerance))]
-        [else
-          (let* ([t (abs tolerance)]
-                 [a (- x t)]
-                 [b (+ x t)])
-            (do ([i 1 (+ i 1)]
-                 [z #f])
+                            (rationalize (imag-part x) tolerance)))
+        (else
+          (let* ((t (abs tolerance))
+                 (a (- x t))
+                 (b (+ x t)))
+            (do ((i 1 (+ i 1))
+                 (z #f))
                 ((number? z) z)
-              (let ([p (ceiling (* a i))]
-                    [q (floor (* b i))])
+              (let ((p (ceiling (* a i)))
+                    (q (floor (* b i))))
                 (if (<= p q)
                     (set! z (/ (if (positive? p) p q)
-                               i))))))]))
+                               i)))))))))
 
 ; (make-polar magnitude angle)
 ; Returns a new complex number with the given
 ; magnitude and angle
 (define (make-polar magnitude angle)
-  (let ([re (* magnitude (cos angle))]
-        [im (* magnitude (sin angle))])
+  (let ((re (* magnitude (cos angle)))
+        (im (* magnitude (sin angle))))
     (make-rectangular re im)))
 
 ; (magnitude z)
 ; Returns the magnitude of a complex number
 (define (magnitude z)
-  (let ([re (real-part z)]
-        [im (imag-part z)])
+  (let ((re (real-part z))
+        (im (imag-part z)))
     (sqrt (+ (* re re) (* im im)))))
 
 ; (angle z)
 ; Returns the angle a complex number makes with the
 ; real axis when plotted in the complex plane
 (define (angle z)
-  (let ([re (real-part z)]
-        [im (imag-part z)])
+  (let ((re (real-part z))
+        (im (imag-part z)))
     (atan im re)))
 
 ; (factorial x)
@@ -258,12 +258,12 @@
 ; The final argument is not copied and the return value of
 ; (append) shares structure with it.
 (define (append first . rest)
-  (cond [(null? rest) first]
-        [(null? first) (apply append rest)]
-        [else
+  (cond ((null? rest) first)
+        ((null? first) (apply append rest))
+        (else
           (cons (car first)
                 (append (cdr first)
-                        (apply append rest)))]))
+                        (apply append rest))))))
 
 ; (reverse list)
 ; Returns a newly allocated list consisting of the
@@ -278,8 +278,8 @@
 ; Returns the sublist of list obtained by omitting the
 ; first k elements.
 (define (list-tail list k)
-  (do ([pair list (cdr pair)]
-       [i k (- i 1)])
+  (do ((pair list (cdr pair))
+       (i k (- i 1)))
       ((zero? i) pair)))
 
 ; (list-ref list k)
@@ -301,7 +301,7 @@
 (define (list-transform-search transform)
   (lambda (predicate)
     (lambda (object list)
-      (do ([pair list (cdr pair)])
+      (do ((pair list (cdr pair)))
           ((or (null? pair)
                (predicate (car (transform pair)) object))
            (if (null? pair)
@@ -338,9 +338,9 @@
       (if (null? list2)
           (cons (proc (car list1))
                 (map proc (cdr list1)))
-          (let* ([all (cons list1 list2)]
-                 [args (map car all)]
-                 [rest (map cdr all)])
+          (let* ((all (cons list1 list2))
+                 (args (map car all))
+                 (rest (map cdr all)))
             (cons (apply proc args)
                   (apply map (cons proc rest)))))))
 
@@ -349,8 +349,8 @@
 ; member (or set of members if more than one list given)
 ; as arguments to proc.
 (define (for-each proc list1 . list2)
-  (do ([pair list1 (cdr pair)]
-       [others list2 (map cdr others)])
+  (do ((pair list1 (cdr pair))
+       (others list2 (map cdr others)))
       ((null? pair) '())
     (apply proc (cons (car pair)
                       (map car others)))))
@@ -364,11 +364,11 @@
 
 ; (sublist list start end)
 (define (sublist list start end)
-  (cond [(null? list) '()]
-        [(> start 0) (sublist (cdr list) (- start 1) (- end 1))]
-        [(<= end 0) '()]
-        [else (cons (car list)
-                    (sublist (cdr list) 0 (- end 1)))]))
+  (cond ((null? list) '())
+        ((> start 0) (sublist (cdr list) (- start 1) (- end 1)))
+        ((<= end 0) '())
+        (else (cons (car list)
+                    (sublist (cdr list) 0 (- end 1))))))
 
 ;----------------------------------------------------------------
 
@@ -387,7 +387,7 @@
 ; Returns true iff letter is an uppercase letter
 (define (char-upper-case? letter)
   (and (char? letter)
-       (let ([code (char->integer letter)])
+       (let ((code (char->integer letter)))
          (and (>= code 65)
               (<= code 90)))))
 
@@ -395,7 +395,7 @@
 ; Returns true iff letter is a lowercase letter
 (define (char-lower-case? letter)
   (and (char? letter)
-       (let ([code (char->integer letter)])
+       (let ((code (char->integer letter)))
          (and (>= code 97)
               (<= code 122)))))
 
@@ -409,7 +409,7 @@
 ; Returns true iff char is a numeric character
 (define (char-numeric? char)
   (and (char? char)
-       (let ([code (char->integer char)])
+       (let ((code (char->integer char)))
          (and (>= code 48)
               (<= code 57)))))
 
@@ -425,7 +425,7 @@
 ; (char-upcase char)
 ; Returns an uppercase copy of char
 (define (char-upcase char)
-  (let ([code (char->integer char)])
+  (let ((code (char->integer char)))
     (if (and (>= code 97) (<= code 122))
         (integer->char (- code 32))
         (integer->char code))))
@@ -433,7 +433,7 @@
 ; (char-downcase char)
 ; Returns a lowercase copy of char
 (define (char-downcase char)
-  (let ([code (char->integer char)])
+  (let ((code (char->integer char)))
     (if (and (>= code 65) (<= code 90))
         (integer->char (+ code 32))
         (integer->char code))))
@@ -461,17 +461,17 @@
   (if (or (not (string? string1))
           (not (string? string2)))
       (error "Expected two strings as arguments")
-      (do ([pair1 (string->list string1) (cdr pair1)]
-           [pair2 (string->list string2) (cdr pair2)]
-           [diff '()])
+      (do ((pair1 (string->list string1) (cdr pair1))
+           (pair2 (string->list string2) (cdr pair2))
+           (diff '()))
           ((integer? diff) diff)
-        (set! diff (cond [(null? pair1) (if (null? pair2) 0 -1)]
-                         [(null? pair2) 1]
-                         [else (let ([char1 (car pair1)]
-                                     [char2 (car pair2)])
-                                 (cond [(char-less?    char1 char2) -1]
-                                       [(char-greater? char1 char2)  1]
-                                       [else '()]))])))))
+        (set! diff (cond ((null? pair1) (if (null? pair2) 0 -1))
+                         ((null? pair2) 1)
+                         (else (let ((char1 (car pair1))
+                                     (char2 (car pair2)))
+                                 (cond ((char-less?    char1 char2) -1)
+                                       ((char-greater? char1 char2)  1)
+                                       (else '())))))))))
 
 ; (string=? string1 string2)
 ; Returns true iff string1 and string2 are equal strings
@@ -538,19 +538,19 @@
 ; (list->string chars)
 ; Returns a new string formed by combining the list
 (define (list->string chars)
-  (let* ([size (length chars)]
-         [str (make-string size)])
-    (do ([list chars (cdr list)]
-         [i 0 (+ i 1)])
+  (let* ((size (length chars))
+         (str (make-string size)))
+    (do ((list chars (cdr list))
+         (i 0 (+ i 1)))
         ((= i size) str)
       (string-set! str i (car list)))))
 
 ; (string->list string)
 ; Returns a newly allocated list of the characters in the string
 (define (string->list string)
-  (let ([size (string-length string)])
-    (do ([i size (- i 1)]
-         [list '() (cons (string-ref string (- i 1)) list)])
+  (let ((size (string-length string)))
+    (do ((i size (- i 1))
+         (list '() (cons (string-ref string (- i 1)) list)))
         ((zero? i) list))))
 
 ; (string-copy string)
@@ -561,8 +561,8 @@
 ; (string-fill! string char)
 ; Replaces every character of string with char
 (define (string-fill! string char)
-  (let ([size (string-length string)])
-    (do ([i size (- i 1)])
+  (let ((size (string-length string)))
+    (do ((i size (- i 1)))
         ((zero? i) string)
       (string-set! string (- i 1) char))))
 
@@ -582,24 +582,24 @@
 ; (list->vector list)
 ; Returns a newly allocated vector from a list
 (define (list->vector list)
-  (let* ([size (length list)]
-         [new-vector (make-vector size)])
-    (do ([i 0 (+ i 1)]
-         [pair list (cdr pair)])
+  (let* ((size (length list))
+         (new-vector (make-vector size)))
+    (do ((i 0 (+ i 1))
+         (pair list (cdr pair)))
         ((= i size) new-vector)
       (vector-set! new-vector i (car pair)))))
 
 ; (vector->list vector)
 ; Returns a newly allocated proper list from a vector
 (define (vector->list vector)
-  (do ([i (vector-length vector) (- i 1)]
-       [pair '() (cons (vector-ref vector (- i 1)) pair)])
+  (do ((i (vector-length vector) (- i 1))
+       (pair '() (cons (vector-ref vector (- i 1)) pair)))
       ((zero? i) pair)))
 
 ; (vector-fill! vector fill)
 ; Sets every element of vector to fill
 (define (vector-fill! vector fill)
-  (do ([i (vector-length vector) (- i 1)])
+  (do ((i (vector-length vector) (- i 1)))
       ((zero? i) vector)
     (vector-set! vector (- i 1) fill)))
 

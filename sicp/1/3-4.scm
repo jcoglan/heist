@@ -127,8 +127,8 @@
 ; To converge, this must be average-damped by a factor
 ; given by floor(log2(n)). Again, curry on n,x
 (define (nth-root n)
-  (let ([transform (nth-root-transform n)]
-        [k (floor (/ (log n) (log 2)))])
+  (let ((transform (nth-root-transform n))
+        (k (floor (/ (log n) (log 2)))))
     (lambda (x)
       (fixed-point-of-transform (transform x)
                                 (repeated average-damp k)

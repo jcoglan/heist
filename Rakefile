@@ -5,8 +5,8 @@ require 'hoe'
 require './lib/heist.rb'
 
 Hoe.spec('heist') do |p|
-  p.developer('James Coglan', 'jcoglan@googlemail.com')
-  p.extra_deps = %w(oyster treetop)
+  p.developer('James Coglan', 'jcoglan@gmail.com')
+  p.extra_deps = [['oyster', '>= 0.9'], ['treetop', '>= 1.2']]
 end
 
 file "lib/builtin/library.rb" => "lib/builtin/library.scm" do |t|

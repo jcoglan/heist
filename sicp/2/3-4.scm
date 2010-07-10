@@ -174,7 +174,7 @@
 ; These trees will always follow this structure, since the
 ; following is true:
 ; 
-;     sum[0,n-1] 2^i = 2^n - 1
+;     sum(0,n-1) 2^i = 2^n - 1
 ; 
 ; i.e. the sum of all the weights below the current maximum
 ; is always less than that maximum.

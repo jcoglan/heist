@@ -5,18 +5,18 @@
 ; found, its consequent is tail-called and no further
 ; preconditions are evaluated.
 (define-syntax cond (syntax-rules (else =>)
-  [(cond) #f]
-  [(cond (else expr1 expr2 ...))
-    (begin expr1 expr2 ...)]
-  [(cond (test => function) clause ...)
-    (let ([temp test])
+  ((cond) #f)
+  ((cond (else expr1 expr2 ...))
+    (begin expr1 expr2 ...))
+  ((cond (test => function) clause ...)
+    (let ((temp test))
       (if temp
           (function temp)
-          (cond clause ...)))]
-  [(cond (test expression ...) clause ...)
+          (cond clause ...))))
+  ((cond (test expression ...) clause ...)
     (if test
         (begin expression ...)
-        (cond clause ...))]))
+        (cond clause ...)))))
 
 ; (case) acts like Ruby's case statement. The value of the
 ; given expression is compared against a series of lists;
@@ -24,17 +24,17 @@
 ; following the list are evaluated and no further lists
 ; are tested.
 (define-syntax case (syntax-rules (else)
-  [(case key) #f]
-  [(case key (else expr1 expr2 ...))
-    (begin expr1 expr2 ...)]
-  [(case key
+  ((case key) #f)
+  ((case key (else expr1 expr2 ...))
+    (begin expr1 expr2 ...))
+  ((case key
          ((cell ...) expr1 expr2 ...)
          clause ...)
-    (let ([temp key])
+    (let ((temp key))
       (if (member temp '(cell ...))
           (begin expr1 expr2 ...)
           (case temp
-                clause ...)))]))
+                clause ...))))))
 
 ;----------------------------------------------------------------
 
@@ -47,33 +47,33 @@
 ; (let) evaluates values in the enclosing scope, so lambdas will
 ; not be able to refer to other values assigned using the (let).
 (define-syntax let (syntax-rules ()
-  [(let ([variable init] ...) body ...)
+  ((let ((variable init) ...) body ...)
     ((lambda (variable ...)
         body ...)
-     init ...)]
-  [(let name ([variable init] ...) body ...)
-    (letrec ([name (lambda (variable ...)
-                     body ...)])
-      (name init ...))]))
+     init ...))
+  ((let name ((variable init) ...) body ...)
+    (letrec ((name (lambda (variable ...)
+                     body ...)))
+      (name init ...)))))
 
 ; (let*) creates a new scope for each variable and evaluates
 ; each expression in its enclosing scope. Basically a shorthand
 ; for several nested (let)s. Variables may refer to those that
 ; preceed them but not vice versa.
 (define-syntax let* (syntax-rules ()
-  [(let* ([n1 e1] [n2 e2] [n3 e3] ...) body ...)  ; 2 or more bindings
-    (let ([n1 e1])
-      (let* ([n2 e2] [n3 e3] ...) body ...))]
-  [(let* ([name expression] ...) body ...)        ; 0 or 1 binding
-    (let ([name expression] ...) body ...)]))
+  ((let* ((n1 e1) (n2 e2) (n3 e3) ...) body ...)  ; 2 or more bindings
+    (let ((n1 e1))
+      (let* ((n2 e2) (n3 e3) ...) body ...)))
+  ((let* ((name expression) ...) body ...)        ; 0 or 1 binding
+    (let ((name expression) ...) body ...))))
 
 ; (letrec) evaluates values in the inner scope, so lambdas are
 ; able to refer to other values assigned using the (letrec).
 (define-syntax letrec (syntax-rules ()
-  [(letrec ([variable init] ...) body ...)
+  ((letrec ((variable init) ...) body ...)
     ((lambda ()
       (define variable init) ...
-      body ...))]))
+      body ...)))))
 
 (define let-syntax let)
 (define letrec-syntax letrec)
@@ -89,19 +89,19 @@
 ; loop is halted and the value of the expression following
 ; the test is returned.
 (define-syntax do (syntax-rules ()
-  [(do ([variable init step ...] ...)   ; Allow 0 or 1 step
+  ((do ((variable init step ...) ...)   ; Allow 0 or 1 step
        (test expression ...)
        command ...)
-    (let loop ([variable init] ...)
+    (let loop ((variable init) ...)
       (if test
           (begin expression ...)
           (begin
             command ...
-            (loop (do "step" variable step ...) ...))))]
-  [(do "step" variable)
-    variable]
-  [(do "step" variable step)
-    step]))
+            (loop (do "step" variable step ...) ...)))))
+  ((do "step" variable)
+    variable)
+  ((do "step" variable step)
+    step)))
 
 ;----------------------------------------------------------------
 
@@ -111,23 +111,23 @@
 ; of expressions, or returns the value of the last expression
 ; if all values are truthy.
 (define-syntax and (syntax-rules ()
-  [(and test) test]
-  [(and test1 test2 ...)
-    (let ([temp test1])
+  ((and test) test)
+  ((and test1 test2 ...)
+    (let ((temp test1))
       (if (not temp)
           temp
-          (and test2 ...)))]))
+          (and test2 ...))))))
 
 ; (or) returns the first truthy value returned by the list
 ; of expressions, or returns the value of the last expression
 ; if all values are falsey.
 (define-syntax or (syntax-rules ()
-  [(or test) test]
-  [(or test1 test2 ...)
-    (let ([temp test1])
+  ((or test) test)
+  ((or test1 test2 ...)
+    (let ((temp test1))
       (if temp
           temp
-          (or test2 ...)))]))
+          (or test2 ...))))))
 
 ;----------------------------------------------------------------
 
@@ -139,16 +139,16 @@
 ; ever evaluated once, so a promise can be implemented as a
 ; memoized closure.
 (define-syntax delay (syntax-rules ()
-  [(delay expression)
-    (let ([forced #f]
-          [memo #f])
+  ((delay expression)
+    (let ((forced #f)
+          (memo #f))
       (lambda ()
         (if forced
             memo
             (begin
               (set! memo expression)
               (set! forced #t)
-              memo))))]))
+              memo)))))))
 
 ;----------------------------------------------------------------
 
@@ -159,10 +159,10 @@
 ; it will evaluate it and insert the result into the
 ; surrounding quoted list.
 (define-syntax quasiquote (syntax-rules (unquote unquote-splicing)
-  [`,expr                 expr]
-  [`(,@first . rest)      (append first `rest)]
-  [`(first . rest)        (cons `first `rest)]
-  [`#(,@first rest ...)   (list->vector `(,@first rest ...))]
-  [`#(expr ...)           (list->vector `(expr ...))]
-  [`expr                  'expr]))
+  (`,expr                 expr)
+  (`(,@first . rest)      (append first `rest))
+  (`(first . rest)        (cons `first `rest))
+  (`#(,@first rest ...)   (list->vector `(,@first rest ...)))
+  (`#(expr ...)           (list->vector `(expr ...)))
+  (`expr                  'expr)))
 

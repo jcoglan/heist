@@ -99,8 +99,8 @@
   (define (iter i term)
     (if (= i 0)
         term
-        (let ([x (n i)]
-              [y (d i)])
+        (let ((x (n i))
+              (y (d i)))
           (iter (- i 1) (/ x (+ y term))))))
   (iter k 0))
 
@@ -111,7 +111,7 @@
 ; Euler's approximation for e
 (define e (+ 2 (cont-frac (lambda (i) 1.0)
                           (lambda (i)
-                            (let ([x (+ 1 i)])
+                            (let ((x (+ 1 i)))
                               (if (= 0 (remainder x 3))
                                   (* 2 (/ x 3))
                                   1.0)))

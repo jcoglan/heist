@@ -41,8 +41,8 @@
 (exercise "2.1")
 ; (make-rat) for negative numbers
 (define (make-rat n d)
-  (let ([g (gcd n d)]
-        [s (if (positive? (* n d)) 1 -1)])
+  (let ((g (gcd n d))
+        (s (if (positive? (* n d)) 1 -1)))
     (cons (* s (abs (/ n g))) (abs (/ d g)))))
 
 (print-rat (make-rat 1 2))
