@@ -98,14 +98,14 @@
 ; (max arg1 arg2 ...)
 ; Returns the maximum value in the list of arguments
 (define (max . values)
-  (foldr (lambda (a b) (if (>= a b) a b))
+  (fold-right (lambda (a b) (if (>= a b) a b))
          (car values)
          (cdr values)))
 
 ; (min arg1 arg2 ...)
 ; Returns the minimum value in the list of arguments
 (define (min . values)
-  (foldr (lambda (a b) (if (<= a b) a b))
+  (fold-right (lambda (a b) (if (<= a b) a b))
          (car values)
          (cdr values)))
 
@@ -355,12 +355,20 @@
     (apply proc (cons (car pair)
                       (map car others)))))
 
-; (foldr proc value list)
-(define (foldr proc value list)
+; (fold-right proc value list)
+(define (fold-right proc value list)
   (if (null? list)
       value
       (proc (car list)
-            (foldr proc value (cdr list)))))
+            (fold-right proc value (cdr list)))))
+
+; (fold-left proc value list)
+(define (fold-left proc value list)
+  (if (null? list)
+      value
+      (fold-left proc
+                 (proc value (car list))
+                 (cdr list))))
 
 ; (sublist list start end)
 (define (sublist list start end)
