@@ -78,8 +78,10 @@
 
 (define (fringe x)
   (if (pair? x)
-      (append (fringe (car x))
-              (fringe (cdr x)))
+      (let* ((left  (fringe (car x)))
+             (right (fringe (cdr x)))
+             (join  (if (pair? left) append cons)))
+        (join left right))
       x))
 
 (output '(fringe x))
