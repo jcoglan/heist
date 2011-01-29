@@ -52,6 +52,7 @@ module Heist
     # Returns the result of evaluating the given +Expression+ in the given +Scope+.
     # If the first argument is not an +Expression+ it will be returned unaltered.
     def evaluate(expression, scope)
+      return expression.value if Runtime::Value === expression
       Runtime::Expression === expression ?
           expression.eval(scope) :
           expression

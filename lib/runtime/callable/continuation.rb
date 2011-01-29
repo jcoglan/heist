@@ -28,15 +28,13 @@ module Heist
       # replace it with the stack returned by this method before continuing
       # execution.
       def call(scope, cells)
-        stack = @stack.copy
-        stack.fill!(@target, cells.car)
-        stack
+        apply(cells.to_a)
       end
       
       # TODO support call-with-values
       def apply(params)
         stack = @stack.copy
-        stack.fill!(@target, params.first)
+        stack.fill!(@target, Value.new(params.first))
         stack
       end
       

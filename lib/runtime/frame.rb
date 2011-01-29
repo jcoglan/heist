@@ -95,6 +95,9 @@ module Heist
       # +value+. When a hole is filled, the <tt>@current</tt> pointer is moved
       # to the next subexpression that needs evaluating.
       def fill!(subexpr, value)
+        value = value.value if Value === value and @values and
+                               not (Syntax === @values.car)
+        
         epair, vpair = @expression, @values
         while Cons === epair and not epair.null?
           if epair.car.equal?(subexpr)

@@ -15,7 +15,7 @@
 ; calling a stored continuation aborts the current stack
 (define called #f)
 (begin
-  (r 5)
+  (r (+ 2 3))
   (set! called #t))
 (assert (not called))
 
@@ -37,8 +37,17 @@
 (assert-equal 6 value)
 
 ; continuations can be called using (apply)
-(apply r '(3))
-(assert-equal 6 value)
+(apply r '(7))
+(assert-equal 10 value)
+
+; symbols can be passed back to a (set!) call
+(set! value (call/cc
+               (lambda (k)
+                 (set! r k)
+                 'foo)))
+(assert-equal 'foo value)
+(r 'bar)
+(assert-equal 'bar value)
 
 ; expressions after the call/cc are re-evaluated
 (set! y 2)
