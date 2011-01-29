@@ -36,6 +36,10 @@
 (r 3)
 (assert-equal 6 value)
 
+; continuations can be called using (apply)
+(apply r '(3))
+(assert-equal 6 value)
+
 ; expressions after the call/cc are re-evaluated
 (set! y 2)
 (set! value (+ 1 (call/cc

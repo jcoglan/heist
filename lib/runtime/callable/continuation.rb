@@ -33,6 +33,13 @@ module Heist
         stack
       end
       
+      # TODO support call-with-values
+      def apply(params)
+        stack = @stack.copy
+        stack.fill!(@target, params.first)
+        stack
+      end
+      
       # Returns a string representation of the +Continuation+ for console
       # output.
       def to_s
