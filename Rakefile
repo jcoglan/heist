@@ -9,12 +9,16 @@ Hoe.spec('heist') do |p|
   p.extra_deps = [['oyster', '>= 0.9'], ['treetop', '>= 1.2']]
 end
 
-file "lib/builtin/library.rb" => "lib/builtin/library.scm" do |t|
-  program = Heist.parse(File.read t.prerequisites.first).convert!
+file "lib/builtin/compiled_library.rb" do |t|
+  library_source = %w[util logic numeric list character string vector].
+                   map { |l| File.read "lib/builtin/lib/#{l}.scm" }.
+                   join("\n\n")
+  
+  program = Heist.parse(library_source).convert!
   File.open(t.name, 'w') { |f| f.write 'program ' + program.to_ruby.inspect }
 end
 
-task :compile => "lib/builtin/library.rb"
+task :compile => "lib/builtin/compiled_library.rb"
 
 namespace :spec do
   task :r5rs do

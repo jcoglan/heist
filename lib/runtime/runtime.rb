@@ -33,7 +33,7 @@ module Heist
     
     attr_accessor :stack, :top_level, :user_scope
     
-    BUILTIN_LIBRARIES = %w[primitives syntax library]
+    BUILTIN_LIBRARIES = %w[primitives syntax compiled_library]
     
     # A +Runtime+ is initialized using a set of options. The available
     # options include the following, all of which are +false+ unless

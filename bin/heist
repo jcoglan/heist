@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/../lib/heist'
-require File.dirname(__FILE__) + '/../lib/bin_spec'
+dir = File.expand_path(File.dirname(__FILE__))
+require dir + '/../lib/heist'
+require dir + '/../lib/bin_spec'
 
 begin
 options = Heist::BIN_SPEC.parse
