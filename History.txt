@@ -1,3 +1,15 @@
+=== Version 0.3.3 (2011-10-24)
+In memory of John McCarthy, inventor of Lisp. His work made language hacking
+accessible, and this project would not exist without it.
+
+http://en.wikipedia.org/wiki/John_McCarthy_(computer_scientist)
+
+* Add the R6RS (fold-left) and (fold-right) procedures
+* Allow continuations to be called using (apply)
+* Stop re-evaluating data passed to a continuation and injected into a macro
+* Split built-in library into files by data type (Fargo uses them)
+
+
 === Version 0.3.2 (2010-01-16)
 
 * Built-in library code is executed in a protected scope so that redefinitions of
