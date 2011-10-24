@@ -2,7 +2,6 @@ require 'forwardable'
 require 'rational'
 require 'complex'
 
-require 'rubygems'
 require 'treetop'
 
 # +Heist+ is the root module for all of Heist's components, and hosts a few
@@ -11,7 +10,7 @@ require 'treetop'
 module Heist
   VERSION = '0.3.3'
   
-  ROOT_PATH    = File.expand_path(File.dirname(__FILE__))
+  ROOT_PATH    = File.expand_path(File.dirname(__FILE__)) + '/heist'
   PARSER_PATH  = ROOT_PATH + '/parser/'
   RUNTIME_PATH = ROOT_PATH + '/runtime/'
   BUILTIN_PATH = ROOT_PATH + '/builtin/'

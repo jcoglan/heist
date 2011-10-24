@@ -1,17 +1,41 @@
 #!/usr/bin/env ruby
 dir = File.expand_path(File.dirname(__FILE__))
 require dir + '/../lib/heist'
-require dir + '/../lib/bin_spec'
 
-begin
-options = Heist::BIN_SPEC.parse
-rescue Oyster::HelpRendered; exit
+require 'oyster'
+spec = Oyster.spec do
+  name "heist -- Ruby-powered Scheme interpreter, v. #{Heist::VERSION}"
+  author 'James Coglan <jcoglan@googlemail.com>'
+  
+  synopsis <<-EOS
+    heist -i [OPTIONS]
+    heist FILE_NAME [OPTIONS]
+  EOS
+  
+  flag :interactive, :desc =>
+        'Start an interactive Scheme session'
+  
+  flag :lazy, :default => false, :desc =>
+        'Use lazy evaluation order'
+  
+  flag :continuations, :default => false, :desc =>
+        'Enable first-class continuations and (call/cc)'
+  
+  flag :unhygienic, :default => false, :desc =>
+        'Use Common Lisp-style unhygienic macros'
 end
 
-if options[:interactive] or options[:unclaimed].empty?
-  Heist::REPL.new(options).run
-else
-  env = Heist::Runtime.new(options)
-  env.run(File.expand_path(options[:unclaimed].first))
+
+begin
+  options = spec.parse
+  
+  if options[:interactive] or options[:unclaimed].empty?
+    Heist::REPL.new(options).run
+  else
+    env = Heist::Runtime.new(options)
+    env.run(File.expand_path(options[:unclaimed].first))
+  end
+
+rescue Oyster::HelpRendered
 end
 
