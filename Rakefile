@@ -1,13 +1,5 @@
-# -*- ruby -*-
-
 require 'rubygems'
-require 'hoe'
-require './lib/heist.rb'
-
-Hoe.spec('heist') do |p|
-  p.developer('James Coglan', 'jcoglan@gmail.com')
-  p.extra_deps = [['oyster', '>= 0.9'], ['treetop', '>= 1.2']]
-end
+require File.expand_path('../lib/heist', __FILE__)
 
 file "lib/builtin/compiled_library.rb" do |t|
   library_source = %w[util logic numeric list character string vector].
@@ -44,4 +36,3 @@ namespace :spec do
   end
 end
 
-# vim: syntax=Ruby

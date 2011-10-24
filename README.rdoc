@@ -128,8 +128,7 @@ per-runtime-environment basis.
 
 == Installation and Usage
 
-  sudo gem install hoe
-  sudo gem install heist
+  gem install heist
 
 Heist can be run from the command line or embedded in Ruby applications. To
 run a Scheme file:
