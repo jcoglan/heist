@@ -2,35 +2,33 @@
 
 http://github.com/jcoglan/heist
 
-Heist is a Scheme interpreter written in Ruby. It provides an executable
-for running Scheme code directly, and also allows the interpreter to be
-easily embedded in, and extended using, Ruby applications. It nominally
-targets R5RS, though is likely to be more liberal than other implementations.
+Heist is a Scheme interpreter written in Ruby. It provides an executable for
+running Scheme code directly, and also allows the interpreter to be easily
+embedded in, and extended using, Ruby applications. It nominally targets R5RS,
+though is likely to be more liberal than other implementations.
 
 
 == What is Scheme?
 
-Scheme is a dialect of Lisp, one of the oldest programming languages still
-in use today. Lisp was the first language to implement conditionals, first
-class functions (lambdas), closures and recursion. Some Lisp features, such
-as closures and macros, have yet to penetrate mainstream languages and it
-has been observed that mainstream languages are slowly converging on the
-feature set of Lisp.
+Scheme is a dialect of Lisp, one of the oldest programming languages still in
+use today. Lisp was the first language to implement conditionals, first class
+functions (lambdas), closures and recursion. Some Lisp features, such as
+closures and macros, have yet to penetrate mainstream languages and it has been
+observed that mainstream languages are slowly converging on the feature set of
+Lisp.
 
-Scheme in particular is important for its influence on current languages,
-in particular JavaScript and Ruby (JavaScript is remarkably similar to
-Scheme if you ignore the syntactic differences). It is also used in the
-much-praised book "Structure and Interpretation of Computer Programs",
-wherein it is used to explore some of the theory surrounding interpreters.
+Scheme in particular is important for its influence on current languages, in
+particular JavaScript and Ruby (JavaScript is remarkably similar to Scheme if
+you ignore the syntactic differences). It is also used in the much-praised book
+"Structure and Interpretation of Computer Programs", wherein it is used to
+explore some of the theory surrounding interpreters.
 
-It is a functional language, in that it supports first-class functions
-and many constructs that would be syntax in other languages resemble
-function calls in Scheme. However it is not purely functional as it
-allows side effects, and is more procedural in nature than, say, a
-declarative language such as Haskell. Like other Lisps, its lack of
-predefined syntax and its support for macros (functions that rewrite
-source code) make it ideal for creating new syntactic forms and embedded
-languages.
+It is a functional language, in that it supports first-class functions and many
+constructs that would be syntax in other languages resemble function calls in
+Scheme. However it is not purely functional as it allows side effects, and is
+more procedural in nature than Haskell and its ilk. Like other Lisps, its lack
+of predefined syntax and its support for macros (functions that rewrite source
+code) make it ideal for creating new syntactic forms and embedded languages.
 
 
 == Features
@@ -104,26 +102,23 @@ Currently implemented R5RS features include:
   <tt>for-each</tt>, <tt>eval</tt>, <tt>load</tt>
 * Input/output: <tt>display</tt>, <tt>newline</tt>
 
-In addition to the above R5RS features, the following are provided. Heist
-allows the behaviour of some of these features to be configured on a
+In addition to the above R5RS features, the following are provided. Heist allows
+the behaviour of some of these features to be configured on a
 per-runtime-environment basis.
 
-* <b>More-helpful-than-usual REPL</b>. Heist's REPL does not clutter
-  your display with prompts and other such cruft. It indents your
-  code automatically, supports tab completion, and output is printed
-  as comments so it's simple to copy code out of a REPL session into
-  a file without modification.
+* <b>More-helpful-than-usual REPL</b>. Heist's REPL does not clutter your
+  display with prompts and other such cruft. It indents your code automatically,
+  supports tab completion, and output is printed as comments so it's simple to
+  copy code out of a REPL session into a file without modification.
 * <b>Transparent lazy evaluation (call by need)</b>. Expressions are not
-  evaluated before being passed as arguments, instead they are
-  evaluated as and when the called function requires their values.
-* <b>Unhygienic macros</b>. Scheme mandates hygienic macros that
-  preserve lexical scoping, but other Lisps use a simpler system that
-  does not impose this restriction. Heist allows hygiene to be
-  disabled, its author not having the requisite experience to decide
-  which system he prefers yet.
-* <b>Optional continuations</b>. Supporting continuations incurs a
-  constant performance overhead, so if you don't need them you can
-  switch them off.
+  evaluated before being passed as arguments, instead they are evaluated as and
+  when the called function requires their values.
+* <b>Unhygienic macros</b>. Scheme mandates hygienic macros that preserve
+  lexical scoping, but other Lisps use a simpler system that does not impose
+  this restriction. Heist allows hygiene to be disabled, its author not having
+  the requisite experience to decide which system he prefers yet.
+* <b>Optional continuations</b>. Supporting continuations incurs a constant
+  performance overhead, so if you don't need them you can switch them off.
 
 
 == Installation and Usage
@@ -135,26 +130,25 @@ run a Scheme file:
 
   heist path/to/file.scm
 
-To start an REPL session:
+To start a REPL session:
 
   heist -i
 
-Both these commands accept a number of runtime configuration options;
-run <tt>heist -h</tt> for more information.
+Both these commands accept a number of runtime configuration options; run
+<tt>heist -h</tt> for more information.
 
 
 === Embed in your Ruby app
 
-To embed Heist in a Ruby application, you need to create an instance of
-the runtime:
+To embed Heist in a Ruby application, you need to create an instance of the
+runtime:
 
-  require 'rubygems'
   require 'heist'
   scheme = Heist::Runtime.new(options)
 
-<tt>options</tt> is an optional argument and is a hash that specifies
-the behaviour of optional parts of the runtime. For example, to enable
-lazy evaluation:
+<tt>options</tt> is an optional argument and is a hash that specifies the
+behaviour of optional parts of the runtime. For example, to enable lazy
+evaluation:
 
   scheme = Heist::Runtime.new(:lazy => true)
 
@@ -162,14 +156,13 @@ The full list of options is:
 
 * <tt>:continuations</tt> - sets whether continuations and <tt>(call/cc)</tt>
   are enabled. Default is <tt>false</tt>.
-* <tt>:lazy</tt> - sets whether evaluation is lazy. By default this option
-  is <tt>false</tt> and evaluation is eager.
+* <tt>:lazy</tt> - sets whether evaluation is lazy. By default this option is
+  <tt>false</tt> and evaluation is eager.
 * <tt>:unhygienic</tt> - set this to <tt>true</tt> to disable macro hygiene.
 
-Bear in mind that continuations and lazy evaluation are not currently
-compatible; enabling continuations forces eager evaluation. Also
-note that lazy evaluation has a slightly unpredictable effect on the
-use of macros.
+Bear in mind that continuations and lazy evaluation are not currently compatible;
+enabling continuations forces eager evaluation. Also note that lazy evaluation
+has a slightly unpredictable effect on the use of macros.
 
 To run a Scheme file using the runtime, just call:
 
@@ -178,26 +171,25 @@ To run a Scheme file using the runtime, just call:
 
 === Create Scheme functions using Ruby
 
-Every runtime gets its own copy of all the built-in functions. You can add
-your own functions written in Ruby and Heist will make them available as
-Scheme procedures. For example, for running tests I do this in my +setup+
-method:
+Every runtime gets its own copy of all the built-in functions. You can add your
+own functions written in Ruby and Heist will make them available as Scheme
+procedures. For example, for running tests I do this in my +setup+ method:
 
-  @@env = Heist::Runtime.new
-  @@env.define('assert-equal') do |expected, actual|
-    assert_equal(expected, actual)
+  @runtime = Heist::Runtime.new
+  @runtime.define 'assert-equal' do |expected, actual|
+    actual.should == expected
   end
 
-This lets me write, for example, <tt>(assert-equal 7 (+ 3 4))</tt> in my
-tests. You can place arbitrary Ruby code in your functions, so this is
-an easy way to expose Ruby functionality to the Scheme environment.
+This lets me write, for example, <tt>(assert-equal 7 (+ 3 4))</tt> in my tests.
+You can place arbitrary Ruby code in your functions, so this is an easy way to
+expose Ruby functionality to the Scheme environment.
 
 
 === Run Ruby data as Scheme code
 
-Heist can interpret Scheme code provided as Ruby data, allowing you
-to write and manipulate Lisp-style expressions inline with Ruby code.
-For example, using our <tt>Heist::Runtime</tt> instance from above:
+Heist can interpret Scheme code provided as Ruby data, allowing you to write and
+manipulate Lisp-style expressions inline with Ruby code. For example, using our
+<tt>Heist::Runtime</tt> instance from above:
 
   scheme.exec [:define, [:square, :x], [:*, :x, :x]]
   
@@ -205,81 +197,76 @@ For example, using our <tt>Heist::Runtime</tt> instance from above:
   #=> 81
 
 Arrays map directly to Scheme lists, symbols map to identifiers, strings,
-numbers and booleans are treated as literals, and any other data is
-interpreted verbatim. So, you can use any piece of Ruby data in these
-expressions as long as the functions you're calling can operate on it.
+numbers and booleans are treated as literals, and any other data is interpreted
+verbatim. So, you can use any piece of Ruby data in these expressions as long as
+the functions you're calling can operate on it.
 
 Due to syntactic limitations, some Scheme constructs cannot be used in this
-interface. Quoting syntax is out, so the expression <tt>'(1 2 3)</tt> would
-need to be written <tt>[:quote, [1, 2, 3]]</tt>. Dotted pairs and improper
-lists are also not available, though you can work around this to some extent
-using <tt>:cons</tt>. Vectors should be written as <tt>[:vector, 1, 2, 3]</tt>
-for example. Characters can be generated using the <tt>char</tt> procedure
-with a unit-length string, for example <tt>[:char, "Z"]</tt> produces the
-character <tt>#\\Z</tt>.
+interface. Quoting syntax is out, so the expression <tt>'(1 2 3)</tt> would need
+to be written <tt>[:quote, [1, 2, 3]]</tt>. Dotted pairs and improper lists are
+also not available, though you can work around this to some extent using
+<tt>:cons</tt>. Vectors should be written as <tt>[:vector, 1, 2, 3]</tt> for
+example. Characters can be generated using the <tt>char</tt> procedure with a
+unit-length string, for example <tt>[:char, "Z"]</tt> produces the character
+<tt>#\\Z</tt>.
 
 
 == Notes
 
-This is alpha-quality software. While every attempt has been made to run
-valid Scheme code, error handling is at present very weak. Anything
-explicitly documented in this file can be assumed to work according to
-the Scheme standard, or according to the information presented here,
-and can be assumed to be reasonably stable.
+This is alpha-quality software. While every attempt has been made to run valid
+Scheme code, error handling is at present very weak. Anything explicitly
+documented in this file can be assumed to work according to the Scheme standard,
+or according to the information presented here, and can be assumed to be
+reasonably stable.
 
 === Ruby-based syntax
 
-I have not documented how to write your own syntax using Ruby because
-it requires far too much knowledge of Heist's plumbing at present (I
-suspect this may be unavoidable). Besides, we have macros so if you
-want new syntax we've got you covered. In fact, writing syntax using
-macros makes sure that new syntactic forms support continuations
-correctly, and Heist itself eschews Ruby-based syntax where possible.
+I have not documented how to write your own syntax using Ruby because it
+requires far too much knowledge of Heist's plumbing at present (I suspect this
+may be unavoidable). Besides, we have macros so if you want new syntax we've got
+you covered. In fact, writing syntax using macros makes sure that new syntactic
+forms support continuations correctly, and Heist itself eschews Ruby-based
+syntax where possible.
 
 === Valid symbols
 
-Heist is extremely liberal as regards symbols. Any sequence of
-characters that does not contain any spaces or parentheses and that
-is not a boolean literal, a number, a character literal or a string
-is considered a valid symbol.
+Heist is extremely liberal as regards symbols. Any sequence of characters that
+does not contain any spaces or parentheses and that is not a boolean literal, a
+number, a character literal or a string is considered a valid symbol.
 
 === Vectors and quoting
 
 Vectors do not need to be quoted, for example the expression <tt>#(1 2 3)</tt>
-evaluates to itself. If a vector is quoted, it is made immutable and
-a quoted vector expression returns the same in-memory object every time
-it is evaluated. In contrast, an unquoted vector returns a new vector
-object every time it is evaluated. Unquoted vectors are not frozen
-as this makes macro transformations hard to implement, and because we
-cannot let the <tt>vector-set!</tt> procedure modify the parse tree
-each unquoted vector is copied on evaluation.
+evaluates to itself. If a vector is quoted, it is made immutable and a quoted
+vector expression returns the same in-memory object every time it is evaluated.
+In contrast, an unquoted vector returns a new vector object every time it is
+evaluated. Unquoted vectors are not frozen as this makes macro transformations
+hard to implement, and because we cannot let the <tt>vector-set!</tt> procedure
+modify the parse tree each unquoted vector is copied on evaluation.
 
 === Macros
 
-Macros are slightly more liberal than R5RS, in that this is a valid
-macro:
+Macros are slightly more liberal than R5RS, in that this is a valid macro:
 
   (define-syntax my-let (syntax-rules ()
     [(my-let (name value) ... body ...)
       (let [(name value) ...]
         body ...)]))
 
-You are allowed to use ellipses in infix positions, as long as the
-pattern that follows the ellipsis matches input that the preceeding
-pattern would fail to match. This is, the ellipsis acts as a greedy
-star operator in regular expressions. In the above, <tt>(name value) ... body ...</tt>
-matches zero or more two-element lists followed by zero or more
-expressions of any type. The following expression evaluates to
-<tt>3</tt> using this macro:
+You are allowed to use ellipses in infix positions, as long as the pattern that
+follows the ellipsis matches input that the preceeding pattern would fail to
+match. This is, the ellipsis acts as a greedy star operator in regular
+expressions. In the above, <tt>(name value) ... body ...</tt> matches zero or
+more two-element lists followed by zero or more expressions of any type. The
+following expression evaluates to <tt>3</tt> using this macro:
 
   (my-let (x 2) (y 3) y)
 
-Speaking of macros, there is no distinct macro expansion stage in
-Heist. Macros are expanded as they are encountered at runtime, and
-their expansions are inlined into the AST to improve performance:
-the same macro use is never expanded more than once. Macros (and
-native syntactic forms) are first-class, so they can be easily
-aliased and used anonymously:
+Speaking of macros, there is no distinct macro expansion stage in Heist. Macros
+are expanded as they are encountered at runtime, and their expansions are
+inlined into the AST to improve performance: the same macro use is never
+expanded more than once. Macros (and native syntactic forms) are first-class, so
+they can be easily aliased and used anonymously:
 
   (define when if)
   
@@ -287,18 +274,16 @@ aliased and used anonymously:
     (+ 3 4)) ; => 7
 
 It's not clear whether it would be useful to choose syntactic forms
-conditionally, certainly this will not work with macros as the
-inlining process will overwrite conditional code using the first
-expansion generated.
+conditionally, certainly this will not work with macros as the inlining process
+will overwrite conditional code using the first expansion generated.
 
 === Laziness
 
-Lazy evaluation mode is mainly useful for doing lambda calculus
-without being concerned about the difference between normal and
-applicative order, which for example affects the expression for
-the Y combinator. It displays some interesting properties, such
-as the fact that this is a perfectly reasonable definition for
-<tt>Y</tt>:
+Lazy evaluation mode is mainly useful for doing lambda calculus without being
+concerned about the difference between normal and applicative order, which for
+example affects the expression for the Y combinator. It displays some
+interesting properties, such as the fact that this is a perfectly reasonable
+definition for <tt>Y</tt>:
 
   (define (Y f)
     (f (Y f)))
@@ -319,23 +304,22 @@ as the fact that this is a perfectly reasonable definition for
 
 (The MIT License)
 
-Copyright (c) 2009 James Coglan
+Copyright (c) 2009-2011 James Coglan
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the 'Software'), to deal in
+the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
