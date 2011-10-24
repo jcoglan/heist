@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.rdoc_options      = %w[--main README.rdoc]
 
   s.files             = %w[History.txt README.rdoc] +
-                        Dir.glob("{bin,lib,test}/**/*")
+                        Dir.glob("{bin,lib,spec}/**/*")
   
   s.executables       = Dir.glob("bin/**").map { |f| File.basename(f) }
   s.require_paths     = %w[lib]
