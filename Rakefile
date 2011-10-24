@@ -1,16 +1,16 @@
 require 'rubygems'
 require File.expand_path('../lib/heist', __FILE__)
 
-file "lib/builtin/compiled_library.rb" do |t|
+file "lib/heist/builtin/compiled_library.rb" do |t|
   library_source = %w[util logic numeric list character string vector].
-                   map { |l| File.read "lib/builtin/lib/#{l}.scm" }.
+                   map { |l| File.read "lib/heist/builtin/lib/#{l}.scm" }.
                    join("\n\n")
   
   program = Heist.parse(library_source).convert!
   File.open(t.name, 'w') { |f| f.write 'program ' + program.to_ruby.inspect }
 end
 
-task :compile => "lib/builtin/compiled_library.rb"
+task :compile => "lib/heist/builtin/compiled_library.rb"
 
 namespace :spec do
   task :r5rs do
