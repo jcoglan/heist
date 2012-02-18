@@ -204,6 +204,10 @@ define('vector?') do |value|
   Vector === value
 end
 
+define('keyword?') do |value|
+  Keyword === value
+end
+
 #----------------------------------------------------------------
 
 # Numerical functions
