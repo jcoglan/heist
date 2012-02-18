@@ -16,7 +16,7 @@
 ; Note that this macro is very inefficient at the moment.
 (define-syntax let-keywords
   (syntax-rules ()
-    ((_ args () body ...) body ...)
+    ((_ args () body ...) (begin body ...))
     ((_ args ((keyword default) rest ...) body ...)
      (let ((keyword (get-keyword
                      (string->keyword
