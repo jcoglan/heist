@@ -2,7 +2,7 @@ require 'rubygems'
 require File.expand_path('../lib/heist', __FILE__)
 
 file "lib/heist/builtin/compiled_library.rb" do |t|
-  library_source = %w[util logic numeric list character string vector].
+  library_source = %w[util logic numeric list character string vector keyword].
                    map { |l| File.read "lib/heist/builtin/lib/#{l}.scm" }.
                    join("\n\n")
   
