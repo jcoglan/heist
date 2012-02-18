@@ -10,3 +10,21 @@
              (cadr args))
             (else
              (loop (cddr args)))))))
+
+; (let-keywords args ((keyword default) keyword ...) body ...)
+; Convenience syntax for binding a list of keyword arguments to variables.
+; Note that this macro is very inefficient at the moment.
+(define-syntax let-keywords
+  (syntax-rules ()
+    ((_ args () body ...) body ...)
+    ((_ args ((keyword default) rest ...) body ...)
+     (let ((keyword (get-keyword
+                     (string->keyword
+                      (symbol->string 'keyword))
+                     args
+                     (lambda () default))))
+       (let-keywords args (rest ...)
+         body ...)))
+    ((_ args (keyword rest ...) body ...)
+     (let-keywords args ((keyword #f) rest ...)
+       body ...))))
