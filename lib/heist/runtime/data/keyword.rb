@@ -6,11 +6,15 @@ module Heist
     # +keyword?+ predicate.
     class Keyword < Identifier
       
+      attr_reader :keyword_name
+      
       # Since keywords need never be renamed they don't need an
       # +original_name+ argument.
       def initialize(name)
-        super(name)
+        @keyword_name = name
+        super("#{name}:")
       end
+      
     end
     
   end

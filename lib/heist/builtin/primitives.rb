@@ -340,6 +340,20 @@ end
 
 #----------------------------------------------------------------
 
+# Keyword functions
+
+# Returns the string representing the name of the given keyword
+define('keyword->string') do |keyword|
+    keyword.keyword_name
+end
+
+# Returns the keyword whose name is the given string
+define('string->keyword') do |string|
+  Keyword.new(string)
+end
+
+#----------------------------------------------------------------
+
 # Character functions
 
 # Returns true iff the two characters are equal

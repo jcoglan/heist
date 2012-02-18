@@ -115,8 +115,3 @@
 ; Returns a new string formed by concatenating the arguments
 (define (string-append . strings)
   (list->string (apply append (map string->list strings))))
-
-; (string->keyword string)
-; Returns a keyword, i.e. suffixes the string with ":" and turns it into a symbol
-(define (string->keyword s)
-  (string->symbol (string-append s ":")))
