@@ -38,6 +38,7 @@ module Heist
       #
       def [](name)
         name = to_name(name)
+        return Keyword.new(name[0..-2]) if name.end_with?(':')
         bound = @symbols.has_key?(name)
         
         raise UndefinedVariable.new(

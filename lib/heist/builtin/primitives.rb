@@ -204,6 +204,10 @@ define('vector?') do |value|
   Vector === value
 end
 
+define('keyword?') do |value|
+  Keyword === value
+end
+
 #----------------------------------------------------------------
 
 # Numerical functions
@@ -332,6 +336,20 @@ end
 # Returns the symbol whose name is the given string
 define('string->symbol') do |string|
   Identifier.new(string)
+end
+
+#----------------------------------------------------------------
+
+# Keyword functions
+
+# Returns the string representing the name of the given keyword
+define('keyword->string') do |keyword|
+    keyword.keyword_name
+end
+
+# Returns the keyword whose name is the given string
+define('string->keyword') do |string|
+  Keyword.new(string)
 end
 
 #----------------------------------------------------------------

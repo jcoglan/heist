@@ -18,7 +18,7 @@ module Heist
   #
   class Runtime
     
-    %w[ data/expression     data/identifier   data/character
+    %w[ data/expression     data/identifier   data/character  data/keyword
         data/cons           data/vector       data/value
         callable/function   callable/syntax   callable/macro  callable/continuation
         frame               stack             stackless
