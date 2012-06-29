@@ -25,3 +25,4 @@
   (do ((i (vector-length vector) (- i 1)))
       ((zero? i) vector)
     (vector-set! vector (- i 1) fill)))
+

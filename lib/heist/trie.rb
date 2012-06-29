@@ -7,9 +7,9 @@ module Heist
   #
   # In our particular implementation, keys (strings representing variable names)
   # are split into arrays and stored in a series of nested hashtables whose keys
-  # are single characters. Strings sharing a common prefix share part of the tree
-  # structure. The <tt>Trie#inspect</tt> method provides a good representation
-  # of this (values omitted for the sake of brevity):
+  # are single characters. Strings sharing a common prefix share part of the
+  # tree structure. The <tt>Trie#inspect</tt> method provides a good
+  # representation of this (values omitted for the sake of brevity):
   #
   #   tree = Trie.new
   #   tree['foo'] = 1
@@ -31,30 +31,30 @@ module Heist
   class Trie
     attr_accessor :value
     
-    # A +Trie+ is initialized with an optional +value+. The value may be
-    # omitted if the trie does not represent the end of a key sequence.
+    # A +Trie+ is initialized with an optional +value+. The value may be omitted
+    # if the trie does not represent the end of a key sequence.
     def initialize(value = nil)
       @value = value
       @children = {}
     end
     
-    # Iterates over each child key of the +Trie+, calling the given +block+
-    # with each key and corresponding value. Like iterating over a flat +Hash+.
+    # Iterates over each child key of the +Trie+, calling the given +block+ with
+    # each key and corresponding value. Like iterating over a flat +Hash+.
     def each_child
       @children.each { |key, subtree| yield(key, subtree) }
     end
     
     # Iterates over the whole +Trie+, calling the given +block+ with each
-    # composite key and corresponding value. Each key will be an +Array+ matching
-    # the route to get from the root of the +Trie+ to the current node.
+    # composite key and corresponding value. Each key will be an +Array+
+    # matching the route to get from the root of the +Trie+ to the current node.
     def each(prefix = [], &block)
       each_child { |path, subtree| subtree.each(prefix + [path], &block) }
       yield(prefix, @value) unless @value.nil?
     end
     
-    # Returns +true+ iff the given +key+ is present in the +Trie+. They key
-    # must match a complete key sequence that maps to a value, not a partial
-    # prefix with no value attached.
+    # Returns +true+ iff the given +key+ is present in the +Trie+. They key must
+    # match a complete key sequence that maps to a value, not a partial prefix
+    # with no value attached.
     def has_key?(key)
       trie = traverse(key)
       trie and not trie.value.nil?
@@ -71,9 +71,9 @@ module Heist
       traverse(key, true).value = value
     end
     
-    # Walks the +Trie+ structure using the given +key+, returning the
-    # resulting subtrie or +nil+ if the key is absent. Pass +true+ as the
-    # second argument to create a subtrie for the key if none exists.
+    # Walks the +Trie+ structure using the given +key+, returning the resulting
+    # subtrie or +nil+ if the key is absent. Pass +true+ as the second argument
+    # to create a subtrie for the key if none exists.
     def traverse(key, create_if_absent = false)
       key = convert_key(key)
       return self if key.empty?
@@ -83,26 +83,25 @@ module Heist
       trie.traverse(key[1..-1], create_if_absent)
     end
     
-    # Returns an array of all the characters used as keys in this +Trie+.
-    # That is, this method returns the initial letters of all the keys
-    # stored in the +Trie+.
+    # Returns an array of all the characters used as keys in this +Trie+. That
+    # is, this method returns the initial letters of all the keys stored in the
+    # +Trie+.
     def prefixes
       @children.keys
     end
     
-    # Returns +true+ if the +Trie+ has no value and only one child. Used
-    # in +longest_prefix+ to find the longest unique prefix from some
-    # starting point.
+    # Returns +true+ if the +Trie+ has no value and only one child. Used in
+    # +longest_prefix+ to find the longest unique prefix from some starting
+    # point.
     def singular?
       @value.nil? and @children.size == 1
     end
     
-    # Returns the longest unique key prefix that starts with +key+. This
-    # is used for autocompletion in the REPL. Given a string, this method
-    # returns another string such that the start of the output is the
-    # same as the input, and the output may contain zero or more additional
-    # characters such that all the keys that begin with the input also begin
-    # with the output.
+    # Returns the longest unique key prefix that starts with +key+. This is used
+    # for autocompletion in the REPL. Given a string, this method returns
+    # another string such that the start of the output is the same as the input,
+    # and the output may contain zero or more additional characters such that
+    # all the keys that begin with the input also begin with the output.
     #
     #   tree = Trie.new
     #   tree['foo'] = 1
@@ -130,17 +129,17 @@ module Heist
       end
     end
     
-    # Returns a string representation of the trie's internal structure.
-    # Values are not printed; the main purpose of this method is to inspect
-    # the internal tree structure.
+    # Returns a string representation of the trie's internal structure. Values
+    # are not printed; the main purpose of this method is to inspect the
+    # internal tree structure.
     def inspect
       @children.inspect
     end
     
   private
     
-    # Returns an array from the given +key+, making it ready for use as
-    # a key sequence.
+    # Returns an array from the given +key+, making it ready for use as a key
+    # sequence.
     def convert_key(key)
       case key
       when Array      then key

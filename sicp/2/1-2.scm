@@ -7,8 +7,8 @@
 (exercise "2.2")
 ; Lines and points
 
-; Initially at least, the constructors just use pairs
-; directly, so just write them as aliases
+; Initially at least, the constructors just use pairs directly, so just write
+; them as aliases
 (define make-point cons)
 (define x-point car)
 (define y-point cdr)

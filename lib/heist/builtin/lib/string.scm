@@ -39,44 +39,42 @@
   (= (string-compare string1 string2 char<? char>?) 1))
 
 ; (string<=? string1 string2)
-; Returns true iff string1 is lexicographically less than or equal
-; to string2
+; Returns true iff string1 is lexicographically less than or equal to string2
 (define (string<=? string1 string2)
   (not (string>? string1 string2)))
 
 ; (string>=? string1 string2)
-; Returns true iff string1 is lexicographically greater than or equal
-; to string2
+; Returns true iff string1 is lexicographically greater than or equal to string2
 (define (string>=? string1 string2)
   (not (string<? string1 string2)))
 
 ; (string-ci<? string1 string2)
-; Returns true iff string1 is lexicographically less than string2,
-; ignoring differences in case
+; Returns true iff string1 is lexicographically less than string2, ignoring
+; differences in case
 (define (string-ci<? string1 string2)
   (= (string-compare string1 string2 char-ci<? char-ci>?) -1))
 
 ; (string-ci>? string1 string2)
-; Returns true iff string1 is lexicographically greater than string2,
-; ignoring differences in case
+; Returns true iff string1 is lexicographically greater than string2, ignoring
+; differences in case
 (define (string-ci>? string1 string2)
   (= (string-compare string1 string2 char-ci<? char-ci>?) 1))
 
 ; (string-ci<=? string1 string2)
-; Returns true iff string1 is lexicographically less than or equal
-; to string2, ignoring differences in case
+; Returns true iff string1 is lexicographically less than or equal to string2,
+; ignoring differences in case
 (define (string-ci<=? string1 string2)
   (not (string-ci>? string1 string2)))
 
 ; (string-ci>=? string1 string2)
-; Returns true iff string1 is lexicographically greater than or equal
-; to string2, ignoring differences in case
+; Returns true iff string1 is lexicographically greater than or equal to
+; string2, ignoring differences in case
 (define (string-ci>=? string1 string2)
   (not (string-ci<? string1 string2)))
 
 ; (substring string start end)
-; Returns a string composed of the characters from start (inclusive)
-; to end (exclusive) in string
+; Returns a string composed of the characters from start (inclusive) to end
+; (exclusive) in string
 (define (substring string start end)
   (list->string (sublist (string->list string) start end)))
 
@@ -115,3 +113,4 @@
 ; Returns a new string formed by concatenating the arguments
 (define (string-append . strings)
   (list->string (apply append (map string->list strings))))
+

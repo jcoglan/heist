@@ -171,14 +171,13 @@
 ;                   /    \
 ;                 B:2    A:1
 ; 
-; These trees will always follow this structure, since the
-; following is true:
+; These trees will always follow this structure, since the following is true:
 ; 
 ;     sum(0,n-1) 2^i = 2^n - 1
 ; 
-; i.e. the sum of all the weights below the current maximum
-; is always less than that maximum.
+; i.e. the sum of all the weights below the current maximum is always less than
+; that maximum.
 ; 
-; 1 bit is needed for the most frequent symbol, and n-1 are
-; needed for the least frequent (A = 1111 above).
+; 1 bit is needed for the most frequent symbol, and n-1 are needed for the least
+; frequent (A = 1111 above).
 

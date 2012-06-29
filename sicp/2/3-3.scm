@@ -39,8 +39,8 @@
 (exercise "2.60")
 ; Procedures allowing duplicates within the representation
 
-; Since we don't care about duplicates, we don't have to
-; call element-of-set? quite so much.
+; Since we don't care about duplicates, we don't have to call element-of-set?
+; quite so much.
 
 ; Leave element-of-set? as is -> O(n)
 
@@ -55,8 +55,8 @@
       (union-set (cdr set1)
                  (adjoin-set (car set1) set2))))
 
-; Leave intersection-set as is. This by definition requires
-; membership checks over both sets -> O(n^2)
+; Leave intersection-set as is. This by definition requires membership checks
+; over both sets -> O(n^2)
 
 
 ; Ordered list representation
@@ -182,20 +182,17 @@
 (output '(tree->list-1 tree-3))
 (output '(tree->list-2 tree-3))
 
-; a. Both produce the same result: the first produces
-;    (append left-side entry right-side), where left-side and
-;    right-side are the flattened portions of each side of
-;    the tree. Thus the output is an ordered list.
+; a. Both produce the same result: the first produces (append left-side entry
+;    right-side), where left-side and right-side are the flattened portions of
+;    each side of the tree. Thus the output is an ordered list.
 ;    
-;    The second simply conses items from the tree onto
-;    a list starting with '() and iterating from rightmost
-;    to leftmost leaf, again producing a correctly ordered
-;    list as output.
+;    The second simply conses items from the tree onto a list starting with '()
+;    and iterating from rightmost to leftmost leaf, again producing a correctly
+;    ordered list as output.
 ;
-; b. tree->list-2 grows more slowly since it requires a
-;    single `cons` for each entry in the tree and tree->list-1
-;    requires an `append` for each entry. `Append` is more
-;    expensive than `cons` since it copies all its arguments
+; b. tree->list-2 grows more slowly since it requires a single `cons` for each
+;    entry in the tree and tree->list-1 requires an `append` for each entry.
+;    `Append` is more expensive than `cons` since it copies all its arguments
 ;    by consing their elements together.
 
 
@@ -208,34 +205,31 @@
   (if (= n 0)
       ; If `n` is zero, return an empty tree and the whole of `elts`
       (cons '() elts)
-      ; We need to make a tree out of the first `n` elements of
-      ; `elts`, whose root node is the median value in this range.
-      ; Pick the first half of the list (n=6 -> left-size=2,
-      ; n=7 -> left-size=3) and use `partial-tree` recursively
-      ; to process it. We get back the left-hand subtree and
-      ; the remainder of elts.
+      ; We need to make a tree out of the first `n` elements of `elts`, whose
+      ; root node is the median value in this range. Pick the first half of the
+      ; list (n=6 -> left-size=2, n=7 -> left-size=3) and use `partial-tree`
+      ; recursively to process it. We get back the left-hand subtree and the
+      ; remainder of elts.
       (let ((left-size (quotient (- n 1) 2)))
         (let ((left-result (partial-tree elts left-size)))
-          ; Extract the tree and remaining list from the result.
-          ; The right-size of the tree is `(- n left-size 1)`,
-          ; since `n` is the size of the tree, we've consumed
-          ; `left-size` elements already and we need one element
-          ; for the root node.
+          ; Extract the tree and remaining list from the result. The right-size
+          ; of the tree is `(- n left-size 1)`, since `n` is the size of the
+          ; tree, we've consumed `left-size` elements already and we need one
+          ; element for the root node.
           (let ((left-tree (car left-result))
                 (non-left-elts (cdr left-result))
                 (right-size (- n (+ left-size 1))))
-            ; Get the root node value from the front of the
-            ; remainder list, and use another recursive call
-            ; to get the right-hand-side of the tree and a list
-            ; of remaining unprocessed values.
+            ; Get the root node value from the front of the remainder list, and
+            ; use another recursive call to get the right-hand-side of the tree
+            ; and a list of remaining unprocessed values.
             (let ((this-entry (car non-left-elts))
                   (right-result (partial-tree (cdr non-left-elts)
                                               right-size)))
               (let ((right-tree (car right-result))
                     (remaining-elts (cdr right-result)))
-                ; Return a tree node using the root value and the
-                ; two subtrees, and a list of the unprocessed
-                ; elements from the original elts list.
+                ; Return a tree node using the root value and the two subtrees,
+                ; and a list of the unprocessed elements from the original elts
+                ; list.
                 (cons (make-tree this-entry left-tree right-tree)
                       remaining-elts))))))))
 
@@ -245,17 +239,15 @@
 ;       (9 (7 () ())
 ;          (11 () ())))
 
-; `Partial-tree` returns once for every element in the input list
-; -- the `this-entry` term in the return expression takes every value
-; in the list once and only once -- so grows as O(n). (There is
-; an O(log n) overhead of making empty subtrees for the leaves, but
-; the O(n) term will dominate.)
+; `Partial-tree` returns once for every element in the input list -- the
+; `this-entry` term in the return expression takes every value in the list once
+; and only once -- so grows as O(n). (There is an O(log n) overhead of making
+; empty subtrees for the leaves, but the O(n) term will dominate.)
 
 
 (exercise "2.65")
-; O(n) union-set and intersection-set for balanced binary trees.
-; Use the list-based procedures with O(n) input/output
-; conversion filters.
+; O(n) union-set and intersection-set for balanced binary trees. Use the
+; list-based procedures with O(n) input/output conversion filters.
 
 (define tree->list tree->list-2)
 

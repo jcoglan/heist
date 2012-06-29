@@ -11,9 +11,9 @@
 ; (put <op> <types> <function>)
 ; (get <op> <types>)
 
-; Looks up a concrete implementation based on the type tags of the
-; arguments, then if a suitable function is found it is applied to
-; the values of the arguments and the result is returned.
+; Looks up a concrete implementation based on the type tags of the arguments,
+; then if a suitable function is found it is applied to the values of the
+; arguments and the result is returned.
 (define (apply-generic op . args)
   (let ((type-tags (map type-tag args)))
     (let ((proc (get op type-tags)))
@@ -52,14 +52,14 @@
 
 (exercise "2.73.a")
 
-; Deriv now does simple data-driven dispatch based on the type of
-; expression handed to it. If the expression is a number, we return
-; 0. If the expression is a symbol, we differentiate it w.r.t. to
-; var giving either 0 or 1. For all other types we dispatch using
-; the type tag i.e. the operator symbol at the start of the expression.
+; Deriv now does simple data-driven dispatch based on the type of expression
+; handed to it. If the expression is a number, we return 0. If the expression is
+; a symbol, we differentiate it w.r.t. to var giving either 0 or 1. For all
+; other types we dispatch using the type tag i.e. the operator symbol at the
+; start of the expression.
 ; 
-; Numbers and variables cannot be assimilated as they are atomic
-; pieces of data without type tags, so they have to be checked directly.
+; Numbers and variables cannot be assimilated as they are atomic pieces of data
+; without type tags, so they have to be checked directly.
 
 
 (exercise "2.73.b")
@@ -96,10 +96,9 @@
 
 
 (exercise "2.73.d")
-; Switch the indexing from operation/type to type/operation
-; You simply need to switch the ordering of the arguments to
-; put() in the above examples, assuming the index table is
-; agnostic concerning the types used to navigate the index.
+; Switch the indexing from operation/type to type/operation You simply need to
+; switch the ordering of the arguments to put() in the above examples, assuming
+; the index table is agnostic concerning the types used to navigate the index.
 
 
 (exercise "2.75")
@@ -118,20 +117,19 @@
 
 
 (exercise "2.76")
-; Explicit dispatch: When new types are added, all existing operations
-; must be modified to dispatch to a new concrete implementation for the
-; new type. When new operations are added, implementations are required
-; for all applicable types and a generic wrapper listing the types to
-; dispatch on must be written.
+; Explicit dispatch: When new types are added, all existing operations must be
+; modified to dispatch to a new concrete implementation for the new type. When
+; new operations are added, implementations are required for all applicable
+; types and a generic wrapper listing the types to dispatch on must be written.
 ; 
 ; Data-driven dispatch: When new types are added, all applicable operations
-; require implementations for the new type and these implementations must
-; be indexed. Generic wrappers remain untouched. When new operations are
-; added, they must be implemented across all types and similarly registered
-; so that generics may dispatch to them.
+; require implementations for the new type and these implementations must be
+; indexed. Generic wrappers remain untouched. When new operations are added,
+; they must be implemented across all types and similarly registered so that
+; generics may dispatch to them.
 ; 
 ; Message-passing. When a new type is added, it must contain concrete
-; implementations for all required operations but no existing code need
-; change. For a new operation, all existing types must add support for
-; the operation but again no other code needs to change.
+; implementations for all required operations but no existing code need change.
+; For a new operation, all existing types must add support for the operation but
+; again no other code needs to change.
 

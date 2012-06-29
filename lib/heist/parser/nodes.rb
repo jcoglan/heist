@@ -8,9 +8,9 @@ module Heist
   # objects. Evaluating a +Program+ requires a +Runtime+ in which to do so.
   module Scheme
     
-    # Any list-generating shorthands present in the grammar should be listed here.
-    # In Scheme, this list includes the various quoting symbols that can be used
-    # as shorthands for calling quoting functions.
+    # Any list-generating shorthands present in the grammar should be listed
+    # here. In Scheme, this list includes the various quoting symbols that can
+    # be used as shorthands for calling quoting functions.
     SHORTHANDS = {
       "'"   => 'quote',
       "`"   => 'quasiquote',
@@ -28,8 +28,8 @@ module Heist
         @data.map { |part| Heist.evaluate(part, scope) }.last
       end
       
-      # Converts all the +Treetop+ objects in the +Program+ to Heist objects
-      # and raw Ruby data ready for interpretation using a +Runtime+.
+      # Converts all the +Treetop+ objects in the +Program+ to Heist objects and
+      # raw Ruby data ready for interpretation using a +Runtime+.
       def convert!
         return @data if @data
         @data = Runtime::Cons.construct(elements[1].elements, true) { |c| c.eval }

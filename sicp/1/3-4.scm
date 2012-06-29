@@ -116,16 +116,15 @@
 (exercise "1.45")
 ; nth roots
 
-; To find the nth root of x, we find the fixed point
-; y of y -> x/y^(n-1). Provide a function to generate
-; this transformation, curried on n and x
+; To find the nth root of x, we find the fixed point y of y -> x/y^(n-1).
+; Provide a function to generate this transformation, curried on n and x
 (define (nth-root-transform n)
   (lambda (x)
     (lambda (y)
       (/ x (expt y (- n 1))))))
 
-; To converge, this must be average-damped by a factor
-; given by floor(log2(n)). Again, curry on n,x
+; To converge, this must be average-damped by a factor given by floor(log2(n)).
+; Again, curry on n,x
 (define (nth-root n)
   (let ((transform (nth-root-transform n))
         (k (floor (/ (log n) (log 2)))))

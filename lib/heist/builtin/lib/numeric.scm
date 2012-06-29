@@ -3,8 +3,8 @@
 (define number? complex?)
 
 ; (exact? x)
-; Returns true iff the given number is exact i.e. an integer, a
-; rational, or a complex made of integers or rationals
+; Returns true iff the given number is exact i.e. an integer, a rational, or a
+; complex made of integers or rationals
 (define (exact? x)
   (or (rational? x)
       (and (not (zero? (imag-part x)))
@@ -81,8 +81,8 @@
 ;          (remainder n1 n2)))
 
 ; (quotient x y)
-; Returns the quotient of two numbers, i.e. performs n1/n2
-; and rounds toward zero.
+; Returns the quotient of two numbers, i.e. performs n1/n2 and rounds toward
+; zero.
 (define (quotient x y)
   (let ((result (/ x y)))
     ((if (positive? result)
@@ -91,8 +91,7 @@
      result)))
 
 ; (remainder x y)
-; Returns the remainder after dividing the first operand
-; by the second
+; Returns the remainder after dividing the first operand by the second
 (define (remainder x y)
   (- (round x)
      (* (round y)
@@ -128,10 +127,9 @@
 (define ceiling ceil)
 
 ; (rationalize x tolerance)
-; Returns the simplest rational number that differs from x by
-; no more than tolerance. Here 'simplest' means the smallest
-; possible denominator is found first, and with that set the
-; smallest corresponding numerator is chosen.
+; Returns the simplest rational number that differs from x by no more than
+; tolerance. Here 'simplest' means the smallest possible denominator is found
+; first, and with that set the smallest corresponding numerator is chosen.
 (define (rationalize x tolerance)
   (cond ((rational? x)
           x)
@@ -152,8 +150,7 @@
                                i)))))))))
 
 ; (make-polar magnitude angle)
-; Returns a new complex number with the given
-; magnitude and angle
+; Returns a new complex number with the given magnitude and angle
 (define (make-polar magnitude angle)
   (let ((re (* magnitude (cos angle)))
         (im (* magnitude (sin angle))))
@@ -167,8 +164,8 @@
     (sqrt (+ (* re re) (* im im)))))
 
 ; (angle z)
-; Returns the angle a complex number makes with the
-; real axis when plotted in the complex plane
+; Returns the angle a complex number makes with the real axis when plotted in
+; the complex plane
 (define (angle z)
   (let ((re (real-part z))
         (im (imag-part z)))
@@ -182,3 +179,4 @@
         acc
         (iter (- y 1) (* y acc))))
   (iter x 1))
+

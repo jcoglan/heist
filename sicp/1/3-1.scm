@@ -14,8 +14,8 @@
       (+ (term a)
          (sum term (next a) next b))))
 
-; Tail recursive version (exercise 1.30, but required
-; so that Heist will actually run the integrals below)
+; Tail recursive version (exercise 1.30, but required so that Heist will
+; actually run the integrals below)
 (define (sum term a next b)
   (define (iter a result)
     (if (> a b)

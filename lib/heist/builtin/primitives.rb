@@ -1,9 +1,8 @@
 # Functions that create new functions
 
-# (define) binds values to names in the current scope. If the
-# first parameter is a list it creates a function, otherwise
-# it eval's the second parameter and binds it to the name
-# given by the first.
+# (define) binds values to names in the current scope. If the first parameter
+# is a list it creates a function, otherwise it evals the second parameter and
+# binds it to the name given by the first.
 syntax('define') do |scope, cells|
   name = cells.car
   Cons === name ?
@@ -11,20 +10,19 @@ syntax('define') do |scope, cells|
       scope[name] = Heist.evaluate(cells.cdr.car, scope)
 end
 
-# (lambda) returns an anonymous function whose arguments are
-# named by the first parameter and whose body is given by the
-# remaining parameters.
+# (lambda) returns an anonymous function whose arguments are named by the first
+# parameter and whose body is given by the remaining parameters.
 syntax('lambda') do |scope, cells|
   Function.new(scope, cells.car, cells.cdr)
 end
 
-# (set!) reassigns the value of an existing bound variable,
-# in the innermost scope responsible for binding it.
+# (set!) reassigns the value of an existing bound variable, in the innermost
+# scope responsible for binding it.
 syntax('set!') do |scope, cells|
   scope.set!(cells.car, Heist.evaluate(cells.cdr.car, scope))
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Macros
 
@@ -36,66 +34,63 @@ syntax('syntax-rules') do |scope, cells|
   Macro.new(scope, cells.car, cells.cdr)
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Continuations
 
-# Creates a +Continuation+ encapsulating the current +Stack+
-# state, and returns the result of calling the second parameter
-# (which should evaluate to a +Function+) with the continuation
-# as the argument.
+# Creates a +Continuation+ encapsulating the current +Stack+ state, and returns
+# the result of calling the second parameter (which should evaluate to a
+# +Function+) with the continuation as the argument.
 syntax('call-with-current-continuation') do |scope, cells|
   continuation = Continuation.new(scope.runtime.stack)
   callback = Heist.evaluate(cells.car, scope)
   callback.call(scope, Cons.new(continuation))
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Quoting functions
 
-# (quote) treats its argument as a literal. Returns the given
-# portion of the parse tree as a list
+# (quote) treats its argument as a literal. Returns the given portion of the
+# parse tree as a list
 syntax('quote') do |scope, cells|
   node = cells.car
   node.freeze! if node.respond_to?(:freeze!)
   node
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Control structures
 
-# (begin) simply executes a series of expressions in the
-# current scope and returns the value of the last one
+# (begin) simply executes a series of expressions in the current scope and
+# returns the value of the last one
 syntax('begin') do |scope, cells|
   Body.new(cells, scope)
 end
 
-# (if) evaluates the consequent if the condition eval's to
-# true, otherwise it evaluates the alternative
+# (if) evaluates the consequent if the condition eval's to true, otherwise it
+# evaluates the alternative
 syntax('if') do |scope, cells|
   which = Heist.evaluate(cells.car, scope) ? cells.cdr : cells.cdr.cdr
   which.null? ? which : Frame.new(which.car, scope)
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Runtime utilities
 
 # (exit) causes the host Ruby process to quit
 define('exit') { exit }
 
-# (runtime) returns the amount of time the host +Runtime+ has
-# been alive, in microseconds. Not a standard function, but
-# used in SICP.
+# (runtime) returns the amount of time the host +Runtime+ has been alive, in
+# microseconds. Not a standard function, but used in SICP.
 syntax('runtime') do |scope, cells|
   scope.runtime.elapsed_time
 end
 
-# (eval) evaluates Scheme code and returns the result. The
-# argument can be a string or a list containing a valid
-# Scheme expression.
+# (eval) evaluates Scheme code and returns the result. The argument can be a
+# string or a list containing a valid Scheme expression.
 syntax('eval') do |scope, cells|
   scope.eval(Heist.evaluate(cells.car, scope))
 end
@@ -105,20 +100,20 @@ define('display') do |expression|
   print expression
 end
 
-# (load) loads a file containing Scheme code and executes its
-# contents. The path can be relative to the current file, or
-# it can be the name of a file in the Heist library.
+# (load) loads a file containing Scheme code and executes its contents. The path
+# can be relative to the current file, or it can be the name of a file in the
+# Heist library.
 syntax('load') do |scope, cells|
   scope.load(cells.car)
 end
 
-# (error) raises an error with the given message. Additional
-# arguments are appended to the message.
+# (error) raises an error with the given message. Additional arguments are
+# appended to the message.
 define('error') do |message, *args|
   raise RuntimeError.new("#{ message } :: #{ args * ', ' }")
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Comparators
 
@@ -160,7 +155,7 @@ define('<=') do |*args|
   result
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Type-checking predicates
 
@@ -204,7 +199,7 @@ define('vector?') do |value|
   Vector === value
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Numerical functions
 # TODO implement rationalize, exact->inexact and vice versa
@@ -226,8 +221,8 @@ define('*') do |*args|
   args.inject(1) { |prod, arg| prod * arg }
 end
 
-# Returns the first argument divided by the second, or the
-# reciprocal of the first if only one argument is given
+# Returns the first argument divided by the second, or the reciprocal of the
+# first if only one argument is given
 define('/') do |op1, op2|
   op2.nil? ? Heist.divide(1, op1) : Heist.divide(op1, op2)
 end
@@ -258,14 +253,12 @@ define('atan') do |op1, op2|
   op2.nil? ? Math.atan(op1) : Math.atan2(op1, op2)
 end
 
-# Returns the result of raising the first argument to the
-# power of the second
+# Returns the result of raising the first argument to the power of the second
 define('expt') do |op1, op2|
   op1 ** op2
 end
 
-# Returns a new complex number with the given real and
-# imaginary parts
+# Returns a new complex number with the given real and imaginary parts
 define('make-rectangular') do |real, imag|
   Complex(real, imag)
 end
@@ -275,8 +268,8 @@ define('real-part') do |value|
   Complex === value ? value.real : value
 end
 
-# Returns the imaginary part of a number, which is zero
-# unless the number is not real
+# Returns the imaginary part of a number, which is zero unless the number is not
+# real
 define('imag-part') do |value|
   Complex === value ? value.imag : 0
 end
@@ -296,7 +289,7 @@ define('string->number') do |string, radix|
   radix.nil? ? string.to_f : string.to_i(radix)
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # List/pair functions
 
@@ -320,7 +313,7 @@ define('set-cdr!') do |cons, value|
   cons.cdr = value
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Symbol functions
 
@@ -334,7 +327,7 @@ define('string->symbol') do |string|
   Identifier.new(string)
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Character functions
 
@@ -369,12 +362,12 @@ define('char->integer') do |char|
   char.char_code
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # String functions
 
-# Returns a new string of the given size, filled with the given
-# character. If no character is given, a space is used.
+# Returns a new string of the given size, filled with the given character. If no
+# character is given, a space is used.
 define('make-string') do |size, char|
   char = " " if char.nil?
   char.to_s * size
@@ -401,12 +394,12 @@ define('string-set!') do |string, k, char|
   string
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Vector functions
 
-# Returns a new vector of the given size, filled with the given
-# filler value (this defaults to the NULL list)
+# Returns a new vector of the given size, filled with the given filler value
+# (this defaults to the NULL list)
 define('make-vector') do |size, fill|
   fill = Cons::NULL if fill.nil?
   Vector.new(size, fill)
@@ -431,7 +424,7 @@ define('vector-set!') do |vector, k, object|
   vector[k] = object
 end
 
-#----------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 # Control features
 

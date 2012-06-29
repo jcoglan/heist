@@ -21,7 +21,6 @@ describe Heist do
   dir = File.expand_path('../scheme_tests', __FILE__)
   
   shared_examples_for "Scheme interpreter" do
-    
     tests = Dir.entries(dir).grep(/\.scm$/) -
             %w[continuations.scm hygienic.scm unhygienic.scm]
     

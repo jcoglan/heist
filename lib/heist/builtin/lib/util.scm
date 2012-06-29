@@ -1,6 +1,5 @@
-; Any built-in functions that we can implement directly
-; in Scheme should go here. If at all possible, write
-; builtins in Scheme rather than Ruby.
+; Any built-in functions that we can implement directly in Scheme should go
+; here. If at all possible, write builtins in Scheme rather than Ruby.
 
 (define quit exit)
 
@@ -16,3 +15,4 @@
 ; (call/cc)
 ; Alias for (call-with-current-continuation)
 (define call/cc call-with-current-continuation)
+

@@ -1,7 +1,6 @@
 ; (char string)
-; Returns a character from a single-character string. Mostly
-; useful for succinct representation of characters in hand-
-; written Ruby code.
+; Returns a character from a single-character string. Mostly useful for succinct
+; representation of characters in hand-written Ruby code.
 (define (char string)
   (if (and (string? string) (= (string-length string) 1))
       (string-ref string 0)
@@ -72,3 +71,4 @@
 (define char-ci>?  (char-compare-ci char>?))
 (define char-ci<=? (char-compare-ci char<=?))
 (define char-ci>=? (char-compare-ci char>=?))
+

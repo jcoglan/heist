@@ -24,9 +24,8 @@
   (iter object 0))
 
 ; (append list ...)
-; Returns a new list formed by concatenating the arguments.
-; The final argument is not copied and the return value of
-; (append) shares structure with it.
+; Returns a new list formed by concatenating the arguments. The final argument
+; is not copied and the return value of (append) shares structure with it.
 (define (append first . rest)
   (cond ((null? rest) first)
         ((null? first) (apply append rest))
@@ -36,8 +35,8 @@
                         (apply append rest))))))
 
 ; (reverse list)
-; Returns a newly allocated list consisting of the
-; elements of list in reverse order.
+; Returns a newly allocated list consisting of the elements of list in reverse
+; order.
 (define (reverse object)
   (if (null? object)
       object
@@ -45,8 +44,7 @@
               (list (car object)))))
 
 ; (list-tail list k)
-; Returns the sublist of list obtained by omitting the
-; first k elements.
+; Returns the sublist of list obtained by omitting the first k elements.
 (define (list-tail list k)
   (do ((pair list (cdr pair))
        (i k (- i 1)))
@@ -60,13 +58,11 @@
 ; (memq obj list)
 ; (memv obj list)
 ; (member obj list)
-; These procedures return the first sublist of list whose
-; car is obj, where the sublists of list are the non-empty
-; lists returned by (list-tail list k) for k less than the
-; length of list. If obj does not occur in list, then #f
-; (not the empty list) is returned. Memq uses eq? to compare
-; obj with the elements of list, while memv uses eqv? and
-; member uses equal?.
+; These procedures return the first sublist of list whose car is obj, where the
+; sublists of list are the non-empty lists returned by (list-tail list k) for k
+; less than the length of list. If obj does not occur in list, then #f (not the
+; empty list) is returned. Memq uses eq? to compare obj with the elements of
+; list, while memv uses eqv? and member uses equal?.
 
 (define (list-transform-search transform)
   (lambda (predicate)
@@ -86,13 +82,11 @@
 ; (assq obj alist)
 ; (assv obj alist)
 ; (assoc obj alist)
-; Alist (for "association list") must be a list of pairs.
-; These procedures find the first pair in alist whose car
-; field is obj, and returns that pair. If no pair in alist
-; has obj as its car, then #f (not the empty list) is
-; returned. Assq uses eq? to compare obj with the car fields
-; of the pairs in alist, while assv uses eqv? and assoc
-; uses equal?.
+; Alist (for "association list") must be a list of pairs. These procedures find
+; the first pair in alist whose car field is obj, and returns that pair. If no
+; pair in alist has obj as its car, then #f (not the empty list) is returned.
+; Assq uses eq? to compare obj with the car fields of the pairs in alist, while
+; assv uses eqv? and assoc uses equal?.
 
 (define assoc-list-search (list-transform-search car))
 (define assq  (assoc-list-search eq?))
@@ -100,8 +94,8 @@
 (define assoc (assoc-list-search equal?))
 
 ; (map proc list1 list2 ...)
-; Returns a new list formed by applying proc to each member
-; (or set of members) of the given list(s).
+; Returns a new list formed by applying proc to each member (or set of members)
+; of the given list(s).
 (define (map proc list1 . list2)
   (if (null? list1)
       list1
@@ -115,9 +109,8 @@
                   (apply map (cons proc rest)))))))
 
 ; (for-each proc list1 list2 ...)
-; Calls proc once for each member of list1, passing each
-; member (or set of members if more than one list given)
-; as arguments to proc.
+; Calls proc once for each member of list1, passing each member (or set of
+; members if more than one list given) as arguments to proc.
 (define (for-each proc list1 . list2)
   (do ((pair list1 (cdr pair))
        (others list2 (map cdr others)))
@@ -147,3 +140,4 @@
         ((<= end 0) '())
         (else (cons (car list)
                     (sublist (cdr list) 0 (- end 1))))))
+

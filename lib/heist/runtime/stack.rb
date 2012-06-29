@@ -2,30 +2,28 @@ module Heist
   class Runtime
     
     # +Stack+ is responsible for executing code by successively evaluating
-    # expressions. It provides fine-grained intermediate result inspection
-    # to support the Scheme notion of continuations, working with the +Frame+
-    # and +Body+ classes to evaluate expressions and function bodies piece
-    # by piece. Using the +Stack+ engine allows the creation of +Continuation+
-    # functions, which save the current state of the stack (i.e. the state
-    # of any unfinished expressions and function bodies) and allow it to be
-    # resumed at some later time.
+    # expressions. It provides fine-grained intermediate result inspection to
+    # support the Scheme notion of continuations, working with the +Frame+ and
+    # +Body+ classes to evaluate expressions and function bodies piece by piece.
+    # Using the +Stack+ engine allows the creation of +Continuation+ functions,
+    # which save the current state of the stack (i.e. the state of any
+    # unfinished expressions and function bodies) and allow it to be resumed at
+    # some later time.
     #
-    # +Stack+ inherits from +Array+, and is a last-in-first-out structure:
-    # the next expression evaluated is always the last expression on the
-    # stack.
+    # +Stack+ inherits from +Array+, and is a last-in-first-out structure: the
+    # next expression evaluated is always the last expression on the stack.
     #
-    # You should think of the +Stack+ as an array of +Frame+ objects that
-    # hold expressions and track their progress. For example, take the
-    # expression:
+    # You should think of the +Stack+ as an array of +Frame+ objects that hold
+    # expressions and track their progress. For example, take the expression:
     #
     #   (+ (- (* 8 9) (/ 21 7)) 4)
     #
     # Evaluating it involves evaluating each subexpression to fill in holes
     # where we expect values; when all the holes in an expression have been
-    # filled, we can apply the resulting function to the arguments and get
-    # a value. Evaluating this expression causes the stack to evolve as
-    # follows, where STATE lists the expressions on the stack and <tt>[]</tt>
-    # represents a hole that is waiting for a value:
+    # filled, we can apply the resulting function to the arguments and get a
+    # value. Evaluating this expression causes the stack to evolve as follows,
+    # where STATE lists the expressions on the stack and <tt>[]</tt> represents
+    # a hole that is waiting for a value:
     #
     #   PUSH:  (+ (- (* 8 9) (/ 21 7)) 4)
     #   STATE: ([] [] 4)
@@ -67,27 +65,26 @@ module Heist
     #   VALUE: 73
     #
     # So we find that <tt>(+ (- (* 8 9) (/ 21 7)) 4)</tt> gives the value 73.
-    # Whenever a value is returned by a subexpression we must inspect it to
-    # see if a +Continuation+ has been called. All this inspection of
-    # intermediate values takes time; if you don't need full +Continuation+
-    # support, use the faster +Stackless+ engine instead.
+    # Whenever a value is returned by a subexpression we must inspect it to see
+    # if a +Continuation+ has been called. All this inspection of intermediate
+    # values takes time; if you don't need full +Continuation+ support, use the
+    # faster +Stackless+ engine instead.
     #
     class Stack < Array
       attr_reader :value
       
-      # Pushes a new +Frame+ or +Body+ onto the +Stack+ and then executes
-      # the resulting code until the pushed frame returns a value, which
-      # is then returned.
+      # Pushes a new +Frame+ or +Body+ onto the +Stack+ and then executes the
+      # resulting code until the pushed frame returns a value, which is then
+      # returned.
       def <<(frame)
         super
         clear!(size - 1)
       end
       
       # Creates and returns a copy of the stack, which represents the current
-      # computational state: any unfinished expressions and function bodies
-      # are stored in the stack. Pass +false+ to discard the final frame,
-      # which will typically be a call to <tt>(call/cc)</tt> when creating
-      # a +Continuation+.
+      # computational state: any unfinished expressions and function bodies are
+      # stored in the stack. Pass +false+ to discard the final frame, which will
+      # typically be a call to <tt>(call/cc)</tt> when creating a +Continuation+.
       def copy(keep_last = true)
         copy = self.class.new
         range = keep_last ? 0..-1 : 0...-1
@@ -97,10 +94,10 @@ module Heist
         copy
       end
       
-      # Fills a hole in the final +Frame+ on the +Stack+ by replacing the
-      # given epxression +subexpr+ with the given +value+. If the +value+
-      # is a +Frame+, this frame is pushed onto the stack rather than filling
-      # a hole in the previous frame.
+      # Fills a hole in the final +Frame+ on the +Stack+ by replacing the given
+      # epxression +subexpr+ with the given +value+. If the +value+ is a +Frame+,
+      # this frame is pushed onto the stack rather than filling a hole in the
+      # previous frame.
       def fill!(subexpr, value)
         return self[size] = value if Frame === value
         return @value = value if empty?
@@ -109,8 +106,8 @@ module Heist
       
       # Causes the stack to evaluate expressions in order to pop them off the
       # stack, until it gets down to the size given by +limit+. The resulting
-      # value if returned after all necessary computations have been done,
-      # and if an error takes place at any point we empty the stack.
+      # value if returned after all necessary computations have been done, and
+      # if an error takes place at any point we empty the stack.
       def clear!(limit = 0)
         process! while size > limit
         @value
@@ -120,13 +117,13 @@ module Heist
       end
       
       # Sets the +value+ on the +Stack+, which is always the value returned by
-      # the last completed expression or function body. If the given +value+
-      # is another +Stack+, this new stack replaces the state of the receiver;
-      # this takes place when a +Continuation+ is called. If the +value+ is
-      # a +Frame+, it is pushed onto the stack and we set a flag to indicate
-      # that a tail call is in effect and the replacement target of the call
-      # needs to be repointed: the expression that generated the tail call will
-      # have been removed from the stack by the time the call returns.
+      # the last completed expression or function body. If the given +value+ is
+      # another +Stack+, this new stack replaces the state of the receiver; this
+      # takes place when a +Continuation+ is called. If the +value+ is a +Frame+,
+      # it is pushed onto the stack and we set a flag to indicate that a tail
+      # call is in effect and the replacement target of the call needs to be
+      # repointed: the expression that generated the tail call will have been
+      # removed from the stack by the time the call returns.
       def value=(value)
         @value  = value
         @unwind = (Stack === @value)

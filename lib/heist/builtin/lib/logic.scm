@@ -15,3 +15,4 @@
 ; Returns true iff x is a boolean value
 (define (boolean? x)
   (or (eqv? x #t) (eqv? x #f)))
+

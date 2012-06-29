@@ -161,9 +161,9 @@
 
 
 (exercise "2.58.a")
-; Redesign the data representations for symbolic expressions to
-; use infix notation. Assume operators take two arguments, and
-; assume fully parenthesised expressions.
+; Redesign the data representations for symbolic expressions to use infix
+; notation. Assume operators take two arguments, and assume fully parenthesised
+; expressions.
 
 (define (exponentiation? x)
   (and (pair? x) (eq? (cadr x) '**)))
@@ -207,11 +207,11 @@
 
 
 (exercise "2.58.b")
-; Abandon assumption that everything is fully parenthesised and
-; handle infix expressions with operator precedence (+ and * only)
+; Abandon assumption that everything is fully parenthesised and handle infix
+; expressions with operator precedence (+ and * only)
 ;
-; Note + and * are associative -- (a + b) + c == a + (b + c)
-; so order does not matter when parsing an n-ary expression.
+; Note + and * are associative -- (a + b) + c == a + (b + c) so order does not
+; matter when parsing an n-ary expression.
 
 ; If the expression contains a '+', it's a sum (lowest binding)
 (define (sum? x)
@@ -222,10 +222,10 @@
 
 (define addend car)
 
-; The augend is simply the rest of the expression after the operator.
-; It will either contain a single item (a number or a parenthesised
-; product or sum) or at least three items (two args and an operator).
-; If it's one item, we remove the surrounding list.
+; The augend is simply the rest of the expression after the operator. It will
+; either contain a single item (a number or a parenthesised product or sum) or
+; at least three items (two args and an operator). If it's one item, we remove
+; the surrounding list.
 (define (augend s)
   (let ((rest (cddr s)))
     (if (=number? (length rest) 1)

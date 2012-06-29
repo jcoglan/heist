@@ -5,8 +5,8 @@
 
 
 (exercise "1.9")
-; This code is slightly different from SICP so as
-; not to overwrite functions we need later
+; This code is slightly different from SICP so as not to overwrite functions we
+; need later
 
 (define (add a b)
   (if (= a 0)

@@ -1,20 +1,19 @@
 module Heist
 
-  # +Runtime+ objects represent instances of the Heist runtime environment.
-  # Each +Runtime+ defines a top-level +Scope+, into which are injected
-  # the standard set of primitive functions and special forms as defined
-  # in <tt>lib/builtin</tt>.
+  # +Runtime+ objects represent instances of the Heist runtime environment. Each
+  # +Runtime+ defines a top-level +Scope+, into which are injected the standard
+  # set of primitive functions and special forms as defined in <tt>lib/builtin</tt>.
   #
-  # User code runs in another scope descended from the top-level. This is
-  # done so that user-level redefinitions of built-in functions do not break
-  # other built-in functions that refer to the redefined names; lexical
-  # scoping ensures that built-in functions can only refer to other bindings
-  # in the top-level scope so user-level bindings do not affect the built-in
-  # library functions.
+  # User code runs in another scope descended from the top-level. This is done
+  # so that user-level redefinitions of built-in functions do not break other
+  # built-in functions that refer to the redefined names; lexical scoping
+  # ensures that built-in functions can only refer to other bindings in the
+  # top-level scope so user-level bindings do not affect the built-in library
+  # functions.
   #
   # +Runtime+ exposes several methods from the user-level +Scope+ object,
-  # allowing runtime objects to be used as interfaces for defining
-  # functions, eval'ing code and running source files.
+  # allowing runtime objects to be used as interfaces for defining functions,
+  # eval'ing code and running source files.
   #
   class Runtime
     
@@ -35,9 +34,9 @@ module Heist
     
     BUILTIN_LIBRARIES = %w[primitives syntax compiled_library]
     
-    # A +Runtime+ is initialized using a set of options. The available
-    # options include the following, all of which are +false+ unless
-    # you override them yourself:
+    # A +Runtime+ is initialized using a set of options. The available options
+    # include the following, all of which are +false+ unless you override them
+    # yourself:
     #
     # * <tt>:continuations</tt>: set to +true+ to enable <tt>call/cc</tt>
     # * <tt>:lazy</tt>: set to +true+ to enable lazy evaluation
@@ -56,10 +55,10 @@ module Heist
       @start_time = Time.now.to_f
     end
     
-    # To stop user-space redefinitions of built-in functions from breaking
-    # the standard library, we define builtins in a privileged scope, one up
-    # from the scope that user code runs in. We then bind the names in 'user
-    # space' to stop (set!) from reaching into our privileged top level.
+    # To stop user-space redefinitions of built-in functions from breaking the
+    # standard library, we define builtins in a privileged scope, one up from
+    # the scope that user code runs in. We then bind the names in 'user space'
+    # to stop (set!) from reaching into our privileged top level.
     def load_builtins(options = {})
       libraries = (options[:only] || BUILTIN_LIBRARIES) - (options[:except] || [])
       
@@ -69,8 +68,8 @@ module Heist
       @user_scope.each_var(&@user_scope.method(:[]=))
     end
     
-    # Returns the length of time the +Runtime+ has been alive for, as a
-    # number in microseconds.
+    # Returns the length of time the +Runtime+ has been alive for, as a number
+    # in microseconds.
     def elapsed_time
       (Time.now.to_f - @start_time) * 1000000
     end

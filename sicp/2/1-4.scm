@@ -26,8 +26,8 @@
 
 (exercise "2.7")
 ; Interval constructors
-; upper-bound and lower-bound ought to return the
-; greater and lesser bounds, respectively
+; upper-bound and lower-bound ought to return the greater and lesser bounds,
+; respectively
 
 (define (make-interval a b) (cons a b))
 
@@ -177,8 +177,8 @@
 
 
 (exercise "2.13")
-; Formula for the tolerance of the product of two intervals,
-; assuming positive values
+; Formula for the tolerance of the product of two intervals, assuming positive
+; values
 
 ; (percent (mul-interval (make-center-percent x a)
 ;                        (make-center-percent y b)))

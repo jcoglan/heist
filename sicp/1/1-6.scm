@@ -33,7 +33,7 @@
       0
       y))
 
-; Don't run this unless using lazy evaluation. With Eager
-; evaluation, (p) calls itself repeatedly.
+; Don't run this unless using lazy evaluation. With Eager evaluation, (p) calls
+; itself repeatedly.
 ; (test 0 (p))
 

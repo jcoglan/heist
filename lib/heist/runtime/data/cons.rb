@@ -2,17 +2,17 @@ module Heist
   class Runtime
     
     # +Cons+ is the basic data structure element in Scheme. A +Cons+ is an
-    # object with two pointers to other objects, the pointers being called
-    # the +car+ and the +cdr+. You can typically think of this type of
-    # object as representing a pair of values, though not all +Cons+ objects
-    # are pairs according to the <tt>(pair?)</tt> procedure; specifically
-    # +NULL+ is not considered a pair.
+    # object with two pointers to other objects, the pointers being called the
+    # +car+ and the +cdr+. You can typically think of this type of object as
+    # representing a pair of values, though not all +Cons+ objects are pairs
+    # according to the <tt>(pair?)</tt> procedure; specifically +NULL+ is not
+    # considered a pair.
     #
-    # +Cons+ objects can be joined together to form lists; a list is either
-    # the empty list or a +Cons+ whose +cdr+ is a list. That is, a list is
-    # chain of +Cons+ pairs joined by their +cdr+ fields, whose +car+ fields
-    # hold the elements of the list. A list is considered 'proper' if its
-    # final +Cons+ is +NULL+, and improper otherwise. Some examples:
+    # +Cons+ objects can be joined together to form lists; a list is either the
+    # empty list or a +Cons+ whose +cdr+ is a list. That is, a list is chain of
+    # +Cons+ pairs joined by their +cdr+ fields, whose +car+ fields hold the
+    # elements of the list. A list is considered 'proper' if its final +Cons+ is
+    # +NULL+, and improper otherwise. Some examples:
     #
     #   Proper list: (1 2 3)    Improper list: (1 2 3 . 4)
     #
@@ -26,12 +26,13 @@ module Heist
     #
     # This also illustrates the relationship between dotted pairs and +Cons+
     # cells; <tt>'(a . b)</tt> is equivalent to <tt>(cons 'a 'b)</tt>, and the
-    # list <tt>(1 2 3)</tt> is more fully written as <tt>(1 . (2 . (3 . ())))</tt>.
+    # list <tt>(1 2 3)</tt> is more fully written as
+    # <tt>(1 . (2 . (3 . ())))</tt>.
     #
-    # +Cons+ objects are +Enumerable+, though always keep in mind that a
-    # +Cons+ does not 'contain' a whole list, it contains one value and a
-    # pointer to the rest of the list. Iterating on a +Cons+ involves
-    # walking this object graph.
+    # +Cons+ objects are +Enumerable+, though always keep in mind that a +Cons+
+    # does not 'contain' a whole list, it contains one value and a pointer to
+    # the rest of the list. Iterating on a +Cons+ involves walking this object
+    # graph.
     #
     class Cons
       include Enumerable
@@ -60,8 +61,8 @@ module Heist
       # An array of all the c[ad]+r functions supported by Heist
       ACCESSORS = cadr_combos
       
-      # For stringifying purposes, we need an inverted copy of the table
-      # of quoting shorthand symbols
+      # For stringifying purposes, we need an inverted copy of the table of
+      # quoting shorthand symbols
       SHORTHANDS = Scheme::SHORTHANDS.invert
       
       class << self
@@ -126,20 +127,20 @@ module Heist
         @cdr = cdr.nil? ? NULL : cdr
       end
       
-      # Recursively freezes the +Cons+ and any conses it points to. This is
-      # used to prevent quoted list constants from being modified since they
-      # are part of the parse tree: quoting a list does not allocate a new
-      # object so changing a quoted list would have undesirable side effects
-      # on any other references to the list.
+      # Recursively freezes the +Cons+ and any conses it points to. This is used
+      # to prevent quoted list constants from being modified since they are part
+      # of the parse tree: quoting a list does not allocate a new object so
+      # changing a quoted list would have undesirable side effects on any other
+      # references to the list.
       def freeze!
         return if null?
         [@car, @cdr].each { |slot| slot.freeze! if slot.respond_to?(:freeze!) }
         freeze
       end
       
-      # Sets the parent pair of +value+ to the receiver. Some +car+ values
-      # need a reference back to their containing +Cons+ for concerns such
-      # as macro expansion inlining.
+      # Sets the parent pair of +value+ to the receiver. Some +car+ values need
+      # a reference back to their containing +Cons+ for concerns such as macro
+      # expansion inlining.
       def hosts(value)
         value.parent = self if Expression === value and value != NULL
       end
@@ -150,11 +151,11 @@ module Heist
         Cons.construct(self, &block)
       end
       
-      # Iterates over each +Cons+ in a list, yielding the +car+ value for
-      # each +Cons+. Returns the final +Cons+ in the list, from where we
-      # can inspect the tail's +cdr+ to see if the list if proper or not.
-      # The block is optional and the method is aliased as +tail+, so to
-      # get the tail value of an improper list you'd call <tt>list.tail.cdr</tt>.
+      # Iterates over each +Cons+ in a list, yielding the +car+ value for each
+      # +Cons+. Returns the final +Cons+ in the list, from where we can inspect
+      # the tail's +cdr+ to see if the list if proper or not. The block is
+      # optional and the method is aliased as +tail+, so to get the tail value
+      # of an improper list you'd call <tt>list.tail.cdr</tt>.
       def each
         pair, tail = self, NULL
         while Cons === pair and not pair.null?
@@ -166,8 +167,8 @@ module Heist
       end
       alias :tail :each
       
-      # Returns the length of the list whose head is the receiving +Cons+.
-      # If the list is improper an exception is raised.
+      # Returns the length of the list whose head is the receiving +Cons+. If
+      # the list is improper an exception is raised.
       def length
         size = 0
         tail = each { |value| size += 1 }
@@ -176,9 +177,9 @@ module Heist
       end
       alias :size :length
       
-      # Returns +true+ iff +other+ is equal to the receiver, that is to
-      # say that +other+ is a +Cons+ with the same +car+ and +cdr+ as the
-      # receiving +Cons+.
+      # Returns +true+ iff +other+ is equal to the receiver, that is to say that
+      # +other+ is a +Cons+ with the same +car+ and +cdr+ as the receiving
+      # +Cons+.
       def ==(other)
         return false unless Cons === other
         return false if NULL == other
@@ -209,14 +210,14 @@ module Heist
       def null?
         self == NULL; end
       
-      # Returns an array representation of the list. If +deep+ is +true+,
-      # the array conversion is performed recursively.
+      # Returns an array representation of the list. If +deep+ is +true+, the
+      # array conversion is performed recursively.
       def to_a(deep = false)
         map { |cell| deep && Cons === cell ? cell.to_a : cell }
       end
       
-      # Returns a pure Ruby representation of the list, with any Heist
-      # specific objects converted to basic Ruby equivalents.
+      # Returns a pure Ruby representation of the list, with any Heist specific
+      # objects converted to basic Ruby equivalents.
       def to_ruby
         members = []
         tail = each do |cell|
